@@ -1,0 +1,139 @@
+classDiagram
+    direction TB
+
+    class User {
+        +UUID id
+        +String email
+    }
+
+    class Recipe {
+        +UUID id
+        +String title
+        +String instructions
+        +Integer estimatedKcalPerServing
+        +RecipeLifecycleStatus lifecycleStatus
+        +DietType dietType
+        +CuisineType cuisineType
+    }
+
+    class Ingredient {
+        +UUID id
+        +String name
+        +String externalFoodId
+    }
+
+    class RecipeIngredient {
+        +Decimal quantity
+        +String unit
+    }
+
+    class PantryItem {
+        +UUID id
+        +Decimal quantity
+        +String unit
+    }
+
+    class ShoppingList {
+        +UUID id
+    }
+
+    class ShoppingListItem {
+        +UUID id
+        +Decimal quantityNeeded
+        +String unit
+        +Boolean purchased
+    }
+
+    class DietType {
+        <<enumeration>>
+        OMNIVORE
+        VEGETARIAN
+        VEGAN
+        KETO
+    }
+
+    class CuisineType {
+        <<enumeration>>
+        ITALIAN
+        POLISH
+				EUROPEAN_OTHER
+				SOUTH_AMERICAN
+				MIDDLE_EASTERN
+        ASIAN
+        OTHER
+    }
+
+    class RecipeLifecycleStatus {
+        <<enumeration>>
+        DRAFT
+        ACTIVE
+        ARCHIVED
+    }
+
+    class MealSuggestionService {
+        +suggestRecipes(UUID userId) List~Recipe~
+    }
+
+    class RecipeManagementService {
+        <<service>>
+        +createDraft(UUID userId) Recipe
+        +updateRecipe(UUID recipeId, metadata) void
+        +setIngredients(UUID recipeId, lines) void
+        +publish(UUID recipeId) void
+        +archive(UUID recipeId) void
+        +deleteRecipe(UUID recipeId) void
+        +listByOwner(UUID userId, filters) List~Recipe~
+    }
+
+    class ShoppingListService {
+        <<service>>
+        +getOrCreateActiveList(UUID userId) ShoppingList
+        +fillMissingFromRecipes(UUID userId, recipeIds) void
+        +addManualItem(UUID userId, ingredientId, qty, unit) void
+        +markPurchased(UUID itemId, purchased) void
+        +removeItem(UUID itemId) void
+    }
+
+    class PantryService {
+        <<service>>
+        +upsertItem(UUID userId, ingredientId, qty, unit) void
+        +adjustQuantity(UUID pantryItemId, delta) void
+        +removeItem(UUID pantryItemId) void
+        +listPantry(UUID userId) List~PantryItem~
+    }
+
+    User "1" --> "*" Recipe : posiada
+    User "1" --> "*" PantryItem : przechowuje
+    User "1" --> "0..1" ShoppingList : aktywna_lista
+
+    Recipe "1" *-- "*" RecipeIngredient : sklad
+    Ingredient "1" <-- "*" RecipeIngredient : wystepuje_w
+
+    ShoppingList "1" *-- "*" ShoppingListItem : pozycje
+    Ingredient "1" <-- "*" ShoppingListItem : dotyczy
+    Ingredient "1" <-- "*" PantryItem : stan
+
+    Recipe --> DietType
+    Recipe --> CuisineType
+    Recipe --> RecipeLifecycleStatus
+
+    MealSuggestionService ..> User : odczyt
+    MealSuggestionService ..> Recipe : odczyt
+    MealSuggestionService ..> PantryItem : odczyt
+
+    RecipeManagementService ..> User : wlasciciel
+    RecipeManagementService ..> Recipe : zapis
+    RecipeManagementService ..> RecipeIngredient : zapis
+    RecipeManagementService ..> Ingredient : rozpoznanie
+
+    ShoppingListService ..> User : wlasciciel
+    ShoppingListService ..> ShoppingList : zapis
+    ShoppingListService ..> ShoppingListItem : zapis
+    ShoppingListService ..> Recipe : odczyt_skladu
+    ShoppingListService ..> RecipeIngredient : odczyt
+    ShoppingListService ..> PantryItem : porownanie
+    ShoppingListService ..> Ingredient : rozpoznanie
+
+    PantryService ..> User : wlasciciel
+    PantryService ..> PantryItem : zapis
+    PantryService ..> Ingredient : rozpoznanie

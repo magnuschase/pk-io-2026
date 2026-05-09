@@ -1,0 +1,7 @@
+stateDiagram-v2
+    [*] --> DRAFT : create_recipe
+    DRAFT --> ACTIVE : publish_recipe
+    ACTIVE --> DRAFT : draft_recipe
+    ACTIVE --> ARCHIVED : archive_recipe
+    ARCHIVED --> ACTIVE : unarchive_recipe
+    ARCHIVED --> [*] : remove_recipe

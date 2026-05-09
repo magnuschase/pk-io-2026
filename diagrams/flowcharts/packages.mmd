@@ -1,0 +1,41 @@
+flowchart TB
+    subgraph presentation["presentation"]
+        spa[SinglePageApplication]
+    end
+
+    subgraph application["application"]
+        rest[REST_API]
+        recipeSvc[RecipeManagementService]
+        shoppingSvc[ShoppingListService]
+        pantrySvc[PantryService]
+        sugg[MealSuggestionService]
+    end
+
+    subgraph domain["domain"]
+        entities[Entities]
+    end
+
+    subgraph infrastructure["infrastructure"]
+        repos[SqlRepositories]
+        nut[NutritionApiClient]
+        recsearch[RecipeSearchApiClient]
+    end
+
+    spa -->|JSON_HTTPS| rest
+    rest --> recipeSvc
+    rest --> shoppingSvc
+    rest --> pantrySvc
+    rest --> sugg
+    recipeSvc --> domain
+    shoppingSvc --> domain
+    pantrySvc --> domain
+    sugg --> domain
+    rest --> repos
+    recipeSvc --> repos
+    shoppingSvc --> repos
+    pantrySvc --> repos
+    sugg --> nut
+    sugg --> recsearch
+    repos --> domain
+    nut --> domain
+    recsearch --> domain

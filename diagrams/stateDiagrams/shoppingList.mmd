@@ -1,0 +1,5 @@
+stateDiagram-v2
+    [*] --> SHOPPING_LIST : add_shopping_list_item
+    SHOPPING_LIST --> PANTRY : mark_as_bought
+    PANTRY --> [*] : remove_pantry_item
+    SHOPPING_LIST --> [*] : cancel_shopping_list_item
