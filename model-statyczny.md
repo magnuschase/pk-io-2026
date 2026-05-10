@@ -1,6 +1,6 @@
 # Model statyczny systemu SmartRecipe
 
-Dokument uzupełnia [model opisowy i diagramy C4](docs.md) o artefakty UML: analizę statyczną, diagram klas, obiektów, pakietów, komponentów oraz wybrane diagramy stanu. Notacja: **Mermaid** (ten sam ekosystem co diagramy C4 w repozytorium).
+Dokument uzupełnia [model opisowy i diagramy C4](docs.md) o artefakty UML: analizę statyczną, diagram klas, obiektów, pakietów, komponentów oraz wybrane diagramy stanu. Diagramy zostały napisane za pomocą MermaidJS.
 
 ---
 

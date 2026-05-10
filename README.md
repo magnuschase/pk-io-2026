@@ -1,3 +1,8 @@
+# Skład zespołu
+
+- Jakub Kapała
+- Grzegorz Kotkowski
+
 # Część 1: Wybór tematu i zrozumienie potrzeb (12.04.2026)
 
 ### Temat projektu
