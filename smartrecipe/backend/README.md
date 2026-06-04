@@ -41,7 +41,7 @@ src/
 ### 1. Zmienne środowiskowe
 
 ```bash
-cp ../.env.example .env
+cp .env.example .env
 ```
 
 Edytuj `.env` jeśli chcesz zmienić domyślne wartości (port DB, klucze JWT). Domyślna konfiguracja działa bez zmian dla środowiska lokalnego.
@@ -186,21 +186,21 @@ POST /nutrition/enrich/<ingredientId>/fdc/2187885
 
 ## Zmienne środowiskowe
 
-| Zmienna              | Domyślnie     | Opis                                                           |
-| -------------------- | ------------- | -------------------------------------------------------------- |
-| `DB_HOST`            | `localhost`   | Host PostgreSQL                                                |
-| `DB_PORT`            | `5432`        | Port PostgreSQL                                                |
-| `DB_NAME`            | `smartrecipe` | Nazwa bazy                                                     |
-| `DB_USER`            | `smartrecipe` | Użytkownik                                                     |
-| `DB_PASS`            | `smartrecipe` | Hasło                                                          |
-| `JWT_SECRET`         | —             | Sekret access tokenu (**zmień w produkcji**)                   |
-| `JWT_REFRESH_SECRET` | —             | Sekret refresh tokenu (**zmień w produkcji**)                  |
-| `JWT_ACCESS_TTL`     | `900`         | TTL access tokenu w sekundach (15 min)                         |
-| `JWT_REFRESH_TTL`    | `604800`      | TTL refresh tokenu w sekundach (7 dni)                         |
+| Zmienna              | Domyślnie     | Opis                                                                  |
+| -------------------- | ------------- | --------------------------------------------------------------------- |
+| `DB_HOST`            | `localhost`   | Host PostgreSQL                                                       |
+| `DB_PORT`            | `5432`        | Port PostgreSQL                                                       |
+| `DB_NAME`            | `smartrecipe` | Nazwa bazy                                                            |
+| `DB_USER`            | `smartrecipe` | Użytkownik                                                            |
+| `DB_PASS`            | `smartrecipe` | Hasło                                                                 |
+| `JWT_SECRET`         | —             | Sekret access tokenu (**zmień w produkcji**)                          |
+| `JWT_REFRESH_SECRET` | —             | Sekret refresh tokenu (**zmień w produkcji**)                         |
+| `JWT_ACCESS_TTL`     | `900`         | TTL access tokenu w sekundach (15 min)                                |
+| `JWT_REFRESH_TTL`    | `604800`      | TTL refresh tokenu w sekundach (7 dni)                                |
 | `NUTRITION_API_KEY`  | `DEMO_KEY`    | USDA FDC — bezpłatny klucz: api.data.gov/signup (30 req/h bez klucza) |
-| `RECIPE_API_KEY`     | —             | Spoonacular — klucz do zewnętrznych przepisów (UC05, opcjonalny) |
-| `PORT`               | `3000`        | Port serwera HTTP                                              |
-| `NODE_ENV`           | `development` | `development` włącza synchronize + SQL logging                 |
+| `RECIPE_API_KEY`     | —             | Spoonacular — klucz do zewnętrznych przepisów (UC05, opcjonalny)      |
+| `PORT`               | `3000`        | Port serwera HTTP                                                     |
+| `NODE_ENV`           | `development` | `development` włącza synchronize + SQL logging                        |
 
 ## Produkcja
 
