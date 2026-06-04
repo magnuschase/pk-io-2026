@@ -3,8 +3,11 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createRecipe, setRecipeIngredients } from '@/api/recipes'
 import { IngredientListEditor } from '@/features/recipes/IngredientListEditor'
+import { RecipeEditorShell } from '@/features/recipes/RecipeEditorShell'
 import { RecipeForm, type RecipeFormValues } from '@/features/recipes/RecipeForm'
 import type { RecipeIngredientLine } from '@/types/domain'
+
+const FORM_ID = 'recipe-new-form'
 
 export function RecipeNewPage() {
   const navigate = useNavigate()
@@ -34,18 +37,32 @@ export function RecipeNewPage() {
     },
   })
 
+  const isPending = mutation.isPending
+
   return (
-    <div>
-      <h1 className="page-heading">Nowy przepis</h1>
-      <RecipeForm
-        onSubmit={(v) => mutation.mutate(v)}
-        isPending={mutation.isPending}
-        submitLabel="Utwórz szkic"
-      />
-      <section className="mt-10">
-        <h2 className="mb-4 text-lg font-bold">Składniki</h2>
-        <IngredientListEditor lines={lines} onChange={setLines} />
-      </section>
-    </div>
+    <RecipeEditorShell
+      title="Nowy przepis"
+      lede="Uzupełnij dane po lewej i składniki po prawej — zapiszesz szkic i wrócisz do edycji w dowolnym momencie."
+      main={
+        <RecipeForm
+          formId={FORM_ID}
+          submitPlacement="footer"
+          onSubmit={(v) => mutation.mutate(v)}
+          isPending={isPending}
+          submitLabel="Utwórz szkic"
+        />
+      }
+      aside={<IngredientListEditor lines={lines} onChange={setLines} />}
+      footer={
+        <button
+          type="submit"
+          form={FORM_ID}
+          className="recipe-form__submit recipe-editor__footer-submit"
+          disabled={isPending}
+        >
+          {isPending ? 'Zapisywanie…' : 'Utwórz szkic'}
+        </button>
+      }
+    />
   )
 }

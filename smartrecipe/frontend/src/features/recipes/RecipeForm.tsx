@@ -1,18 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { Button } from '@/components/ui/button'
+import { Combobox } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  cuisineFormOptions,
+  dietFormOptions,
+  parseFormValue,
+  toFormValue,
+} from '@/lib/filter-options'
 import { CuisineType, DietType, type Recipe } from '@/types/domain'
-import { displayEnum } from '@/lib/utils'
 
 const schema = z.object({
   title: z.string().min(1, 'Tytuł jest wymagany').max(300),
@@ -29,6 +27,9 @@ interface RecipeFormProps {
   onSubmit: (values: RecipeFormValues) => void
   isPending?: boolean
   submitLabel?: string
+  formId?: string
+  /** On new-recipe mobile layout the submit button lives in the page footer. */
+  submitPlacement?: 'inline' | 'footer'
 }
 
 export function RecipeForm({
@@ -36,12 +37,15 @@ export function RecipeForm({
   onSubmit,
   isPending,
   submitLabel = 'Zapisz',
+  formId = 'recipe-form',
+  submitPlacement = 'inline',
 }: RecipeFormProps) {
   const {
     register,
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<RecipeFormValues>({
     resolver: zodResolver(schema),
@@ -58,65 +62,97 @@ export function RecipeForm({
   const cuisineType = watch('cuisineType')
 
   return (
-    <form className="flex max-w-xl flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <Label htmlFor="title">Tytuł</Label>
-        <Input id="title" {...register('title')} />
-        {errors.title ? <p className="text-sm text-[var(--color-destructive)]">{errors.title.message}</p> : null}
+    <form id={formId} className="recipe-form" onSubmit={handleSubmit(onSubmit)}>
+      <div className="recipe-form__stack">
+        <div className="recipe-form__field recipe-form__field--title">
+          <label className="recipe-form__label" htmlFor="recipe-title">
+            Tytuł
+          </label>
+          <Input
+            id="recipe-title"
+            className="recipe-form__input"
+            placeholder="np. Zupa pomidorowa"
+            {...register('title')}
+          />
+          {errors.title ? (
+            <p className="recipe-form__error" role="alert">
+              {errors.title.message}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="recipe-form__field">
+          <label className="recipe-form__label" htmlFor="recipe-instructions">
+            Instrukcje
+          </label>
+          <Controller
+            name="instructions"
+            control={control}
+            render={({ field }) => (
+              <RichTextEditor
+                value={field.value ?? ''}
+                onChange={field.onChange}
+                placeholder="Krok po kroku — możesz uzupełnić później."
+              />
+            )}
+          />
+        </div>
+
+        <div className="recipe-form__meta">
+          <div className="recipe-form__field">
+            <label className="recipe-form__label" htmlFor="recipe-kcal">
+              kcal / porcja
+            </label>
+            <Input
+              id="recipe-kcal"
+              type="number"
+              className="recipe-form__input"
+              placeholder="—"
+              {...register('estimatedKcalPerServing')}
+            />
+          </div>
+          <div className="recipe-form__field">
+            <label className="recipe-form__label" id="recipe-diet-label">
+              Dieta
+            </label>
+            <Combobox
+              id="recipe-diet"
+              aria-labelledby="recipe-diet-label"
+              value={toFormValue(dietType)}
+              onValueChange={(v) => setValue('dietType', parseFormValue<DietType>(v))}
+              options={dietFormOptions()}
+              placeholder="—"
+              allowSearch={false}
+            />
+          </div>
+          <div className="recipe-form__field">
+            <label className="recipe-form__label" id="recipe-cuisine-label">
+              Kuchnia
+            </label>
+            <Combobox
+              id="recipe-cuisine"
+              aria-labelledby="recipe-cuisine-label"
+              value={toFormValue(cuisineType)}
+              onValueChange={(v) => setValue('cuisineType', parseFormValue<CuisineType>(v))}
+              options={cuisineFormOptions()}
+              placeholder="—"
+              searchPlaceholder="Szukaj kuchni…"
+            />
+          </div>
+        </div>
       </div>
-      <div>
-        <Label htmlFor="instructions">Instrukcje</Label>
-        <textarea
-          id="instructions"
-          className="flex min-h-28 w-full rounded-[var(--radius-sm)] border border-[var(--color-rule)] bg-[var(--color-paper)] px-3 py-2 text-sm"
-          {...register('instructions')}
-        />
+
+      <div
+        className={
+          submitPlacement === 'footer'
+            ? 'recipe-form__actions recipe-form__actions--desktop'
+            : 'recipe-form__actions'
+        }
+      >
+        <button type="submit" className="recipe-form__submit" disabled={isPending}>
+          {isPending ? 'Zapisywanie…' : submitLabel}
+        </button>
       </div>
-      <div>
-        <Label htmlFor="kcal">kcal / porcja</Label>
-        <Input id="kcal" type="number" {...register('estimatedKcalPerServing')} />
-      </div>
-      <div>
-        <Label>Dieta</Label>
-        <Select
-          value={dietType ?? 'none'}
-          onValueChange={(v) => setValue('dietType', v === 'none' ? undefined : (v as DietType))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="—" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">—</SelectItem>
-            {Object.values(DietType).map((d) => (
-              <SelectItem key={d} value={d}>
-                {displayEnum(d)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <Label>Kuchnia</Label>
-        <Select
-          value={cuisineType ?? 'none'}
-          onValueChange={(v) => setValue('cuisineType', v === 'none' ? undefined : (v as CuisineType))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="—" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">—</SelectItem>
-            {Object.values(CuisineType).map((c) => (
-              <SelectItem key={c} value={c}>
-                {displayEnum(c)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <Button type="submit" disabled={isPending}>
-        {isPending ? 'Zapisywanie…' : submitLabel}
-      </Button>
     </form>
   )
 }

@@ -1,6 +1,22 @@
 [
   {
     "date": "2026-06-04",
+    "macrostructure": "Split Studio",
+    "theme": "Garden",
+    "enrichment": "none",
+    "scope": "single-page-redesign",
+    "brief": "SmartRecipe · new recipe form redesign"
+  },
+  {
+    "date": "2026-06-04",
+    "macrostructure": "Portfolio Grid",
+    "theme": "Garden",
+    "enrichment": "none",
+    "scope": "single-page-redesign",
+    "brief": "SmartRecipe · recipes page redesign"
+  },
+  {
+    "date": "2026-06-04",
     "macrostructure": "Index-First",
     "theme": "Garden",
     "enrichment": "none",

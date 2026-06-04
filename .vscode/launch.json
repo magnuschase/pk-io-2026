@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "SmartRecipe Frontend (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/smartrecipe/frontend/src",
+      "sourceMapPathOverrides": {
+        "/@fs/*": "${workspaceFolder}/*"
+      },
+      "preLaunchTask": "vite: dev"
+    },
+    {
+      "name": "SmartRecipe Frontend (attach Chrome)",
+      "type": "chrome",
+      "request": "attach",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/smartrecipe/frontend/src",
+      "sourceMapPathOverrides": {
+        "/@fs/*": "${workspaceFolder}/*"
+      }
+    }
+  ]
+}

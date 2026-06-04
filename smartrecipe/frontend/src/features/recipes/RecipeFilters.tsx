@@ -31,8 +31,8 @@ export function RecipeFilters({ values, onChange }: RecipeFiltersProps) {
   }
 
   return (
-    <div className="recipe-filters">
-      <div className="filters-row">
+    <div className="recipes-filters">
+      <div className="recipes-filters__grid">
         <div>
           <Label htmlFor="recipe-filter-diet">Dieta</Label>
           <Combobox
@@ -80,14 +80,14 @@ export function RecipeFilters({ values, onChange }: RecipeFiltersProps) {
       </div>
 
       {hasActiveFilters ? (
-        <div className="recipe-filters__active">
-          <div className="recipe-filters__chips">
+        <div className="recipes-filters__active">
+          <div className="recipes-filters__chips">
             {values.diet ? (
-              <span className="recipe-filters__chip">
+              <span className="recipes-filters__chip">
                 Dieta: {displayEnum(values.diet)}
                 <button
                   type="button"
-                  className="recipe-filters__chip-remove"
+                  className="recipes-filters__chip-remove"
                   onClick={() => onChange({ ...values, diet: undefined })}
                   aria-label="Usuń filtr diety"
                 >
@@ -96,11 +96,11 @@ export function RecipeFilters({ values, onChange }: RecipeFiltersProps) {
               </span>
             ) : null}
             {values.cuisine ? (
-              <span className="recipe-filters__chip">
+              <span className="recipes-filters__chip">
                 Kuchnia: {displayEnum(values.cuisine)}
                 <button
                   type="button"
-                  className="recipe-filters__chip-remove"
+                  className="recipes-filters__chip-remove"
                   onClick={() => onChange({ ...values, cuisine: undefined })}
                   aria-label="Usuń filtr kuchni"
                 >
@@ -109,11 +109,11 @@ export function RecipeFilters({ values, onChange }: RecipeFiltersProps) {
               </span>
             ) : null}
             {values.kcalMin ? (
-              <span className="recipe-filters__chip">
+              <span className="recipes-filters__chip">
                 min {values.kcalMin} kcal
                 <button
                   type="button"
-                  className="recipe-filters__chip-remove"
+                  className="recipes-filters__chip-remove"
                   onClick={() => onChange({ ...values, kcalMin: undefined })}
                   aria-label="Usuń filtr kcal min"
                 >
@@ -122,11 +122,11 @@ export function RecipeFilters({ values, onChange }: RecipeFiltersProps) {
               </span>
             ) : null}
             {values.kcalMax ? (
-              <span className="recipe-filters__chip">
+              <span className="recipes-filters__chip">
                 max {values.kcalMax} kcal
                 <button
                   type="button"
-                  className="recipe-filters__chip-remove"
+                  className="recipes-filters__chip-remove"
                   onClick={() => onChange({ ...values, kcalMax: undefined })}
                   aria-label="Usuń filtr kcal max"
                 >
@@ -135,7 +135,7 @@ export function RecipeFilters({ values, onChange }: RecipeFiltersProps) {
               </span>
             ) : null}
           </div>
-          <button type="button" className="recipe-filters__clear" onClick={clearAll}>
+          <button type="button" className="recipes-filters__clear" onClick={clearAll}>
             Wyczyść filtry
           </button>
         </div>

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { IngredientCombobox } from '@/components/domain/IngredientCombobox'
 import { UnitCombobox } from '@/components/domain/UnitCombobox'
@@ -30,7 +29,7 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="recipe-ingredients">
       <IngredientCombobox
         value={picker}
         onChange={(ing) => {
@@ -41,32 +40,44 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
             setPicker(null)
           }
         }}
-        label="Dodaj składnik do przepisu"
+        label="Dodaj składnik"
       />
-      <ul className="flex flex-col gap-2">
-        {lines.map((line, i) => (
-          <li key={line.ingredientId} className="flex flex-wrap items-end gap-2 rounded border border-[var(--color-rule)] p-3">
-            <span className="min-w-[8rem] flex-1 text-sm font-medium">
-              {line.ingredient?.name ?? line.ingredientId}
-            </span>
-            <Input
-              type="number"
-              step="any"
-              className="w-24"
-              value={line.quantity}
-              onChange={(e) => updateLine(i, { quantity: Number(e.target.value) })}
-            />
-            <UnitCombobox
-              className="w-[11rem]"
-              value={line.unit}
-              onValueChange={(unit) => updateLine(i, { unit })}
-            />
-            <Button type="button" variant="ghost" size="sm" onClick={() => removeLine(i)}>
-              Usuń
-            </Button>
-          </li>
-        ))}
-      </ul>
+
+      {lines.length === 0 ? (
+        <p className="recipe-ingredients__empty" role="status">
+          Jeszcze bez składników — wyszukaj powyżej, aby dodać pierwszy.
+        </p>
+      ) : (
+        <ul className="recipe-ingredients__list">
+          {lines.map((line, i) => (
+            <li key={line.ingredientId} className="recipe-ingredient-line">
+              <span className="recipe-ingredient-line__name">
+                {line.ingredient?.name ?? line.ingredientId}
+              </span>
+              <Input
+                type="number"
+                step="any"
+                className="recipe-ingredient-line__qty recipe-form__input"
+                aria-label={`Ilość: ${line.ingredient?.name ?? line.ingredientId}`}
+                value={line.quantity}
+                onChange={(e) => updateLine(i, { quantity: Number(e.target.value) })}
+              />
+              <UnitCombobox
+                className="recipe-ingredient-line__unit"
+                value={line.unit}
+                onValueChange={(unit) => updateLine(i, { unit })}
+              />
+              <button
+                type="button"
+                className="recipe-ingredient-line__remove"
+                onClick={() => removeLine(i)}
+              >
+                Usuń
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }
