@@ -23,6 +23,20 @@ pnpm dev
 Aplikacja: http://localhost:5173  
 Backend (domyślnie): http://localhost:3000 - ustaw `VITE_API_URL` w `.env`.
 
+## Docker
+
+Obraz serwuje zbudowane pliki statyczne przez **nginx** (port 80, SPA fallback).
+
+```bash
+cd smartrecipe/frontend
+docker build -t smartrecipe-frontend --build-arg VITE_API_URL=http://localhost:3000 .
+docker run --rm -p 8080:80 smartrecipe-frontend
+```
+
+`VITE_API_URL` jest wpisywany do bundla w czasie `docker build` (zmienna Vite). W CI/CD ustaw repozytoryjne `vars.VITE_API_URL` albo przekaż `--build-arg` przy ręcznym buildzie.
+
+Obrazy publikowane do GHCR: `ghcr.io/<org>/<repo>/smartrecipe-frontend` (workflow `frontend-docker.yml`).
+
 ## Skrypty
 
 | Polecenie       | Opis                              |

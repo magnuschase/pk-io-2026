@@ -22,7 +22,7 @@ export function useIntersectionObserver<T extends HTMLElement>(
           }
         });
       },
-      { threshold: 0.08, root, rootMargin, threshold },
+      { root, rootMargin, threshold: threshold ?? 0.08 },
     );
 
     obs.observe(el);
