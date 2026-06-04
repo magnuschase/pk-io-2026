@@ -103,6 +103,7 @@ C4Container
 
 - **Backend API** (NestJS, PostgreSQL): [smartrecipe/backend/README.md](smartrecipe/backend/README.md) - uruchomienie, architektura `src/`, endpointy REST, zmienne środowiskowe
 - **Frontend** (React, Vite): [smartrecipe/frontend/README.md](smartrecipe/frontend/README.md) - uruchomienie dev, skrypty, struktura katalogów
+- **Wdrożenie k3s** (Postgres + API + SPA + Ingress): [smartrecipe/k8s/README.md](smartrecipe/k8s/README.md)
 
 ### Model statyczny (UML)
 

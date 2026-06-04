@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: smartrecipe
+  labels:
+    app.kubernetes.io/part-of: smartrecipe
+  annotations:
+    # k3s ships Traefik as default Ingress controller
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: smartrecipe.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: smartrecipe-frontend
+                port:
+                  number: 80
+    - host: api.smartrecipe.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: smartrecipe-backend
+                port:
+                  number: 3000

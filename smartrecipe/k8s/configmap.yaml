@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smartrecipe-config
+  labels:
+    app.kubernetes.io/part-of: smartrecipe
+data:
+  DB_HOST: smartrecipe-postgres
+  DB_PORT: "5432"
+  DB_NAME: smartrecipe
+  DB_USER: smartrecipe
+  PORT: "3000"
+  JWT_ACCESS_TTL: "900"
+  JWT_REFRESH_TTL: "604800"
+  NODE_ENV: production

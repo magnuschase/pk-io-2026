@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartrecipe-backend
+  labels:
+    app.kubernetes.io/name: smartrecipe-backend
+    app.kubernetes.io/component: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: smartrecipe-backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: smartrecipe-backend
+        app.kubernetes.io/component: api
+    spec:
+      containers:
+        - name: backend
+          image: smartrecipe-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: smartrecipe-config
+            - secretRef:
+                name: smartrecipe-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:16-alpine
+          env:
+            - name: PGHOST
+              valueFrom:
+                configMapKeyRef:
+                  name: smartrecipe-config
+                  key: DB_HOST
+            - name: PGUSER
+              valueFrom:
+                configMapKeyRef:
+                  name: smartrecipe-config
+                  key: DB_USER
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: smartrecipe-secrets
+                  key: DB_PASS
+            - name: PGDATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: smartrecipe-config
+                  key: DB_NAME
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE"; do
+                echo "waiting for postgres..."
+                sleep 2
+              done

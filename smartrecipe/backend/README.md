@@ -31,6 +31,10 @@ src/
     └── enums.ts        # DietType, CuisineType, RecipeLifecycleStatus
 ```
 
+## Wdrożenie na k3s
+
+Manifesty Kubernetes (Postgres + API + frontend + Ingress): [`../k8s/README.md`](../k8s/README.md).
+
 ## Wymagania
 
 - Node.js ≥ 20

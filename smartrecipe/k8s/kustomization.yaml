@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: smartrecipe
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - postgres/service.yaml
+  - postgres/statefulset.yaml
+  - backend/service.yaml
+  - backend/deployment.yaml
+  - frontend/service.yaml
+  - frontend/deployment.yaml
+  - ingress.yaml
+
+# Edytuj newName na swoje repozytorium GHCR (po pushu z GitHub Actions).
+images:
+  - name: smartrecipe-backend
+    newName: ghcr.io/REPLACE_OWNER/REPLACE_REPO/smartrecipe-backend
+    newTag: latest
+  - name: smartrecipe-frontend
+    newName: ghcr.io/REPLACE_OWNER/REPLACE_REPO/smartrecipe-frontend
+    newTag: latest

@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../
+
+# Pierwsze wdrożenie na pustą bazę: TypeORM synchronize (tylko gdy NODE_ENV != production).
+# Po utworzeniu schematu przełącz na overlay domyślny (base) z NODE_ENV=production.
+patches:
+  - path: configmap-node-env.yaml

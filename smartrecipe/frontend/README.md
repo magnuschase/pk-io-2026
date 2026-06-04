@@ -37,6 +37,8 @@ docker run --rm -p 8080:80 smartrecipe-frontend
 
 Obrazy publikowane do GHCR: `ghcr.io/<org>/<repo>/smartrecipe-frontend` (workflow `frontend-docker.yml`).
 
+Wdrożenie całego stosu na k3s: [`../k8s/README.md`](../k8s/README.md).
+
 ## Skrypty
 
 | Polecenie       | Opis                              |
