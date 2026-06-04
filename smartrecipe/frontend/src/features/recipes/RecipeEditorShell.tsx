@@ -8,6 +8,9 @@ interface RecipeEditorShellProps {
   toolbar?: React.ReactNode
   main: React.ReactNode
   aside: React.ReactNode
+  mainPanelTitle?: string
+  asidePanelTitle?: string
+  className?: string
   /** Sticky page footer — used for primary submit on mobile (below ingredients). */
   footer?: React.ReactNode
 }
@@ -19,10 +22,21 @@ export function RecipeEditorShell({
   toolbar,
   main,
   aside,
+  mainPanelTitle = 'Dane przepisu',
+  asidePanelTitle = 'Składniki',
+  className,
   footer,
 }: RecipeEditorShellProps) {
   return (
-    <div className={`recipe-editor${footer ? ' recipe-editor--has-footer' : ''}`}>
+    <div
+      className={[
+        'recipe-editor',
+        footer ? 'recipe-editor--has-footer' : '',
+        className ?? '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <nav className="recipe-editor__crumb" aria-label="Nawigacja">
         <Link className="recipe-editor__back" to="/recipes">
           ← Przepisy
@@ -45,14 +59,14 @@ export function RecipeEditorShell({
       <div className="recipe-editor__split">
         <section className="recipe-editor__panel recipe-editor__panel--main" aria-labelledby="recipe-panel-main">
           <h2 id="recipe-panel-main" className="recipe-editor__panel-title">
-            Dane przepisu
+            {mainPanelTitle}
           </h2>
           {main}
         </section>
 
         <aside className="recipe-editor__panel recipe-editor__panel--aside" aria-labelledby="recipe-panel-aside">
           <h2 id="recipe-panel-aside" className="recipe-editor__panel-title">
-            Składniki
+            {asidePanelTitle}
           </h2>
           {aside}
         </aside>

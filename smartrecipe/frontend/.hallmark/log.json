@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-06-04",
+    "macrostructure": "Long Document",
+    "theme": "Garden",
+    "enrichment": "none",
+    "scope": "single-page-redesign",
+    "brief": "SmartRecipe · active recipe read-only detail + shopping list CTA"
+  },
+  {
+    "date": "2026-06-04",
     "macrostructure": "Workbench",
     "theme": "Garden",
     "enrichment": "none",
