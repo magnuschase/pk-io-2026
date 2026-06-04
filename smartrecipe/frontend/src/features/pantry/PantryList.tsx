@@ -1,11 +1,29 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { deletePantryItem, getPantry, upsertPantryItem } from '@/api/pantry'
 import { PantryItemRow } from '@/components/domain/PantryItemRow'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { PantryPageHeader } from '@/features/pantry/PantryPageHeader'
 import { UpsertPantryItemDialog } from '@/features/pantry/UpsertPantryItemDialog'
 import { queryKeys } from '@/lib/query-keys'
 import type { PantryItem } from '@/types/domain'
+
+type UpsertValues = { quantity: number; unit: string; mode?: 'set' | 'add' }
+
+function AddIngredientButton({
+  onSubmit,
+}: {
+  onSubmit: (ingredientId: string, values: UpsertValues) => void
+}) {
+  return (
+    <UpsertPantryItemDialog
+      trigger={
+        <button type="button" className="pantry-add-btn">
+          Dodaj składnik
+        </button>
+      }
+      onSubmit={onSubmit}
+    />
+  )
+}
 
 export function PantryList() {
   const qc = useQueryClient()
@@ -20,22 +38,28 @@ export function PantryList() {
       ingredientId,
       quantity,
       unit,
+      mode = 'set',
     }: {
       ingredientId: string
       quantity: number
       unit: string
-    }) => upsertPantryItem(ingredientId, { quantity, unit }),
-    onMutate: async ({ ingredientId, quantity, unit }) => {
+      mode?: 'set' | 'add'
+    }) => upsertPantryItem(ingredientId, { quantity, unit, mode }),
+    onMutate: async ({ ingredientId, quantity, unit, mode = 'set' }) => {
       await qc.cancelQueries({ queryKey: queryKeys.pantry() })
       const prev = qc.getQueryData<PantryItem[]>(queryKeys.pantry())
       qc.setQueryData<PantryItem[]>(queryKeys.pantry(), (old = []) => {
         const idx = old.findIndex((i) => i.ingredientId === ingredientId)
-        const next = { id: `opt-${ingredientId}`, ingredientId, quantity, unit } as PantryItem
         if (idx >= 0) {
           const copy = [...old]
-          copy[idx] = { ...copy[idx], quantity, unit }
+          const existing = copy[idx]
+          const nextQty =
+            mode === 'add' ? Number(existing.quantity) + quantity : quantity
+          const nextUnit = mode === 'add' ? existing.unit : unit
+          copy[idx] = { ...existing, quantity: nextQty, unit: nextUnit }
           return copy
         }
+        const next = { id: `opt-${ingredientId}`, ingredientId, quantity, unit } as PantryItem
         return [...old, next]
       })
       return { prev }
@@ -57,6 +81,14 @@ export function PantryList() {
     },
   })
 
+  function handleAdd(ingredientId: string, values: UpsertValues) {
+    upsertMutation.mutate({ ingredientId, ...values, mode: 'add' })
+  }
+
+  function handleEdit(ingredientId: string, values: UpsertValues) {
+    upsertMutation.mutate({ ingredientId, ...values, mode: 'set' })
+  }
+
   function confirmDelete(item: PantryItem) {
     const name = item.ingredient?.name ?? 'ten składnik'
     if (window.confirm(`Usunąć ${name} ze spiżarni?`)) {
@@ -64,58 +96,66 @@ export function PantryList() {
     }
   }
 
+  const addAction = <AddIngredientButton onSubmit={handleAdd} />
+
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-3">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-12 w-full" />
-        ))}
+      <div className="pantry-page" aria-busy="true" aria-label="Ładowanie spiżarni">
+        <PantryPageHeader itemCount={0} actions={addAction} />
+        <ul className="pantry-grid">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <li key={i}>
+              <div className="pantry-skeleton-card" />
+            </li>
+          ))}
+        </ul>
       </div>
     )
   }
 
-  if (isError) return <p className="text-[var(--color-destructive)]">Nie udało się wczytać spiżarni.</p>
+  if (isError) {
+    return (
+      <div className="pantry-page">
+        <PantryPageHeader itemCount={0} actions={addAction} />
+        <p className="pantry-error" role="alert">
+          Nie udało się wczytać spiżarni.
+        </p>
+      </div>
+    )
+  }
 
   return (
-    <div>
-      <div className="mb-4 flex justify-end">
-        <UpsertPantryItemDialog
-          trigger={<Button>Dodaj składnik</Button>}
-          onSubmit={(ingredientId, v) => upsertMutation.mutate({ ingredientId, ...v })}
-        />
-      </div>
+    <div className="pantry-page">
+      <PantryPageHeader itemCount={data.length} actions={addAction} />
+
       {data.length === 0 ? (
-        <p className="text-[var(--color-muted)]">Spiżarnia jest pusta. Dodaj pierwszy składnik.</p>
+        <div className="pantry-shelf-empty" role="status">
+          <p className="pantry-shelf-empty__title">Półki są puste</p>
+          <p className="pantry-shelf-empty__hint">
+            Dodaj składnik powyżej — wtedy pojawią się dopasowane przepisy w sugestiach.
+          </p>
+        </div>
       ) : (
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-[var(--color-ink)] text-xs uppercase tracking-wide text-[var(--color-muted)]">
-              <th className="pb-2 pr-4">Składnik</th>
-              <th className="pb-2 pr-4">Ilość</th>
-              <th className="pb-2 text-right">Akcje</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((item) => (
-              <PantryItemRow
-                key={item.id}
-                item={item}
-                editTrigger={
-                  <UpsertPantryItemDialog
-                    item={item}
-                    trigger={
-                      <Button type="button" variant="outline" size="sm">
-                        Edytuj
-                      </Button>
-                    }
-                    onSubmit={(ingredientId, v) => upsertMutation.mutate({ ingredientId, ...v })}
-                  />
-                }
-                onDelete={confirmDelete}
-              />
-            ))}
-          </tbody>
-        </table>
+        <ul className="pantry-grid" aria-label="Składniki w spiżarni">
+          {data.map((item) => (
+            <PantryItemRow
+              key={item.id}
+              item={item}
+              editTrigger={
+                <UpsertPantryItemDialog
+                  item={item}
+                  trigger={
+                    <button type="button" className="pantry-card__btn">
+                      Edytuj
+                    </button>
+                  }
+                  onSubmit={handleEdit}
+                />
+              }
+              onDelete={confirmDelete}
+            />
+          ))}
+        </ul>
       )}
     </div>
   )

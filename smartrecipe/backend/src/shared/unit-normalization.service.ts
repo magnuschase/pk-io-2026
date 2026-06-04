@@ -51,4 +51,27 @@ export class UnitNormalizationService {
     const recipe = this.normalize(recipeQuantity, recipeUnit);
     return pantry.value >= recipe.value;
   }
+
+  /** Sum two amounts; result is expressed in resultUnit (typically the existing pantry unit). */
+  addQuantities(
+    qtyA: number,
+    unitA: string,
+    qtyB: number,
+    unitB: string,
+    resultUnit: string = unitA,
+  ): number {
+    if (!this.canCompare(unitA, unitB)) {
+      throw new Error('INCOMPATIBLE_UNITS');
+    }
+    const a = this.normalize(qtyA, unitA);
+    const b = this.normalize(qtyB, unitB);
+    return this.fromBase(a.value + b.value, resultUnit);
+  }
+
+  fromBase(value: number, unit: string): number {
+    const key = unit.toLowerCase().trim();
+    const conv = CONVERSIONS[key];
+    if (!conv) return value;
+    return value / conv.factor;
+  }
 }

@@ -1,6 +1,4 @@
 import type { PantryItem } from '@/types/domain'
-import { formatUnit } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 
 interface PantryItemRowProps {
   item: PantryItem
@@ -8,21 +6,33 @@ interface PantryItemRowProps {
   onDelete: (item: PantryItem) => void
 }
 
+function formatQuantity(quantity: number): string {
+  return Number.isInteger(quantity) ? String(quantity) : quantity.toFixed(1)
+}
+
 export function PantryItemRow({ item, editTrigger, onDelete }: PantryItemRowProps) {
   const name = item.ingredient?.name ?? item.ingredientId
+  const qty = Number(item.quantity)
 
   return (
-    <tr className="border-b border-[var(--color-rule)]">
-      <td className="py-3 pr-4">{name}</td>
-      <td className="py-3 pr-4 tabular-nums">{formatUnit(Number(item.quantity), item.unit)}</td>
-      <td className="py-3 text-right">
-        <div className="flex justify-end gap-2">
+    <li>
+      <article className="pantry-card">
+        <h2 className="pantry-card__name">{name}</h2>
+        <p className="pantry-card__qty">
+          {formatQuantity(qty)}
+          <span className="pantry-card__unit"> {item.unit}</span>
+        </p>
+        <div className="pantry-card__actions">
           {editTrigger}
-          <Button type="button" variant="destructive" size="sm" onClick={() => onDelete(item)}>
+          <button
+            type="button"
+            className="pantry-card__btn pantry-card__btn--danger"
+            onClick={() => onDelete(item)}
+          >
             Usuń
-          </Button>
+          </button>
         </div>
-      </td>
-    </tr>
+      </article>
+    </li>
   )
 }

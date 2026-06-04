@@ -8,7 +8,7 @@ export async function getPantry(): Promise<PantryItem[]> {
 
 export async function upsertPantryItem(
   ingredientId: string,
-  body: { quantity: number; unit: string },
+  body: { quantity: number; unit: string; mode?: 'set' | 'add' },
 ): Promise<PantryItem> {
   const { data } = await apiClient.put<PantryItem>(`/pantry/items/${ingredientId}`, body)
   return data

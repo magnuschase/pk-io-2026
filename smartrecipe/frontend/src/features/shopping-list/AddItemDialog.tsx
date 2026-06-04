@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { addShoppingItem } from '@/api/shopping-list'
 import { IngredientCombobox } from '@/components/domain/IngredientCombobox'
@@ -15,6 +15,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { UnitCombobox } from '@/components/domain/UnitCombobox'
+import { DEFAULT_UNIT } from '@/lib/unit-options'
 import type { Ingredient } from '@/types/domain'
 
 const schema = z.object({
@@ -35,12 +37,13 @@ export function AddItemDialog({ trigger }: AddItemDialogProps) {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { quantityNeeded: 1, unit: 'szt' },
+    defaultValues: { quantityNeeded: 1, unit: DEFAULT_UNIT },
   })
 
   const mutation = useMutation({
@@ -65,7 +68,7 @@ export function AddItemDialog({ trigger }: AddItemDialogProps) {
         <DialogHeader>
           <DialogTitle>Dodaj pozycję ręcznie</DialogTitle>
         </DialogHeader>
-        <IngredientCombobox onSelect={setIngredient} />
+        <IngredientCombobox value={ingredient} onChange={setIngredient} />
         <form
           className="mt-4 flex flex-col gap-3"
           onSubmit={handleSubmit((v) => mutation.mutate(v))}
@@ -78,8 +81,19 @@ export function AddItemDialog({ trigger }: AddItemDialogProps) {
             ) : null}
           </div>
           <div>
-            <Label htmlFor="unit">Jednostka</Label>
-            <Input id="unit" {...register('unit')} />
+            <Label id="shopping-unit-label">Jednostka</Label>
+            <Controller
+              name="unit"
+              control={control}
+              render={({ field }) => (
+                <UnitCombobox
+                  id="unit"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  aria-labelledby="shopping-unit-label"
+                />
+              )}
+            />
           </div>
           <Button type="submit" disabled={!ingredient || mutation.isPending}>
             Dodaj

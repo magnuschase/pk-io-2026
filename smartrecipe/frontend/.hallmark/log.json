@@ -1,6 +1,22 @@
 [
   {
     "date": "2026-06-04",
+    "macrostructure": "Index-First",
+    "theme": "Garden",
+    "enrichment": "none",
+    "scope": "single-page-redesign",
+    "brief": "SmartRecipe · pantry page redesign v2 (shelf empty, header action)"
+  },
+  {
+    "date": "2026-06-04",
+    "macrostructure": "Catalogue",
+    "theme": "Garden",
+    "enrichment": "none",
+    "scope": "single-page-redesign",
+    "brief": "SmartRecipe · pantry page redesign"
+  },
+  {
+    "date": "2026-06-04",
     "macrostructure": "Workbench",
     "theme": "Garden",
     "enrichment": "none",

@@ -17,14 +17,14 @@ export function DialogContent({
       <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[oklch(17%_0.012_115/0.4)]" />
       <DialogPrimitive.Content
         className={cn(
-          'fixed left-1/2 top-1/2 z-50 w-[min(100%-2rem,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius-md)] border border-[var(--color-rule)] bg-[var(--color-paper)] p-6 shadow-[var(--shadow-whisper)] focus:outline-none',
+          'app-dialog-content fixed left-1/2 top-1/2 z-50 w-[min(100%-2rem,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius-md)] border border-[var(--color-rule)] bg-[var(--color-paper)] shadow-[var(--shadow-whisper)] focus:outline-none',
           className,
         )}
         {...props}
       >
         {children}
         <DialogPrimitive.Close
-          className="absolute right-4 top-4 rounded-[var(--radius-sm)] p-1 text-[var(--color-muted)] hover:text-[var(--color-ink)] focus-visible:outline-2 focus-visible:outline-[var(--color-focus)]"
+          className="app-dialog__close"
           aria-label="Zamknij"
         >
           <X className="size-4" />

@@ -1,67 +1,154 @@
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { createIngredient, searchIngredients } from '@/api/ingredients'
 import { useDebounce } from '@/hooks/useDebounce'
 import { queryKeys } from '@/lib/query-keys'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
 import type { Ingredient } from '@/types/domain'
 
 interface IngredientComboboxProps {
-  onSelect: (ingredient: Ingredient) => void
+  value: Ingredient | null
+  onChange: (ingredient: Ingredient | null) => void
   label?: string
 }
 
-export function IngredientCombobox({ onSelect, label = 'Szukaj składnika' }: IngredientComboboxProps) {
-  const [search, setSearch] = useState('')
+export function IngredientCombobox({ value, onChange, label = 'Szukaj składnika' }: IngredientComboboxProps) {
+  const [search, setSearch] = useState(value?.name ?? '')
+  const [open, setOpen] = useState(false)
   const debounced = useDebounce(search, 300)
+  const queryTerm = debounced.trim()
+  const inputId = useId()
+  const listboxId = useId()
 
   const { data = [], isFetching } = useQuery({
-    queryKey: queryKeys.ingredients(debounced),
-    queryFn: () => searchIngredients(debounced),
+    queryKey: queryKeys.ingredients(queryTerm || '__default__'),
+    queryFn: () => searchIngredients(queryTerm),
     staleTime: 300_000,
-    enabled: debounced.length >= 1,
+    enabled: open,
   })
+
+  const showCreate =
+    queryTerm.length >= 2 && !data.some((i) => i.name.toLowerCase() === queryTerm.toLowerCase())
+
+  useEffect(() => {
+    if (value?.name) {
+      setSearch(value.name)
+    } else if (!value) {
+      setSearch('')
+    }
+  }, [value])
 
   async function handleCreate() {
     const name = search.trim()
     if (!name) return
     const created = await createIngredient(name)
-    onSelect(created)
-    setSearch('')
+    onChange(created)
+    setSearch(created.name)
+    setOpen(false)
+  }
+
+  function handleSelect(item: Ingredient) {
+    onChange(item)
+    setSearch(item.name)
+    setOpen(false)
+  }
+
+  function handleSearchChange(next: string) {
+    setSearch(next)
+    if (value && next.trim() !== value.name) {
+      onChange(null)
+    }
+    setOpen(true)
+  }
+
+  function openPicker() {
+    setOpen(true)
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <label className="text-sm font-medium">{label}</label>
-      <Input
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="np. mąka pszenna"
-        aria-autocomplete="list"
-      />
-      {isFetching ? <p className="text-xs text-[var(--color-muted)]">Szukam…</p> : null}
-      <ul className="max-h-40 overflow-y-auto rounded-[var(--radius-sm)] border border-[var(--color-rule)]">
-        {data.map((item) => (
-          <li key={item.id}>
-            <button
-              type="button"
-              className="w-full px-3 py-2 text-left text-sm hover:bg-[var(--color-paper-2)]"
-              onClick={() => {
-                onSelect(item)
-                setSearch('')
-              }}
+    <Popover open={open} onOpenChange={setOpen} modal={false}>
+      <div className="ingredient-search">
+        <label className="ingredient-search__label" htmlFor={inputId}>
+          {label}
+        </label>
+        <PopoverAnchor asChild>
+          <div className="ingredient-search__anchor">
+            <Input
+              id={inputId}
+              value={search}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              onFocus={openPicker}
+              onClick={openPicker}
+              placeholder="np. mąka pszenna"
+              role="combobox"
+              aria-expanded={open}
+              aria-controls={open ? listboxId : undefined}
+              aria-autocomplete="list"
+              autoComplete="off"
+            />
+          </div>
+        </PopoverAnchor>
+        <PopoverContent
+          className="ingredient-search__popover"
+          align="start"
+          side="bottom"
+          sideOffset={4}
+          collisionPadding={12}
+          onOpenAutoFocus={(e) => e.preventDefault()}
+          onWheel={(e) => e.stopPropagation()}
+        >
+          {!queryTerm && data.length > 0 ? (
+            <p className="ingredient-search__hint">Składniki z katalogu</p>
+          ) : null}
+          {isFetching ? (
+            <p className="ingredient-search__status">Szukam…</p>
+          ) : null}
+          {data.length > 0 ? (
+            <ul
+              id={listboxId}
+              className="ingredient-search__list"
+              role="listbox"
+              data-scroll-lock-scrollable=""
+              onWheel={(e) => e.stopPropagation()}
             >
-              {item.name}
-            </button>
-          </li>
-        ))}
-      </ul>
-      {debounced.length >= 2 && !data.some((i) => i.name.toLowerCase() === debounced.toLowerCase()) ? (
-        <Button type="button" variant="outline" size="sm" onClick={() => void handleCreate()}>
-          Utwórz „{search.trim()}”
-        </Button>
-      ) : null}
-    </div>
+              {data.map((item) => (
+                <li key={item.id} role="presentation">
+                  <button
+                    type="button"
+                    role="option"
+                    className="ingredient-search__item"
+                    onPointerDown={(e) => {
+                      e.preventDefault()
+                      handleSelect(item)
+                    }}
+                  >
+                    {item.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : !isFetching ? (
+            <p className="ingredient-search__status">
+              {queryTerm ? 'Brak wyników' : 'Katalog jest pusty'}
+            </p>
+          ) : null}
+          {showCreate ? (
+            <div className="ingredient-search__footer">
+              <button
+                type="button"
+                className="ingredient-search__create"
+                onPointerDown={(e) => {
+                  e.preventDefault()
+                  void handleCreate()
+                }}
+              >
+                Utwórz „{search.trim()}”
+              </button>
+            </div>
+          ) : null}
+        </PopoverContent>
+      </div>
+    </Popover>
   )
 }

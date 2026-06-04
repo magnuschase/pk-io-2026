@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 
 export const Popover = PopoverPrimitive.Root
 export const PopoverTrigger = PopoverPrimitive.Trigger
+export const PopoverAnchor = PopoverPrimitive.Anchor
 
 export function PopoverContent({
   className,
@@ -17,7 +18,7 @@ export function PopoverContent({
         align={align}
         sideOffset={sideOffset}
         className={cn(
-          'z-[200] rounded-[var(--radius-md)] border border-[var(--color-rule)] bg-[var(--color-paper)] p-0 shadow-[var(--shadow-whisper)] outline-none',
+          'z-[250] rounded-[var(--radius-md)] border border-[var(--color-rule)] bg-[var(--color-paper)] p-0 shadow-[var(--shadow-whisper)] outline-none',
           className,
         )}
         {...props}

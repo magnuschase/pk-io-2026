@@ -1,6 +1,9 @@
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { IngredientCombobox } from '@/components/domain/IngredientCombobox'
+import { UnitCombobox } from '@/components/domain/UnitCombobox'
+import { DEFAULT_UNIT } from '@/lib/unit-options'
 import type { Ingredient, RecipeIngredientLine } from '@/types/domain'
 
 interface IngredientListEditorProps {
@@ -9,9 +12,11 @@ interface IngredientListEditorProps {
 }
 
 export function IngredientListEditor({ lines, onChange }: IngredientListEditorProps) {
+  const [picker, setPicker] = useState<Ingredient | null>(null)
+
   function addLine(ingredient: Ingredient) {
     if (lines.some((l) => l.ingredientId === ingredient.id)) return
-    onChange([...lines, { ingredientId: ingredient.id, quantity: 1, unit: 'g', ingredient }])
+    onChange([...lines, { ingredientId: ingredient.id, quantity: 1, unit: DEFAULT_UNIT, ingredient }])
   }
 
   function updateLine(index: number, patch: Partial<RecipeIngredientLine>) {
@@ -26,7 +31,18 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
 
   return (
     <div className="flex flex-col gap-4">
-      <IngredientCombobox onSelect={addLine} label="Dodaj składnik do przepisu" />
+      <IngredientCombobox
+        value={picker}
+        onChange={(ing) => {
+          if (ing) {
+            addLine(ing)
+            setPicker(null)
+          } else {
+            setPicker(null)
+          }
+        }}
+        label="Dodaj składnik do przepisu"
+      />
       <ul className="flex flex-col gap-2">
         {lines.map((line, i) => (
           <li key={line.ingredientId} className="flex flex-wrap items-end gap-2 rounded border border-[var(--color-rule)] p-3">
@@ -40,10 +56,10 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
               value={line.quantity}
               onChange={(e) => updateLine(i, { quantity: Number(e.target.value) })}
             />
-            <Input
-              className="w-20"
+            <UnitCombobox
+              className="w-[11rem]"
               value={line.unit}
-              onChange={(e) => updateLine(i, { unit: e.target.value })}
+              onValueChange={(unit) => updateLine(i, { unit })}
             />
             <Button type="button" variant="ghost" size="sm" onClick={() => removeLine(i)}>
               Usuń

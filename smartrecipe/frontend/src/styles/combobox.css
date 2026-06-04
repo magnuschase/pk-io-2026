@@ -43,10 +43,17 @@ button.combobox-trigger,
 /* ── Popover panel ───────────────────────────────────────── */
 .combobox-popover {
   overflow: hidden;
+  max-height: min(20rem, 50dvh);
   padding: 0 !important;
+  pointer-events: auto;
   box-shadow:
     var(--shadow-whisper),
     0 8px 24px color-mix(in oklch, var(--color-ink) 8%, transparent);
+}
+
+.combobox-command {
+  max-height: min(20rem, 50dvh);
+  overflow: hidden;
 }
 
 /* Header (short lists without search) */
@@ -84,11 +91,16 @@ button.combobox-trigger,
 }
 
 /* List container — brak poziomego paddingu, żeby tło opcji dochodzi do krawędzi */
-.combobox-popover [cmdk-list] {
+.combobox-popover [cmdk-list],
+.combobox-command__list {
   padding: 0 !important;
-  max-height: 18rem;
-  overflow-y: auto;
+  max-height: min(16rem, 42dvh) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   scroll-padding: 0;
+  touch-action: pan-y;
 }
 
 .combobox-popover [cmdk-group] {

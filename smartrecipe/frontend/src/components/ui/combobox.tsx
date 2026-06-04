@@ -47,7 +47,7 @@ export function Combobox({
   const selected = options.find((o) => o.value === value)
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={false}>
       <PopoverTrigger asChild>
         <Button
           type="button"
@@ -73,7 +73,10 @@ export function Combobox({
       <PopoverContent
         className="combobox-popover w-[var(--radix-popover-trigger-width)] min-w-[12rem]"
         align="start"
+        side="bottom"
         sideOffset={6}
+        collisionPadding={12}
+        onWheel={(e) => e.stopPropagation()}
       >
         <Command id={listboxId} loop className="combobox-command">
           {allowSearch ? (
@@ -83,7 +86,11 @@ export function Combobox({
               <p className="combobox-popover__header-label">Wybierz opcję</p>
             </div>
           )}
-          <CommandList>
+          <CommandList
+            className="combobox-command__list"
+            data-scroll-lock-scrollable=""
+            onWheel={(e) => e.stopPropagation()}
+          >
             <CommandEmpty>{emptyText}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {

@@ -10,18 +10,19 @@
 
 /* ── Page masthead ───────────────────────────────────────── */
 .suggest-masthead {
-  padding-block-end: var(--space-xl);
-  margin-block-end: var(--space-2xl);
-  border-bottom: 3px solid var(--color-ink);
-}
-
-.suggest-masthead__row {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
   gap: var(--space-lg);
-  margin-block-end: var(--space-md);
+  padding-block-end: var(--space-xl);
+  margin-block-end: var(--space-2xl);
+  border-bottom: 3px solid var(--color-ink);
+}
+
+.suggest-masthead__main {
+  flex: 1 1 16rem;
+  min-width: 0;
 }
 
 .suggest-masthead__title {
@@ -42,6 +43,7 @@
   flex-direction: column;
   align-items: flex-end;
   gap: var(--space-2xs);
+  flex-shrink: 0;
   min-width: 0;
 }
 
@@ -88,6 +90,7 @@
 }
 
 .suggest-masthead__lede {
+  margin-block-start: var(--space-md);
   font-size: var(--text-md);
   line-height: 1.55;
   color: var(--color-muted);

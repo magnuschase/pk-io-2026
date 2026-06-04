@@ -5,10 +5,7 @@ export function Input({ className, type = 'text', ...props }: InputHTMLAttribute
   return (
     <input
       type={type}
-      className={cn(
-        'flex h-11 w-full min-w-0 rounded-[var(--radius-sm)] border border-[var(--color-rule)] bg-[var(--color-paper)] px-3 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-muted)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-focus)]',
-        className,
-      )}
+      className={cn('app-input', className)}
       {...props}
     />
   )
