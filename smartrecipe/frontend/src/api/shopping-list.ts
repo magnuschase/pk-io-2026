@@ -31,3 +31,12 @@ export async function patchShoppingItem(
 export async function deleteShoppingItem(id: string): Promise<void> {
   await apiClient.delete(`/shopping-list/items/${id}`)
 }
+
+export async function clearShoppingList(): Promise<void> {
+  await apiClient.delete('/shopping-list/items')
+}
+
+export async function syncPurchasedToPantry(): Promise<ShoppingList> {
+  const { data } = await apiClient.post<ShoppingList>('/shopping-list/sync-pantry')
+  return data
+}

@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-06-04",
+    "macrostructure": "Catalogue",
+    "theme": "Garden",
+    "enrichment": "none",
+    "scope": "single-page-redesign",
+    "brief": "SmartRecipe · shopping list redesign + checkbox adds to pantry"
+  },
+  {
+    "date": "2026-06-04",
     "macrostructure": "n/a",
     "theme": "Garden",
     "enrichment": "none",
