@@ -261,6 +261,12 @@
   margin: 0;
   padding: 0;
   min-width: 0;
+  align-items: stretch;
+}
+
+.recipes-grid > li {
+  display: flex;
+  min-width: 0;
 }
 
 .recipes-grid--fade {
@@ -282,25 +288,54 @@
   }
 }
 
+/* Hallmark · component: recipe-list-card · genre: editorial · theme: Garden
+ * states: default · hover · focus · active
+ */
 .recipes-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  width: 100%;
   min-width: 0;
-  min-height: 11rem;
+  min-height: 16.5rem;
+  height: 100%;
   padding: var(--space-md);
   background: var(--color-paper);
   border: 1px solid var(--color-rule);
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
   transition:
     border-color var(--dur-base) var(--ease-out),
-    box-shadow var(--dur-base) var(--ease-out);
+    box-shadow var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .recipes-card:hover {
     border-color: var(--color-ink);
-    box-shadow: var(--shadow-whisper);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-card-offset);
   }
+
+  .recipes-card:hover .recipes-card__title {
+    color: var(--color-accent);
+  }
+
+  .recipes-card:hover .recipes-card__cta {
+    color: var(--color-ink);
+  }
+}
+
+.recipes-card:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 4px;
+  border-color: var(--color-ink);
+  box-shadow: var(--shadow-card-offset);
+}
+
+.recipes-card:active {
+  transform: translate(0, 0);
 }
 
 .recipes-card__top {
@@ -348,6 +383,10 @@
   white-space: nowrap;
 }
 
+.recipes-card__kcal--placeholder {
+  visibility: hidden;
+}
+
 .recipes-card__title {
   font-family: var(--font-display);
   font-size: var(--text-md);
@@ -355,33 +394,27 @@
   font-style: normal;
   line-height: 1.2;
   color: var(--color-ink);
-  overflow-wrap: anywhere;
   min-width: 0;
-  flex: 1;
-}
-
-.recipes-card__title a {
-  color: inherit;
-  text-decoration: none;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  min-height: calc(2 * 1.2 * 1em);
   transition: color var(--dur-base) var(--ease-out);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .recipes-card__title a:hover {
-    color: var(--color-accent);
-  }
-}
-
-.recipes-card__title a:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 4px;
-  border-radius: var(--radius-sm);
 }
 
 .recipes-card__meta {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2xs);
+  min-height: 1.75rem;
+}
+
+.recipes-card__meta--placeholder {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .recipes-card__chip {
@@ -394,17 +427,40 @@
   white-space: nowrap;
 }
 
-.recipes-card__preview {
+.recipes-card__ingredients {
+  flex: 1;
   margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  min-width: 0;
+  min-height: 6.5rem;
+}
+
+.recipes-card__ingredient {
+  max-width: 22ch;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  color: var(--color-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recipes-card__ingredient--more {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+.recipes-card__ingredients-empty {
+  flex: 1;
+  margin: 0;
+  min-height: 6.5rem;
   font-size: var(--text-sm);
   line-height: 1.45;
   color: var(--color-muted);
-  overflow-wrap: anywhere;
-  min-width: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .recipes-card__cta {
@@ -413,23 +469,10 @@
   font-size: var(--text-sm);
   font-weight: 500;
   color: var(--color-accent);
-  text-decoration: none;
   border-bottom: 1px solid currentColor;
   align-self: flex-start;
   white-space: nowrap;
   transition: color var(--dur-base) var(--ease-out);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .recipes-card__cta:hover {
-    color: var(--color-ink);
-  }
-}
-
-.recipes-card__cta:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 4px;
-  border-radius: var(--radius-sm);
 }
 
 /* ── Empty + error + loading ─────────────────────────────── */
@@ -469,7 +512,8 @@
 }
 
 .recipes-skeleton-card {
-  min-height: 11rem;
+  width: 100%;
+  min-height: 16.5rem;
   background: linear-gradient(
     90deg,
     var(--color-paper-2) 0%,
@@ -494,6 +538,11 @@
   .recipes-skeleton-card {
     animation: none;
     background: var(--color-paper-2);
+  }
+
+  .recipes-card:hover {
+    transform: none;
+    box-shadow: none;
   }
 
   .recipes-card:active,

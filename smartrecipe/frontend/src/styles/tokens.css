@@ -53,6 +53,7 @@
   --radius-lg: 8px;
 
   --shadow-whisper: 0 1px 2px oklch(20% 0.01 110 / 0.05);
+  --shadow-card-offset: 4px 4px 0 var(--color-ink);
   --z-nav: 100;
   --z-nav-overlay: 250;
   --z-nav-drawer: 260;
