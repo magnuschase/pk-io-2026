@@ -1,6 +1,15 @@
 [
   {
     "date": "2026-06-04",
+    "macrostructure": "n/a",
+    "theme": "Garden",
+    "enrichment": "none",
+    "scope": "component-nav",
+    "nav": "N6 Masthead + N3 mobile drawer",
+    "brief": "SmartRecipe · app navbar editorial match + mobile sidebar"
+  },
+  {
+    "date": "2026-06-04",
     "macrostructure": "Long Document",
     "theme": "Garden",
     "enrichment": "none",

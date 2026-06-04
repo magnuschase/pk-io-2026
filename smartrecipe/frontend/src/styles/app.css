@@ -27,61 +27,6 @@ body {
   width: 100%;
 }
 
-.app-nav {
-  position: sticky;
-  top: 0;
-  z-index: var(--z-nav);
-  border-bottom: 1px solid var(--color-rule);
-  background: color-mix(in oklch, var(--color-paper) 92%, transparent);
-  backdrop-filter: blur(8px);
-}
-
-.app-nav__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
-  padding: var(--space-sm) clamp(var(--space-md), 4vw, var(--space-xl));
-  max-width: 74rem;
-  margin-inline: auto;
-}
-
-.app-nav__brand {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--text-lg);
-  color: var(--color-ink);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.app-nav__links {
-  display: none;
-  align-items: center;
-  gap: var(--space-lg);
-}
-
-@media (min-width: 48rem) {
-  .app-nav__links {
-    display: flex;
-  }
-  .app-nav__mobile-toggle {
-    display: none;
-  }
-}
-
-.app-nav__link {
-  font-size: var(--text-sm);
-  color: var(--color-muted);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.app-nav__link:hover,
-.app-nav__link[aria-current='page'] {
-  color: var(--color-ink);
-}
-
 .recipe-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));

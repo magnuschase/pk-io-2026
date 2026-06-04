@@ -2,6 +2,7 @@
 @import "./styles/tokens.css";
 @import "./styles/landing.css";
 @import "./styles/app.css";
+@import "./styles/nav.css";
 @import "./styles/suggestions.css";
 @import "./styles/pantry.css";
 @import "./styles/recipes.css";
