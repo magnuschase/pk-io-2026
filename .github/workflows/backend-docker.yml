@@ -60,7 +60,7 @@ jobs:
             org.opencontainers.image.source=${{ github.event.repository.clone_url }}
             org.opencontainers.image.url=${{ github.event.repository.html_url }}
             org.opencontainers.image.created=${{ github.event.release.published_at || github.event.head_commit.timestamp }}
-            org.opencontainers.image.documentation=${{ github.event.repository.html_url }}/blob/main/README.md
+            org.opencontainers.image.documentation=${{ github.event.repository.html_url }}/blob/main/smartrecipe/backend/README.md
             org.opencontainers.image.description=${{ github.event.release.name || 'Build from main branch' }}
             org.opencontainers.image.release-notes=${{ github.event.release.body || 'Development build from main branch.' }}
 
