@@ -143,8 +143,8 @@ export function RecipeDetailPage() {
           <ul className="recipe-detail__ingredients-read">
             {ingredientLines.map((l) => (
               <li key={l.ingredientId}>
-                {l.ingredient?.name ?? l.ingredientId} —{" "}
-                {formatUnit(Number(l.quantity), l.unit)}
+                {l.ingredient?.name ?? l.ingredientId}
+                {l.unit ? ` — ${formatUnit(Number(l.quantity), l.unit)}` : null}
               </li>
             ))}
           </ul>

@@ -3,7 +3,7 @@ import { Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { IngredientCombobox } from '@/components/domain/IngredientCombobox'
 import { UnitCombobox } from '@/components/domain/UnitCombobox'
-import { DEFAULT_UNIT } from '@/lib/unit-options'
+import { DEFAULT_UNIT, NO_UNIT } from '@/lib/unit-options'
 import type { Ingredient, RecipeIngredientLine } from '@/types/domain'
 
 interface IngredientListEditorProps {
@@ -62,14 +62,16 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
                 <span className="recipe-ingredient-line__name">
                   {line.ingredient?.name ?? line.ingredientId}
                 </span>
-                <Input
-                  type="number"
-                  step="any"
-                  className="recipe-ingredient-line__qty recipe-form__input"
-                  aria-label={`Ilość: ${line.ingredient?.name ?? line.ingredientId}`}
-                  value={line.quantity}
-                  onChange={(e) => updateLine(i, { quantity: Number(e.target.value) })}
-                />
+                {line.unit !== NO_UNIT && (
+                  <Input
+                    type="number"
+                    step="any"
+                    className="recipe-ingredient-line__qty recipe-form__input"
+                    aria-label={`Ilość: ${line.ingredient?.name ?? line.ingredientId}`}
+                    value={line.quantity}
+                    onChange={(e) => updateLine(i, { quantity: Number(e.target.value) })}
+                  />
+                )}
                 <UnitCombobox
                   className="recipe-ingredient-line__unit"
                   value={line.unit}

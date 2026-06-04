@@ -38,6 +38,7 @@ export function displayEnum(value: DietType | CuisineType | RecipeLifecycleStatu
 }
 
 export function formatUnit(quantity: number, unit: string): string {
+  if (!unit) return ''
   const q = Number.isInteger(quantity) ? String(quantity) : quantity.toFixed(1)
   return `${q} ${unit}`
 }
