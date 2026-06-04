@@ -77,8 +77,8 @@ export function LinkIngredientNutritionDialog({
             Kaloryka — {ingredient.name}
           </DialogTitle>
           <p className="nutrition-dialog__lede">
-            Szukamy wartości na 100 g w bazie żywności. Polskie nazwy są tłumaczone
-            automatycznie — możesz też wpisać własną frazę (np. „wheat flour”).
+            Szukamy wartości na 100 g w bazie żywności. Polskie nazwy tłumaczymy
+            przez DeepL — możesz też wpisać własną frazę po angielsku (np. „wheat flour”).
           </p>
         </DialogHeader>
 

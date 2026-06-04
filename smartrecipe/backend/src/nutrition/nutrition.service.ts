@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { firstValueFrom } from 'rxjs';
 import { Ingredient } from '../domain/entities/ingredient.entity';
 import { buildUsdaSearchQueries } from './ingredient-usda-query';
+import { DeeplTranslationService } from './deepl-translation.service';
 import { pickDefaultGramsPerPiece } from './usda-portion-grams';
 
 const USDA_BASE = 'https://api.nal.usda.gov/fdc/v1';
@@ -57,6 +58,7 @@ export class NutritionService {
   constructor(
     private readonly http: HttpService,
     private readonly config: ConfigService,
+    private readonly deepl: DeeplTranslationService,
     @InjectRepository(Ingredient)
     private readonly ingredientRepo: Repository<Ingredient>,
   ) {}
@@ -77,7 +79,8 @@ export class NutritionService {
     pageSize = 10,
   ): Promise<NutritionSearchHit[]> {
     if (!query.trim()) return [];
-    const queries = buildUsdaSearchQueries(query);
+    const english = await this.deepl.translatePlToEn(query);
+    const queries = buildUsdaSearchQueries(query, english);
     const seen = new Set<number>();
     const merged: NutritionSearchHit[] = [];
 

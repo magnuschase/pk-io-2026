@@ -30,8 +30,8 @@ export class NutritionController {
     summary: 'Szukaj składników w USDA FoodData Central',
     description:
       'Zwraca listę wyników z bazy USDA FDC — fdcId, opis i kcal/100 g. ' +
-      'Używa DEMO_KEY gdy brak NUTRITION_API_KEY (30 req/godz). ' +
-      'Klucz darmowy: https://api.data.gov/signup/',
+      'Polskie zapytania są tłumaczone przez DeepL (DEEPL_API_KEY). ' +
+      'USDA: DEMO_KEY gdy brak NUTRITION_API_KEY (30 req/godz).',
   })
   @ApiQuery({
     name: 'q',

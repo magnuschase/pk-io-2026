@@ -1,17 +1,18 @@
 import { buildUsdaSearchQueries } from './ingredient-usda-query';
 
 describe('buildUsdaSearchQueries', () => {
-  it('maps exact Polish terms to English USDA queries first', () => {
-    const queries = buildUsdaSearchQueries('mąka');
-    expect(queries[0]).toBe('wheat flour');
+  it('puts English translation first', () => {
+    expect(buildUsdaSearchQueries('mąka', 'wheat flour')).toEqual([
+      'wheat flour',
+      'mąka',
+    ]);
   });
 
-  it('includes tofu without translation', () => {
-    expect(buildUsdaSearchQueries('tofu')).toContain('tofu');
+  it('falls back to Polish name only when translation is missing', () => {
+    expect(buildUsdaSearchQueries('tofu', null)).toEqual(['tofu']);
   });
 
-  it('maps compound names via partial alias', () => {
-    const queries = buildUsdaSearchQueries('świeża bazylia');
-    expect(queries.some((q) => q.includes('basil'))).toBe(true);
+  it('deduplicates when translation matches normalized Polish', () => {
+    expect(buildUsdaSearchQueries('Tofu', 'tofu')).toEqual(['tofu']);
   });
 });

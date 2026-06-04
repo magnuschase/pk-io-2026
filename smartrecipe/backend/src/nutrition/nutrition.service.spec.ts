@@ -5,6 +5,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { of, throwError } from 'rxjs';
 import { NutritionService } from './nutrition.service';
+import { DeeplTranslationService } from './deepl-translation.service';
 import { Ingredient } from '../domain/entities/ingredient.entity';
 
 const ING_ID = 'ing-uuid';
@@ -31,6 +32,10 @@ const mockConfig = {
 const mockIngredientRepo = {
   findOne: jest.fn(),
   save: jest.fn((r: Ingredient) => Promise.resolve(r)),
+};
+
+const mockDeepl = {
+  translatePlToEn: jest.fn().mockResolvedValue('chicken breast'),
 };
 
 const usdaSearchResponse = {
@@ -81,6 +86,7 @@ describe('NutritionService', () => {
           provide: getRepositoryToken(Ingredient),
           useValue: mockIngredientRepo,
         },
+        { provide: DeeplTranslationService, useValue: mockDeepl },
       ],
     }).compile();
     service = module.get(NutritionService);
@@ -107,7 +113,15 @@ describe('NutritionService', () => {
     it('returns empty array for empty query without calling API', async () => {
       const hits = await service.searchFoods('  ');
       expect(mockHttp.get).not.toHaveBeenCalled();
+      expect(mockDeepl.translatePlToEn).not.toHaveBeenCalled();
       expect(hits).toHaveLength(0);
+    });
+
+    it('translates Polish query via DeepL before USDA search', async () => {
+      mockDeepl.translatePlToEn.mockResolvedValueOnce('wheat flour');
+      mockHttp.get.mockReturnValue(of({ data: usdaSearchResponse }));
+      await service.searchFoods('mąka', 5);
+      expect(mockDeepl.translatePlToEn).toHaveBeenCalledWith('mąka');
     });
 
     it('uses DEMO_KEY when NUTRITION_API_KEY is not configured', async () => {
