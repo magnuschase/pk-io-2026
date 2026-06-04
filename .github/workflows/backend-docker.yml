@@ -1,12 +1,13 @@
 name: 🛥️ BE CD - Build and Push Docker Image
 
 on:
+  release:
+    types: [published]
   push:
     branches: [main]
     paths:
       - "smartrecipe/backend/**"
       - ".github/workflows/backend-docker.yml"
-  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -29,14 +30,39 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata
+      # Determine version or ID depending on trigger
+      # We will use short commit sha for main push (dev builds)
+      # and release tag name (aka version) for releases
+      - name: Determine image tag
+        id: vars
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            VERSION="${{ github.event.release.tag_name }}"
+          else
+            SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+            VERSION="main-${SHORT_SHA}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Using image tag: ${VERSION}"
+
+      - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=sha,prefix=
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=${{ steps.vars.outputs.version }}
+            type=raw,value=latest
+          labels: |
+            org.opencontainers.image.title=${{ github.event.repository.name }}
+            org.opencontainers.image.version=${{ steps.vars.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=${{ github.event.repository.clone_url }}
+            org.opencontainers.image.url=${{ github.event.repository.html_url }}
+            org.opencontainers.image.created=${{ github.event.release.published_at || github.event.head_commit.timestamp }}
+            org.opencontainers.image.documentation=${{ github.event.repository.html_url }}/blob/main/README.md
+            org.opencontainers.image.description=${{ github.event.release.name || 'Build from main branch' }}
+            org.opencontainers.image.release-notes=${{ github.event.release.body || 'Development build from main branch.' }}
 
       - name: Build and push
         uses: docker/build-push-action@v6
