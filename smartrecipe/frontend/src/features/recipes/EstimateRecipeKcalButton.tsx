@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { normalizeRecipeIngredientLines } from "@/lib/recipe-ingredients";
+import { skipSummary } from "@/lib/recipe-kcal-skip-summary";
 import type { RecipeIngredientLine } from "@/types/domain";
 
 interface EstimateRecipeKcalButtonProps {
@@ -19,19 +20,6 @@ interface EstimateRecipeKcalButtonProps {
   /** Porcje z formularza lub zapisane w przepisie — wstępna wartość w dialogu. */
   resolveDefaultServings?: () => number | null | undefined;
   onEstimated: (result: RecipeKcalEstimate) => void;
-}
-
-function skipSummary(skipped: RecipeKcalEstimate["skipped"]): string {
-  const noKcal = skipped.filter((s) => s.reason === "no_kcal_data").length;
-  const noMass = skipped.filter((s) => s.reason === "no_mass_unit").length;
-  const parts: string[] = [];
-  if (noKcal > 0) {
-    parts.push(`${noKcal} bez kaloryki (ustaw „kcal / 100 g” przy składniku)`);
-  }
-  if (noMass > 0) {
-    parts.push(`${noMass} w szt./łyżkach — użyj gramów lub ml, żeby wliczyć`);
-  }
-  return parts.join(" · ");
 }
 
 function formatServingsInput(value: number | null | undefined): string {

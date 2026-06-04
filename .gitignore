@@ -7,3 +7,4 @@ dist
 .pnpm-store
 .pnpm-store/**
 FRONTEND_PLAN.md
+coverage

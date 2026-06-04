@@ -25,9 +25,14 @@ Backend (domyślnie): http://localhost:3000 — ustaw `VITE_API_URL` w `.env`.
 
 ## Skrypty
 
-| Polecenie      | Opis           |
-| -------------- | -------------- |
-| `pnpm dev`     | dev server     |
-| `pnpm build`   | produkcja      |
-| `pnpm preview` | podgląd buildu |
-| `pnpm lint`    | ESLint         |
+| Polecenie       | Opis                              |
+| --------------- | --------------------------------- |
+| `pnpm dev`      | dev server                        |
+| `pnpm build`    | produkcja                         |
+| `pnpm preview`  | podgląd buildu                    |
+| `pnpm lint`     | ESLint                            |
+| `pnpm test`     | testy jednostkowe i komponentowe (Vitest) |
+| `pnpm test:watch` | testy w trybie watch            |
+| `pnpm test:cov` | testy z raportem pokrycia         |
+
+Testy obejmują logikę UI powiązaną z modelem domenowym (spiżarnia, przepisy i cykl życia, sugestie posiłków, lista zakupów, szacowanie kcal, filtry diety/kuchni) — zgodnie z `model-statyczny.md` i `model-dynamiczny.md` (UC01–UC04, RF17).
