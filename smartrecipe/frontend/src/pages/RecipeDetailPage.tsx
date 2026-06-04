@@ -1,7 +1,7 @@
-import DOMPurify from "dompurify";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { getRecipe, setRecipeIngredients, updateRecipe } from "@/api/recipes";
 import { Skeleton } from "@/components/ui/skeleton";
 import { IngredientListEditor } from "@/features/recipes/IngredientListEditor";
@@ -10,13 +10,25 @@ import {
   RecipeForm,
   type RecipeFormValues,
 } from "@/features/recipes/RecipeForm";
+import { RecipeEditorShell } from "@/features/recipes/RecipeEditorShell";
 import { queryKeys } from "@/lib/query-keys";
+import { normalizeIngredientLine } from "@/lib/recipe-ingredients";
 import { displayEnum, formatUnit } from "@/lib/utils";
-import type { RecipeIngredientLine } from "@/types/domain";
+import {
+  RecipeLifecycleStatus,
+  type RecipeIngredientLine,
+} from "@/types/domain";
+
+interface SaveRecipePayload {
+  values: RecipeFormValues;
+  lines: RecipeIngredientLine[];
+  saveIngredients: boolean;
+}
 
 export function RecipeDetailPage() {
   const { id = "" } = useParams();
   const qc = useQueryClient();
+  const submitFormRef = useRef<() => void>(() => {});
   const [editingIngredients, setEditingIngredients] = useState(false);
   const [lines, setLines] = useState<RecipeIngredientLine[]>([]);
 
@@ -31,34 +43,39 @@ export function RecipeDetailPage() {
     staleTime: 120_000,
   });
 
-  const updateMutation = useMutation({
-    mutationFn: (values: RecipeFormValues) =>
-      updateRecipe(id, {
+  const isDraft = recipe?.lifecycleStatus === RecipeLifecycleStatus.DRAFT;
+  const ingredientLines = recipe?.ingredients ?? [];
+  const ingredientsEditable = isDraft || editingIngredients;
+
+  useEffect(() => {
+    if (!recipe || !ingredientsEditable) return;
+    setLines((recipe.ingredients ?? []).map(normalizeIngredientLine));
+  }, [recipe, ingredientsEditable]);
+
+  const saveMutation = useMutation({
+    mutationFn: async ({ values, lines, saveIngredients }: SaveRecipePayload) => {
+      await updateRecipe(id, {
         title: values.title,
         instructions: values.instructions,
         estimatedKcalPerServing: values.estimatedKcalPerServing || undefined,
         dietType: values.dietType,
         cuisineType: values.cuisineType,
-      }),
-    onSuccess: () =>
-      void qc.invalidateQueries({ queryKey: [{ resource: "recipes" }] }),
-  });
-
-  const ingredientsMutation = useMutation({
-    mutationFn: () =>
-      setRecipeIngredients(
-        id,
-        lines.map(({ ingredientId, quantity, unit }) => ({
-          ingredientId,
-          quantity,
-          unit,
-        })),
-      ),
+      });
+      if (saveIngredients) {
+        await setRecipeIngredients(id, lines);
+      }
+    },
     onSuccess: () => {
       setEditingIngredients(false);
       void qc.invalidateQueries({ queryKey: [{ resource: "recipes" }] });
+      toast.success("Zmiany zapisane");
     },
+    onError: () => toast.error("Nie udało się zapisać zmian"),
   });
+
+  const handleSave = () => {
+    submitFormRef.current();
+  };
 
   if (isLoading) return <Skeleton className="h-40 w-full" />;
   if (isError || !recipe) {
@@ -69,111 +86,102 @@ export function RecipeDetailPage() {
     );
   }
 
-  const ingredientLines = recipe.ingredients ?? [];
-
-  return (
-    <div className="recipe-detail">
-      <nav className="recipe-detail__crumb" aria-label="Nawigacja">
-        <Link className="recipe-editor__back" to="/recipes">
-          ← Przepisy
-        </Link>
-      </nav>
-
-      <header className="recipe-detail__header">
-        <h1 className="recipe-detail__title">{recipe.title}</h1>
-        <span className="recipe-detail__status">
-          {displayEnum(recipe.lifecycleStatus)}
-        </span>
-      </header>
-
-      <LifecycleActions recipe={recipe} />
-
-      <section
-        className="recipe-detail__section"
-        aria-labelledby="recipe-detail-data"
-      >
-        <h2 id="recipe-detail-data" className="recipe-detail__section-title">
-          Dane podstawowe
-        </h2>
-        <RecipeForm
-          defaultValues={recipe}
-          onSubmit={(v) => updateMutation.mutate(v)}
-          isPending={updateMutation.isPending}
-        />
-      </section>
-
-      <section
-        className="recipe-detail__section"
-        aria-labelledby="recipe-detail-ingredients"
-      >
-        <div className="recipe-detail__section-head">
-          <h2
-            id="recipe-detail-ingredients"
-            className="recipe-detail__section-title"
-          >
-            Składniki
-          </h2>
-          <button
-            type="button"
-            className="recipe-detail__edit-toggle"
-            onClick={() => {
-              setLines(ingredientLines);
-              setEditingIngredients((v) => !v);
-            }}
-          >
-            {editingIngredients ? "Anuluj" : "Edytuj składniki"}
-          </button>
-        </div>
-
-        {editingIngredients ? (
-          <>
-            <IngredientListEditor lines={lines} onChange={setLines} />
-            <button
-              type="button"
-              className="recipe-detail__save-ingredients"
-              onClick={() => ingredientsMutation.mutate()}
-              disabled={ingredientsMutation.isPending}
-            >
-              {ingredientsMutation.isPending
-                ? "Zapisywanie…"
-                : "Zapisz składniki"}
-            </button>
-          </>
-        ) : ingredientLines.length > 0 ? (
-          <ul className="recipe-detail__ingredients-read">
-            {ingredientLines.map((l) => (
-              <li key={l.ingredientId}>
-                {l.ingredient?.name ?? l.ingredientId}
-                {l.unit ? ` — ${formatUnit(Number(l.quantity), l.unit)}` : null}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="recipe-ingredients__empty">
-            Brak składników w tym przepisie.
-          </p>
-        )}
-      </section>
-
-      {recipe.instructions ? (
-        <section
-          className="recipe-detail__section"
-          aria-labelledby="recipe-detail-instructions"
+  const aside = ingredientsEditable ? (
+    <div className="recipe-editor__aside-stack">
+      <IngredientListEditor lines={lines} onChange={setLines} />
+      {editingIngredients && !isDraft ? (
+        <button
+          type="button"
+          className="recipe-editor__aside-cancel"
+          onClick={() => setEditingIngredients(false)}
         >
-          <h2
-            id="recipe-detail-instructions"
-            className="recipe-detail__section-title"
-          >
-            Instrukcje
-          </h2>
-          <div
-            className="recipe-detail__instructions rte-output"
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(recipe.instructions),
-            }}
-          />
-        </section>
+          Anuluj edycję składników
+        </button>
       ) : null}
     </div>
+  ) : (
+    <div className="recipe-editor__aside-read">
+      {ingredientLines.length > 0 ? (
+        <ul className="recipe-detail__ingredients-read">
+          {ingredientLines.map((l) => (
+            <li key={l.ingredientId}>
+              <span className="recipe-detail__ingredient-name">
+                {l.ingredient?.name ?? l.ingredientId}
+              </span>
+              {l.unit ? (
+                <span className="recipe-detail__ingredient-qty">
+                  {formatUnit(Number(l.quantity), l.unit)}
+                </span>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="recipe-ingredients__empty">
+          Brak składników w tym przepisie.
+        </p>
+      )}
+      <button
+        type="button"
+        className="recipe-editor__aside-edit"
+        onClick={() => {
+          setLines(ingredientLines.map(normalizeIngredientLine));
+          setEditingIngredients(true);
+        }}
+      >
+        Edytuj składniki
+      </button>
+    </div>
+  );
+
+  const toolbar = (
+    <div className="recipe-editor__toolbar-actions">
+      <button
+        type="button"
+        className="recipe-form__submit recipe-editor__toolbar-save"
+        disabled={saveMutation.isPending}
+        onClick={handleSave}
+      >
+        {saveMutation.isPending ? "Zapisywanie…" : "Zapisz zmiany"}
+      </button>
+      <LifecycleActions recipe={recipe} />
+    </div>
+  );
+
+  return (
+    <RecipeEditorShell
+      title={recipe.title}
+      lede={
+        isDraft
+          ? "Szkic — uzupełnij dane i składniki, zapisz zmiany, a gdy będzie gotowy opublikuj."
+          : undefined
+      }
+      status={
+        <span
+          className={`recipe-editor__status recipe-editor__status--${recipe.lifecycleStatus.toLowerCase()}`}
+        >
+          {displayEnum(recipe.lifecycleStatus)}
+        </span>
+      }
+      toolbar={toolbar}
+      main={
+        <RecipeForm
+          defaultValues={recipe}
+          onSubmit={(values) =>
+            saveMutation.mutate({
+              values,
+              lines,
+              saveIngredients: ingredientsEditable,
+            })
+          }
+          isPending={saveMutation.isPending}
+          submitPlacement="none"
+          onRegisterSubmit={(submit) => {
+            submitFormRef.current = submit;
+          }}
+        />
+      }
+      aside={aside}
+    />
   );
 }

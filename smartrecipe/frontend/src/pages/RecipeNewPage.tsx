@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { createRecipe, setRecipeIngredients } from '@/api/recipes'
 import { IngredientListEditor } from '@/features/recipes/IngredientListEditor'
 import { RecipeEditorShell } from '@/features/recipes/RecipeEditorShell'
@@ -12,6 +13,7 @@ const FORM_ID = 'recipe-new-form'
 export function RecipeNewPage() {
   const navigate = useNavigate()
   const qc = useQueryClient()
+  const submitFormRef = useRef<() => void>(() => {})
   const [lines, setLines] = useState<RecipeIngredientLine[]>([])
 
   const mutation = useMutation({
@@ -35,6 +37,7 @@ export function RecipeNewPage() {
       void qc.invalidateQueries({ queryKey: [{ resource: 'recipes' }] })
       navigate(`/recipes/${recipe.id}`)
     },
+    onError: () => toast.error('Nie udało się zapisać przepisu'),
   })
 
   const isPending = mutation.isPending
@@ -50,15 +53,18 @@ export function RecipeNewPage() {
           onSubmit={(v) => mutation.mutate(v)}
           isPending={isPending}
           submitLabel="Utwórz szkic"
+          onRegisterSubmit={(submit) => {
+            submitFormRef.current = submit
+          }}
         />
       }
       aside={<IngredientListEditor lines={lines} onChange={setLines} />}
       footer={
         <button
-          type="submit"
-          form={FORM_ID}
+          type="button"
           className="recipe-form__submit recipe-editor__footer-submit"
           disabled={isPending}
+          onClick={() => submitFormRef.current()}
         >
           {isPending ? 'Zapisywanie…' : 'Utwórz szkic'}
         </button>

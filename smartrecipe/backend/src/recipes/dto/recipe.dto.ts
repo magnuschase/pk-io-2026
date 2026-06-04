@@ -20,6 +20,7 @@ export class RecipeIngredientLineDto {
   ingredientId: string;
 
   @ApiProperty({ example: 400 })
+  @Type(() => Number)
   @IsPositive()
   quantity: number;
 

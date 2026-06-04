@@ -16,7 +16,7 @@ export const UNIT_OPTIONS: ComboboxOption[] = [
   { value: 'cup', label: 'szklanka (240 ml)' },
 ]
 
-export const DEFAULT_UNIT = 'g'
+export const DEFAULT_UNIT = 'szt'
 
 export function isKnownUnit(unit: string): boolean {
   return UNIT_OPTIONS.some((o) => o.value === unit)

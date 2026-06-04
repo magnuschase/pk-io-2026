@@ -1,4 +1,5 @@
 import { apiClient } from '@/api/client'
+import { normalizeRecipeIngredientLines } from '@/lib/recipe-ingredients'
 import type { CuisineType, DietType, Recipe, RecipeIngredientLine } from '@/types/domain'
 
 export interface RecipeFilters {
@@ -47,7 +48,9 @@ export async function setRecipeIngredients(
   id: string,
   ingredients: RecipeIngredientLine[],
 ): Promise<Recipe> {
-  const { data } = await apiClient.put<Recipe>(`/recipes/${id}/ingredients`, { ingredients })
+  const { data } = await apiClient.put<Recipe>(`/recipes/${id}/ingredients`, {
+    ingredients: normalizeRecipeIngredientLines(ingredients),
+  })
   return data
 }
 

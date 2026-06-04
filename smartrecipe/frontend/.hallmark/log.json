@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-06-04",
+    "macrostructure": "Workbench",
+    "theme": "Garden",
+    "enrichment": "none",
+    "scope": "single-page-redesign",
+    "brief": "SmartRecipe · draft recipe detail page redesign"
+  },
+  {
+    "date": "2026-06-04",
     "macrostructure": "n/a",
     "theme": "Garden",
     "enrichment": "none",

@@ -68,8 +68,13 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
                     step="any"
                     className="recipe-ingredient-line__qty recipe-form__input"
                     aria-label={`Ilość: ${line.ingredient?.name ?? line.ingredientId}`}
-                    value={line.quantity}
-                    onChange={(e) => updateLine(i, { quantity: Number(e.target.value) })}
+                    value={Number(line.quantity) || ''}
+                    onChange={(e) => {
+                      const q = parseFloat(e.target.value)
+                      updateLine(i, {
+                        quantity: Number.isFinite(q) && q > 0 ? q : 1,
+                      })
+                    }}
                   />
                 )}
                 <UnitCombobox

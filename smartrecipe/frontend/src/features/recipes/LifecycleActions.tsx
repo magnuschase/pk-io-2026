@@ -31,9 +31,14 @@ export function LifecycleActions({ recipe }: LifecycleActionsProps) {
   const status = recipe.lifecycleStatus
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="recipe-editor__lifecycle">
       {status === RecipeLifecycleStatus.DRAFT ? (
-        <Button type="button" onClick={() => mutation.mutate('publish')} disabled={mutation.isPending}>
+        <Button
+          type="button"
+          className="recipe-editor__toolbar-publish"
+          onClick={() => mutation.mutate('publish')}
+          disabled={mutation.isPending}
+        >
           Opublikuj
         </Button>
       ) : null}
