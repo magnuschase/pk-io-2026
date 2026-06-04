@@ -13,7 +13,7 @@ defaults:
 
 jobs:
   quality:
-    name: 🧹 Lint & Test
+    name: 🧹 BE Lint & Test
     runs-on: ubuntu-latest
 
     steps:
