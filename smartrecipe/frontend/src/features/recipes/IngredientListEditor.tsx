@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { IngredientCombobox } from '@/components/domain/IngredientCombobox'
 import { UnitCombobox } from '@/components/domain/UnitCombobox'
@@ -48,35 +49,44 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
           Jeszcze bez składników — wyszukaj powyżej, aby dodać pierwszy.
         </p>
       ) : (
-        <ul className="recipe-ingredients__list">
-          {lines.map((line, i) => (
-            <li key={line.ingredientId} className="recipe-ingredient-line">
-              <span className="recipe-ingredient-line__name">
-                {line.ingredient?.name ?? line.ingredientId}
-              </span>
-              <Input
-                type="number"
-                step="any"
-                className="recipe-ingredient-line__qty recipe-form__input"
-                aria-label={`Ilość: ${line.ingredient?.name ?? line.ingredientId}`}
-                value={line.quantity}
-                onChange={(e) => updateLine(i, { quantity: Number(e.target.value) })}
-              />
-              <UnitCombobox
-                className="recipe-ingredient-line__unit"
-                value={line.unit}
-                onValueChange={(unit) => updateLine(i, { unit })}
-              />
-              <button
-                type="button"
-                className="recipe-ingredient-line__remove"
-                onClick={() => removeLine(i)}
-              >
-                Usuń
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="recipe-ingredients__table">
+          <div className="recipe-ingredients__cols" aria-hidden="true">
+            <span className="recipe-ingredients__col">Składnik</span>
+            <span className="recipe-ingredients__col">Ilość</span>
+            <span className="recipe-ingredients__col">Jednostka</span>
+            <span />
+          </div>
+          <ul className="recipe-ingredients__list">
+            {lines.map((line, i) => (
+              <li key={line.ingredientId} className="recipe-ingredient-line">
+                <span className="recipe-ingredient-line__name">
+                  {line.ingredient?.name ?? line.ingredientId}
+                </span>
+                <Input
+                  type="number"
+                  step="any"
+                  className="recipe-ingredient-line__qty recipe-form__input"
+                  aria-label={`Ilość: ${line.ingredient?.name ?? line.ingredientId}`}
+                  value={line.quantity}
+                  onChange={(e) => updateLine(i, { quantity: Number(e.target.value) })}
+                />
+                <UnitCombobox
+                  className="recipe-ingredient-line__unit"
+                  value={line.unit}
+                  onValueChange={(unit) => updateLine(i, { unit })}
+                />
+                <button
+                  type="button"
+                  className="recipe-ingredient-line__remove"
+                  aria-label={`Usuń ${line.ingredient?.name ?? line.ingredientId}`}
+                  onClick={() => removeLine(i)}
+                >
+                  <Trash2 size={14} aria-hidden="true" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   )

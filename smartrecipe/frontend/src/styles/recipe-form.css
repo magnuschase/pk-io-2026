@@ -290,6 +290,11 @@
 }
 
 /* ── Ingredients panel ─────────────────────────────────────── */
+/* Hallmark · component: ingredient-list · genre: editorial · theme: Garden
+ * states: default · hover · focus · active · disabled
+ * layout: table-row model — fixed columns, named grid areas, stable at any name length
+ */
+
 .recipe-ingredients {
   display: flex;
   flex-direction: column;
@@ -305,16 +310,6 @@
   color: var(--color-ink);
 }
 
-.recipe-ingredients__list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  margin: 0;
-  padding: 0;
-  min-width: 0;
-}
-
 .recipe-ingredients__empty {
   margin: 0;
   font-size: var(--text-sm);
@@ -322,86 +317,141 @@
   color: var(--color-muted);
 }
 
-.recipe-ingredient-line {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-sm);
-  padding: var(--space-md);
-  background: var(--color-paper);
+/* Outer table container */
+.recipe-ingredients__table {
   border: 1px solid var(--color-rule);
   min-width: 0;
 }
 
+/* Column header — hidden on mobile, shown on desktop */
+.recipe-ingredients__cols {
+  display: none;
+}
+
+@media (min-width: 30rem) {
+  .recipe-ingredients__cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 5.5rem 9rem 2.5rem;
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-md);
+    background: var(--color-paper-2);
+    border-bottom: 1px solid var(--color-rule);
+    align-items: center;
+  }
+}
+
+.recipe-ingredients__col {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* Row list — no gaps; rows separated by border-bottom */
+.recipe-ingredients__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+/* ── Row: mobile-first two-row layout ──
+   Col template: [qty-width] [unit-flex] [remove-width]
+   Row 1: name spans cols 1+2, remove in col 3
+   Row 2: qty in col 1, unit in col 2, col 3 empty       */
+.recipe-ingredient-line {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr 2.5rem;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "name   name   remove"
+    "qty    unit   .";
+  gap: var(--space-xs) var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-rule);
+  background: var(--color-paper);
+  min-width: 0;
+}
+
+.recipe-ingredient-line:last-child {
+  border-bottom: none;
+}
+
+/* ── Row: desktop single-row layout ──
+   Same four named areas in one row, fixed column widths */
 @media (min-width: 30rem) {
   .recipe-ingredient-line {
-    grid-template-columns: minmax(0, 1fr) auto auto auto;
-    align-items: end;
+    grid-template-columns: minmax(0, 1fr) 5.5rem 9rem 2.5rem;
+    grid-template-rows: auto;
+    grid-template-areas: "name qty unit remove";
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-md);
+    align-items: center;
+    min-height: 3rem;
+    transition: background var(--dur-base) var(--ease-out);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 30rem) {
+  .recipe-ingredient-line:hover {
+    background: var(--color-paper-2);
   }
 }
 
 .recipe-ingredient-line__name {
+  grid-area: name;
   font-family: var(--font-display);
   font-size: var(--text-sm);
   font-weight: 600;
   font-style: normal;
-  line-height: 1.3;
+  line-height: 1.35;
   color: var(--color-ink);
+  align-self: center;
   overflow-wrap: anywhere;
   min-width: 0;
 }
 
 .recipe-ingredient-line__qty {
+  grid-area: qty;
   width: 100%;
   min-width: 0;
-}
-
-@media (min-width: 30rem) {
-  .recipe-ingredient-line__qty {
-    width: 5.5rem;
-  }
 }
 
 .recipe-ingredient-line__unit {
+  grid-area: unit;
   width: 100%;
   min-width: 0;
 }
 
-@media (min-width: 30rem) {
-  .recipe-ingredient-line__unit {
-    width: 9rem;
-  }
-}
-
 .recipe-ingredient-line__remove {
+  grid-area: remove;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding-inline: var(--space-sm);
-  font-size: var(--text-sm);
-  font-weight: 500;
+  justify-self: center;
+  width: 2.5rem;
+  min-height: 2.75rem;
+  padding: 0;
   color: var(--color-muted);
   background: transparent;
   border: none;
-  border-bottom: 1px solid transparent;
-  white-space: nowrap;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition:
-    color var(--dur-base) var(--ease-out),
-    border-color var(--dur-base) var(--ease-out);
+  transition: color var(--dur-base) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .recipe-ingredient-line__remove:hover {
     color: var(--color-destructive);
-    border-bottom-color: currentColor;
   }
 }
 
 .recipe-ingredient-line__remove:focus-visible {
   outline: 2px solid var(--color-focus);
-  outline-offset: 4px;
-  border-radius: var(--radius-sm);
+  outline-offset: 2px;
 }
 
 /* Detail page — shared crumb + lifecycle band */

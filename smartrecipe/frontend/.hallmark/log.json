@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-06-04",
+    "macrostructure": "n/a",
+    "theme": "Garden",
+    "enrichment": "none",
+    "scope": "component",
+    "brief": "SmartRecipe · ingredient list — table-row redesign (layout stability)"
+  },
+  {
+    "date": "2026-06-04",
     "macrostructure": "Split Studio",
     "theme": "Garden",
     "enrichment": "none",
