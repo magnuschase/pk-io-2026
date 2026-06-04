@@ -2,9 +2,10 @@ import DOMPurify from "dompurify";
 import { RecipeLifecycleStatus, type Recipe } from "@/types/domain";
 import { AddRecipeToShoppingListButton } from "@/features/recipes/AddRecipeToShoppingListButton";
 import { CookRecipeButton } from "@/features/recipes/CookRecipeButton";
+import { getIngredientPantryTooltip } from "@/features/recipes/recipe-pantry-tooltip";
 import { LifecycleActions } from "@/features/recipes/LifecycleActions";
 import { RecipeEditorShell } from "@/features/recipes/RecipeEditorShell";
-import { displayEnum, formatUnit } from "@/lib/utils";
+import { cn, displayEnum, formatUnit } from "@/lib/utils";
 
 interface RecipeDetailViewProps {
   recipe: Recipe;
@@ -99,18 +100,37 @@ export function RecipeDetailView({ recipe }: RecipeDetailViewProps) {
       aside={
         ingredients.length > 0 ? (
           <ul className="recipe-detail__ingredients-read recipe-detail-view__ingredients">
-            {ingredients.map((l) => (
-              <li key={l.ingredientId}>
-                <span className="recipe-detail__ingredient-name">
-                  {l.ingredient?.name ?? l.ingredientId}
-                </span>
-                {l.unit ? (
-                  <span className="recipe-detail__ingredient-qty">
-                    {formatUnit(Number(l.quantity), l.unit)}
+            {ingredients.map((l) => {
+              const match = isActive ? l.pantryMatch : undefined;
+              const isShort = match != null && match.status !== "sufficient";
+              const tooltip = match ? getIngredientPantryTooltip(match) : undefined;
+
+              return (
+                <li key={l.ingredientId}>
+                  <span className="recipe-detail__ingredient-name">
+                    {l.ingredient?.name ?? l.ingredientId}
                   </span>
-                ) : null}
-              </li>
-            ))}
+                  {l.unit ? (
+                    <span
+                      className={cn(
+                        "recipe-detail__ingredient-qty",
+                        isShort && "recipe-detail__ingredient-qty--short",
+                        tooltip && "recipe-detail__ingredient-qty--tip",
+                      )}
+                      {...(tooltip
+                        ? {
+                            "data-tooltip": tooltip,
+                            tabIndex: 0,
+                            "aria-label": tooltip,
+                          }
+                        : {})}
+                    >
+                      {formatUnit(Number(l.quantity), l.unit)}
+                    </span>
+                  ) : null}
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className="recipe-ingredients__empty">Brak składników w tym przepisie.</p>

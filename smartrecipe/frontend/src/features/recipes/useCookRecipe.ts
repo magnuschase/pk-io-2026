@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { cookRecipe } from '@/api/recipes'
-import { queryKeys } from '@/lib/query-keys'
+import { invalidatePantryDependentQueries } from '@/lib/invalidate-pantry-dependent'
 
 export function useCookRecipe(recipeId: string) {
   const navigate = useNavigate()
@@ -11,9 +11,7 @@ export function useCookRecipe(recipeId: string) {
   return useMutation({
     mutationFn: () => cookRecipe(recipeId),
     onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: queryKeys.pantry() })
-      void qc.invalidateQueries({ queryKey: queryKeys.recipes.detail(recipeId) })
-      void qc.invalidateQueries({ queryKey: [{ resource: 'suggestions' }] })
+      invalidatePantryDependentQueries(qc)
       toast.success('Składniki odjęte ze spiżarni', {
         action: {
           label: 'Spiżarnia',

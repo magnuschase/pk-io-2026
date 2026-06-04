@@ -26,11 +26,23 @@ export interface Ingredient {
   name: string
 }
 
+export type IngredientPantryMatchStatus = 'sufficient' | 'deficit' | 'missing' | 'incompatible'
+
+export interface IngredientPantryMatch {
+  status: IngredientPantryMatchStatus
+  pantryQuantity?: number
+  pantryUnit?: string
+  deficitQuantity?: number
+  deficitUnit?: string
+}
+
 export interface RecipeIngredientLine {
   ingredientId: string
   quantity: number
   unit: string
   ingredient?: Ingredient
+  /** Present on GET /recipes/:id for ACTIVE recipes */
+  pantryMatch?: IngredientPantryMatch
 }
 
 export interface Recipe {

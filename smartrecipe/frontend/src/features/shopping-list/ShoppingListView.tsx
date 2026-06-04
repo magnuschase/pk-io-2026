@@ -11,6 +11,7 @@ import { ShoppingItemRow } from '@/components/domain/ShoppingItemRow'
 import { AddItemDialog } from '@/features/shopping-list/AddItemDialog'
 import { FillFromRecipesDialog } from '@/features/shopping-list/FillFromRecipesDialog'
 import { ShoppingListPageHeader } from '@/features/shopping-list/ShoppingListPageHeader'
+import { invalidatePantryDependentQueries } from '@/lib/invalidate-pantry-dependent'
 import { queryKeys } from '@/lib/query-keys'
 import type { ShoppingList } from '@/types/domain'
 
@@ -34,7 +35,7 @@ export function ShoppingListView() {
 
   const invalidateListAndPantry = () => {
     void qc.invalidateQueries({ queryKey: [{ resource: 'shopping-list' }] })
-    void qc.invalidateQueries({ queryKey: queryKeys.pantry() })
+    invalidatePantryDependentQueries(qc)
   }
 
   const toggleMutation = useMutation({

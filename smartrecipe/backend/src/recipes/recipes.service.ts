@@ -93,8 +93,17 @@ export class RecipesService {
         { quantity: Number(p.quantity), unit: p.unit },
       ]),
     );
-    detail.pantryMissingCount =
-      this.pantryService.countMissingIngredients(lines, pantryMap);
+    const matches = this.pantryService.computeIngredientPantryMatches(
+      lines,
+      pantryMap,
+    );
+    detail.pantryMissingCount = matches.filter(
+      (m) => m.status !== 'sufficient',
+    ).length;
+    detail.ingredients = (recipe.ingredients ?? []).map((ri, index) => ({
+      ...ri,
+      pantryMatch: matches[index],
+    }));
     return detail;
   }
 

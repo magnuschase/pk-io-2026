@@ -17,6 +17,14 @@ export type RecipeIngredientLine = {
   unit: string;
 };
 
+export type IngredientPantryMatch = {
+  status: 'sufficient' | 'deficit' | 'missing' | 'incompatible';
+  pantryQuantity?: number;
+  pantryUnit?: string;
+  deficitQuantity?: number;
+  deficitUnit?: string;
+};
+
 @Injectable()
 export class PantryService {
   constructor(
@@ -76,26 +84,64 @@ export class PantryService {
     await this.repo.remove(item);
   }
 
+  computeIngredientPantryMatches(
+    lines: RecipeIngredientLine[],
+    pantry: Map<string, { quantity: number; unit: string }>,
+  ): IngredientPantryMatch[] {
+    return lines.map((line) => {
+      const requiredQty = Number(line.quantity);
+      const inPantry = pantry.get(line.ingredientId);
+
+      if (!inPantry) {
+        return {
+          status: 'missing',
+          deficitQuantity: requiredQty,
+          deficitUnit: line.unit,
+        };
+      }
+
+      if (!this.units.canCompare(inPantry.unit, line.unit)) {
+        return { status: 'incompatible' };
+      }
+
+      if (
+        this.units.isSufficient(
+          inPantry.quantity,
+          inPantry.unit,
+          requiredQty,
+          line.unit,
+        )
+      ) {
+        return {
+          status: 'sufficient',
+          pantryQuantity: inPantry.quantity,
+          pantryUnit: inPantry.unit,
+        };
+      }
+
+      const pantryNorm = this.units.normalize(inPantry.quantity, inPantry.unit);
+      const recipeNorm = this.units.normalize(requiredQty, line.unit);
+      const deficitBase = recipeNorm.value - pantryNorm.value;
+      const perRecipeUnit = this.units.normalize(1, line.unit).value;
+      const deficitQuantity = deficitBase / perRecipeUnit;
+
+      return {
+        status: 'deficit',
+        pantryQuantity: inPantry.quantity,
+        pantryUnit: inPantry.unit,
+        deficitQuantity,
+        deficitUnit: line.unit,
+      };
+    });
+  }
+
   countMissingIngredients(
     lines: RecipeIngredientLine[],
     pantry: Map<string, { quantity: number; unit: string }>,
   ): number {
-    let missing = 0;
-    for (const line of lines) {
-      const inPantry = pantry.get(line.ingredientId);
-      if (!inPantry) {
-        missing++;
-        continue;
-      }
-      const sufficient = this.units.isSufficient(
-        inPantry.quantity,
-        inPantry.unit,
-        Number(line.quantity),
-        line.unit,
-      );
-      if (!sufficient) missing++;
-    }
-    return missing;
+    return this.computeIngredientPantryMatches(lines, pantry).filter(
+      (m) => m.status !== 'sufficient',
+    ).length;
   }
 
   async consumeIngredients(

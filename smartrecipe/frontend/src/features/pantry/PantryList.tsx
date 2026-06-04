@@ -3,6 +3,7 @@ import { deletePantryItem, getPantry, upsertPantryItem } from '@/api/pantry'
 import { PantryItemRow } from '@/components/domain/PantryItemRow'
 import { PantryPageHeader } from '@/features/pantry/PantryPageHeader'
 import { UpsertPantryItemDialog } from '@/features/pantry/UpsertPantryItemDialog'
+import { invalidatePantryDependentQueries } from '@/lib/invalidate-pantry-dependent'
 import { queryKeys } from '@/lib/query-keys'
 import type { PantryItem } from '@/types/domain'
 
@@ -67,18 +68,12 @@ export function PantryList() {
     onError: (_e, _v, ctx) => {
       if (ctx?.prev) qc.setQueryData(queryKeys.pantry(), ctx.prev)
     },
-    onSettled: () => {
-      void qc.invalidateQueries({ queryKey: [{ resource: 'pantry' }] })
-      void qc.invalidateQueries({ queryKey: [{ resource: 'suggestions' }] })
-    },
+    onSettled: () => invalidatePantryDependentQueries(qc),
   })
 
   const deleteMutation = useMutation({
     mutationFn: (ingredientId: string) => deletePantryItem(ingredientId),
-    onSettled: () => {
-      void qc.invalidateQueries({ queryKey: [{ resource: 'pantry' }] })
-      void qc.invalidateQueries({ queryKey: [{ resource: 'suggestions' }] })
-    },
+    onSettled: () => invalidatePantryDependentQueries(qc),
   })
 
   function handleAdd(ingredientId: string, values: UpsertValues) {

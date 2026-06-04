@@ -51,6 +51,7 @@ const mockRiRepo = {
 const mockPantryService = {
   listPantry: jest.fn().mockResolvedValue([]),
   countMissingIngredients: jest.fn().mockReturnValue(0),
+  computeIngredientPantryMatches: jest.fn().mockReturnValue([]),
   consumeIngredients: jest.fn().mockResolvedValue([]),
 };
 
