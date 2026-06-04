@@ -42,6 +42,8 @@ export interface Recipe {
   dietType: DietType | null
   cuisineType: CuisineType | null
   ingredients?: RecipeIngredientLine[]
+  /** Present on GET /recipes/:id for ACTIVE recipes — missing pantry lines count */
+  pantryMissingCount?: number
   createdAt?: string
   updatedAt?: string
 }

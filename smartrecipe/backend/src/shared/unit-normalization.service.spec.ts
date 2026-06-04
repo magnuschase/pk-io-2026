@@ -138,4 +138,20 @@ describe('UnitNormalizationService', () => {
       expect(svc.isSufficient(3, 'łyżki', 2, 'łyżeczka')).toBe(true);
     });
   });
+
+  describe('subtractQuantities', () => {
+    it('subtracts same unit and returns remainder', () => {
+      expect(svc.subtractQuantities(500, 'g', 200, 'g', 'g')).toBe(300);
+    });
+
+    it('subtracts cross-unit (1 kg − 200 g = 800 g)', () => {
+      expect(svc.subtractQuantities(1, 'kg', 200, 'g', 'g')).toBe(800);
+    });
+
+    it('throws when pantry is insufficient', () => {
+      expect(() => svc.subtractQuantities(100, 'g', 200, 'g')).toThrow(
+        'INSUFFICIENT_QUANTITY',
+      );
+    });
+  });
 });

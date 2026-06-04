@@ -6,6 +6,7 @@ import {
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { RecipesService } from './recipes.service';
+import { PantryService } from '../pantry/pantry.service';
 import { Recipe } from '../domain/entities/recipe.entity';
 import { RecipeIngredient } from '../domain/entities/recipe-ingredient.entity';
 import { RecipeLifecycleStatus } from '../domain/enums';
@@ -47,6 +48,12 @@ const mockRiRepo = {
   count: jest.fn(),
 };
 
+const mockPantryService = {
+  listPantry: jest.fn().mockResolvedValue([]),
+  countMissingIngredients: jest.fn().mockReturnValue(0),
+  consumeIngredients: jest.fn().mockResolvedValue([]),
+};
+
 describe('RecipesService', () => {
   let service: RecipesService;
 
@@ -57,6 +64,7 @@ describe('RecipesService', () => {
         RecipesService,
         { provide: getRepositoryToken(Recipe), useValue: mockRecipeRepo },
         { provide: getRepositoryToken(RecipeIngredient), useValue: mockRiRepo },
+        { provide: PantryService, useValue: mockPantryService },
       ],
     }).compile();
     service = module.get(RecipesService);

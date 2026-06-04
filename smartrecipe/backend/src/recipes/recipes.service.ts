@@ -15,6 +15,10 @@ import {
   SetIngredientsDto,
   UpdateRecipeDto,
 } from './dto/recipe.dto';
+import { PantryService } from '../pantry/pantry.service';
+import { PantryItem } from '../domain/entities/pantry-item.entity';
+
+export type RecipeDetail = Recipe & { pantryMissingCount?: number };
 
 type AllowedTransition = Record<RecipeLifecycleStatus, RecipeLifecycleStatus[]>;
 
@@ -34,6 +38,7 @@ export class RecipesService {
     private readonly recipeRepo: Repository<Recipe>,
     @InjectRepository(RecipeIngredient)
     private readonly riRepo: Repository<RecipeIngredient>,
+    private readonly pantryService: PantryService,
   ) {}
 
   async findAll(userId: string, filters: RecipeFilterDto): Promise<Recipe[]> {
@@ -58,14 +63,64 @@ export class RecipesService {
     return qb.orderBy('r.createdAt', 'DESC').getMany();
   }
 
-  async findOne(userId: string, id: string): Promise<Recipe> {
+  async findOne(userId: string, id: string): Promise<RecipeDetail> {
     const recipe = await this.recipeRepo.findOne({
       where: { id },
       relations: { ingredients: { ingredient: true } },
     });
     if (!recipe) throw new NotFoundException('Recipe not found');
     if (recipe.userId !== userId) throw new ForbiddenException();
-    return recipe;
+    return this.withPantryStatus(userId, recipe);
+  }
+
+  private async withPantryStatus(
+    userId: string,
+    recipe: Recipe,
+  ): Promise<RecipeDetail> {
+    const detail: RecipeDetail = { ...recipe };
+    if (recipe.lifecycleStatus !== RecipeLifecycleStatus.ACTIVE) {
+      return detail;
+    }
+    const lines = (recipe.ingredients ?? []).map((ri) => ({
+      ingredientId: ri.ingredientId,
+      quantity: Number(ri.quantity),
+      unit: ri.unit,
+    }));
+    const pantryItems = await this.pantryService.listPantry(userId);
+    const pantryMap = new Map(
+      pantryItems.map((p) => [
+        p.ingredientId,
+        { quantity: Number(p.quantity), unit: p.unit },
+      ]),
+    );
+    detail.pantryMissingCount =
+      this.pantryService.countMissingIngredients(lines, pantryMap);
+    return detail;
+  }
+
+  async cookRecipe(userId: string, id: string): Promise<PantryItem[]> {
+    const recipe = await this.findOne(userId, id);
+    if (recipe.lifecycleStatus !== RecipeLifecycleStatus.ACTIVE) {
+      throw new UnprocessableEntityException(
+        'Tylko opublikowany przepis można oznaczyć jako ugotowany',
+      );
+    }
+    const lines = (recipe.ingredients ?? []).map((ri) => ({
+      ingredientId: ri.ingredientId,
+      quantity: Number(ri.quantity),
+      unit: ri.unit,
+    }));
+    if (lines.length === 0) {
+      throw new UnprocessableEntityException(
+        'Przepis nie ma składników do odjęcia ze spiżarni',
+      );
+    }
+    if ((recipe.pantryMissingCount ?? lines.length) > 0) {
+      throw new UnprocessableEntityException(
+        'Nie masz wszystkich składników w spiżarni',
+      );
+    }
+    return this.pantryService.consumeIngredients(userId, lines);
   }
 
   async create(userId: string, dto: CreateRecipeDto): Promise<Recipe> {

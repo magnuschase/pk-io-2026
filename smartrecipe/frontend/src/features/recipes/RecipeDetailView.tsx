@@ -1,6 +1,7 @@
 import DOMPurify from "dompurify";
 import { RecipeLifecycleStatus, type Recipe } from "@/types/domain";
 import { AddRecipeToShoppingListButton } from "@/features/recipes/AddRecipeToShoppingListButton";
+import { CookRecipeButton } from "@/features/recipes/CookRecipeButton";
 import { LifecycleActions } from "@/features/recipes/LifecycleActions";
 import { RecipeEditorShell } from "@/features/recipes/RecipeEditorShell";
 import { displayEnum, formatUnit } from "@/lib/utils";
@@ -12,10 +13,19 @@ interface RecipeDetailViewProps {
 export function RecipeDetailView({ recipe }: RecipeDetailViewProps) {
   const ingredients = recipe.ingredients ?? [];
   const isActive = recipe.lifecycleStatus === RecipeLifecycleStatus.ACTIVE;
+  const hasIngredients = ingredients.length > 0;
+  const pantryMissing = recipe.pantryMissingCount;
+  const canCook =
+    isActive && hasIngredients && pantryMissing !== undefined && pantryMissing === 0;
+  const showAddMissing =
+    isActive &&
+    hasIngredients &&
+    (pantryMissing === undefined || pantryMissing > 0);
 
   const toolbar = (
     <div className="recipe-editor__toolbar-actions">
-      {isActive ? (
+      {canCook ? <CookRecipeButton recipeId={recipe.id} /> : null}
+      {showAddMissing ? (
         <AddRecipeToShoppingListButton recipeId={recipe.id} />
       ) : null}
       <LifecycleActions recipe={recipe} />

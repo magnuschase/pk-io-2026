@@ -150,7 +150,8 @@
 }
 
 /* Shopping list — accent primary (active recipe view) */
-.recipe-editor__toolbar-actions .recipe-detail-view__shop-btn {
+.recipe-editor__toolbar-actions .recipe-detail-view__shop-btn,
+.recipe-editor__toolbar-actions .recipe-detail-view__cook-btn {
   min-width: 12rem;
   padding-inline: var(--space-lg);
   padding-block: var(--space-sm);
@@ -170,18 +171,21 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .recipe-editor__toolbar-actions .recipe-detail-view__shop-btn:hover:not(:disabled) {
+  .recipe-editor__toolbar-actions .recipe-detail-view__shop-btn:hover:not(:disabled),
+  .recipe-editor__toolbar-actions .recipe-detail-view__cook-btn:hover:not(:disabled) {
     background: color-mix(in oklch, var(--color-accent) 88%, var(--color-ink));
     border-color: color-mix(in oklch, var(--color-accent) 88%, var(--color-ink));
   }
 }
 
-.recipe-editor__toolbar-actions .recipe-detail-view__shop-btn:focus-visible {
+.recipe-editor__toolbar-actions .recipe-detail-view__shop-btn:focus-visible,
+.recipe-editor__toolbar-actions .recipe-detail-view__cook-btn:focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 4px;
 }
 
-.recipe-editor__toolbar-actions .recipe-detail-view__shop-btn:disabled {
+.recipe-editor__toolbar-actions .recipe-detail-view__shop-btn:disabled,
+.recipe-editor__toolbar-actions .recipe-detail-view__cook-btn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
@@ -213,6 +217,7 @@
 
   .recipe-editor__toolbar-actions .recipe-editor__toolbar-save,
   .recipe-editor__toolbar-actions .recipe-detail-view__shop-btn,
+  .recipe-editor__toolbar-actions .recipe-detail-view__cook-btn,
   .recipe-editor__toolbar-actions .recipe-editor__lifecycle {
     width: 100%;
   }
