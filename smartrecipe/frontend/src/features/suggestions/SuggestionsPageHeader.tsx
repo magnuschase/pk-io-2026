@@ -12,7 +12,7 @@ export function SuggestionsPageHeader({
       <div className="suggest-masthead__main">
         <h1 className="suggest-masthead__title">Co dziś ugotować?</h1>
         <p className="suggest-masthead__lede">
-          Przepisy dopasowane do tego, co masz na półkach — gotowe od razu albo
+          Przepisy dopasowane do tego, co masz na półkach - gotowe od razu albo
           z drobnymi brakami.
         </p>
       </div>

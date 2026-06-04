@@ -127,7 +127,7 @@ export function PantryList() {
         <div className="pantry-shelf-empty" role="status">
           <p className="pantry-shelf-empty__title">Półki są puste</p>
           <p className="pantry-shelf-empty__hint">
-            Dodaj składnik powyżej — wtedy pojawią się dopasowane przepisy w sugestiach.
+            Dodaj składnik powyżej - wtedy pojawią się dopasowane przepisy w sugestiach.
           </p>
         </div>
       ) : (

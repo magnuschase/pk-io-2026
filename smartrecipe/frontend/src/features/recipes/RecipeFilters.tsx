@@ -52,7 +52,7 @@ export function RecipeFilters({ values, onChange }: RecipeFiltersProps) {
             onValueChange={(v) => onChange({ ...values, cuisine: parseFilterValue<CuisineType>(v) })}
             options={cuisineFilterOptions()}
             placeholder="Wszystkie kuchnie"
-            searchPlaceholder="Szukaj kuchni…"
+            searchPlaceholder="Szukaj kuchni..."
           />
         </div>
         <div>

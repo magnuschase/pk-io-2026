@@ -66,7 +66,7 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
 
       {lines.length === 0 ? (
         <p className="recipe-ingredients__empty" role="status">
-          Jeszcze bez składników — wyszukaj powyżej, aby dodać pierwszy.
+          Jeszcze bez składników - wyszukaj powyżej, aby dodać pierwszy.
         </p>
       ) : (
         <div className="recipe-ingredients__table">

@@ -114,7 +114,7 @@ export function SuggestionsPage() {
         <div className="suggest-empty">
           <p className="suggest-empty__title">Spiżarnia jest pusta</p>
           <p className="suggest-empty__text">
-            Dodaj składniki, które masz w domu — wtedy pokażemy przepisy dopasowane do Twoich zapasów.
+            Dodaj składniki, które masz w domu - wtedy pokażemy przepisy dopasowane do Twoich zapasów.
           </p>
           <Link className="suggest-empty__btn" to="/pantry">
             Uzupełnij spiżarnię

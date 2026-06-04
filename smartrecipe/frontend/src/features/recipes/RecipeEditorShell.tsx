@@ -4,14 +4,14 @@ interface RecipeEditorShellProps {
   title: string
   lede?: string
   status?: React.ReactNode
-  /** Lifecycle / secondary actions — Workbench action band below the title. */
+  /** Lifecycle / secondary actions - Workbench action band below the title. */
   toolbar?: React.ReactNode
   main: React.ReactNode
   aside: React.ReactNode
   mainPanelTitle?: string
   asidePanelTitle?: string
   className?: string
-  /** Sticky page footer — used for primary submit on mobile (below ingredients). */
+  /** Sticky page footer - used for primary submit on mobile (below ingredients). */
   footer?: React.ReactNode
 }
 

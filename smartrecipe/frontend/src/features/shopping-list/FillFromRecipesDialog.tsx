@@ -55,7 +55,7 @@ export function FillFromRecipesDialog({ trigger }: FillFromRecipesDialogProps) {
         <DialogHeader className="fill-recipes-dialog__header mb-0 gap-0">
           <DialogTitle className="fill-recipes-dialog__title">Dodaj braki z przepisów</DialogTitle>
           <p className="fill-recipes-dialog__lede">
-            Zaznacz przepisy — brakujące składniki trafią na listę zakupów.
+            Zaznacz przepisy - brakujące składniki trafią na listę zakupów.
           </p>
         </DialogHeader>
 
@@ -102,7 +102,7 @@ export function FillFromRecipesDialog({ trigger }: FillFromRecipesDialogProps) {
               })
             }
           >
-            {mutation.isPending ? 'Uzupełnianie…' : 'Uzupełnij listę zakupów'}
+            {mutation.isPending ? 'Uzupełnianie...' : 'Uzupełnij listę zakupów'}
           </button>
         </footer>
       </DialogContent>

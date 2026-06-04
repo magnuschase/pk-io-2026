@@ -55,7 +55,7 @@ export function LoginForm() {
         <p className="text-sm text-[var(--color-destructive)]">Nieprawidłowy e-mail lub hasło.</p>
       ) : null}
       <Button type="submit" disabled={mutation.isPending}>
-        {mutation.isPending ? 'Logowanie…' : 'Zaloguj się'}
+        {mutation.isPending ? 'Logowanie...' : 'Zaloguj się'}
       </Button>
       <p className="text-center text-sm text-[var(--color-muted)]">
         Nie masz konta?{' '}

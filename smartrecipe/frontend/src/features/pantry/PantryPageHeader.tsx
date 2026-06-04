@@ -11,7 +11,7 @@ export function PantryPageHeader({ itemCount, actions }: PantryPageHeaderProps) 
       <div className="pantry-header__main">
         <h1 className="pantry-header__title">Spiżarnia</h1>
         <p className="pantry-header__lede">
-          Katalog tego, co masz w domu — od tego zależą sugestie przepisów.
+          Katalog tego, co masz w domu - od tego zależą sugestie przepisów.
         </p>
       </div>
       <div className="pantry-header__aside">

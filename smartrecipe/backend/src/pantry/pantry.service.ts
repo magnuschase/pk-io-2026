@@ -61,7 +61,7 @@ export class PantryService {
           );
         } catch {
           throw new BadRequestException(
-            'Nie można dodać — jednostki są niezgodne z tym, co już jest w spiżarni',
+            'Nie można dodać - jednostki są niezgodne z tym, co już jest w spiżarni',
           );
         }
       } else {
@@ -188,7 +188,7 @@ export class PantryService {
         );
       } catch {
         throw new BadRequestException(
-          'Nie można odjąć — jednostki są niezgodne z tym, co jest w spiżarni',
+          'Nie można odjąć - jednostki są niezgodne z tym, co jest w spiżarni',
         );
       }
 

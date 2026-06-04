@@ -90,7 +90,7 @@ button.combobox-trigger,
   caret-color: var(--color-accent);
 }
 
-/* List container — brak poziomego paddingu, żeby tło opcji dochodzi do krawędzi */
+/* List container - brak poziomego paddingu, żeby tło opcji dochodzi do krawędzi */
 .combobox-popover [cmdk-list],
 .combobox-command__list {
   padding: 0 !important;
@@ -115,7 +115,7 @@ button.combobox-trigger,
   color: var(--color-muted);
 }
 
-/* Items — tło na pełną szerokość; padding tylko dla treści (tekst + check) */
+/* Items - tło na pełną szerokość; padding tylko dla treści (tekst + check) */
 .combobox-popover [cmdk-item] {
   display: flex !important;
   align-items: center !important;

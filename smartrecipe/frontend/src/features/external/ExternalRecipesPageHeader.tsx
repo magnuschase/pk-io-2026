@@ -42,7 +42,7 @@ export function ExternalRecipesPageHeader({
                     : `${resultCount} wyników wyszukiwania`
               }
             >
-              {isSearching ? '…' : resultCount}
+              {isSearching ? '...' : resultCount}
             </span>
             <span className="external-header__stat-label">
               {showProgress ? `załadowano · ${loadedCount} z ${totalResults}` : 'wyników'}

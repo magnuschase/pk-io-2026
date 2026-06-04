@@ -30,7 +30,7 @@ function handleEnrichResult(
 ) {
   const normalized = normalizeIngredient(updated)
   if (!hasIngredientKcal(normalized)) {
-    toast.error('Nie znaleziono kaloryki dla tego składnika — wybierz inną pozycję z listy.')
+    toast.error('Nie znaleziono kaloryki dla tego składnika - wybierz inną pozycję z listy.')
     return
   }
   onLinked(normalized)
@@ -74,11 +74,11 @@ export function LinkIngredientNutritionDialog({
       <DialogContent className="nutrition-dialog">
         <DialogHeader>
           <DialogTitle className="nutrition-dialog__title">
-            Kaloryka — {ingredient.name}
+            Kaloryka - {ingredient.name}
           </DialogTitle>
           <p className="nutrition-dialog__lede">
             Szukamy wartości na 100 g w bazie żywności. Polskie nazwy tłumaczymy
-            przez DeepL — możesz też wpisać własną frazę po angielsku (np. „wheat flour”).
+            przez DeepL - możesz też wpisać własną frazę po angielsku (np. „wheat flour”).
           </p>
         </DialogHeader>
 
@@ -89,7 +89,7 @@ export function LinkIngredientNutritionDialog({
             disabled={busy}
             onClick={() => autoMutation.mutate()}
           >
-            {autoMutation.isPending ? 'Pobieram…' : 'Pobierz automatycznie'}
+            {autoMutation.isPending ? 'Pobieram...' : 'Pobierz automatycznie'}
           </Button>
         </div>
 
@@ -107,11 +107,11 @@ export function LinkIngredientNutritionDialog({
 
         {isError ? (
           <p className="nutrition-dialog__error" role="alert">
-            Baza kaloryczna niedostępna — sprawdź konfigurację API w backendzie.
+            Baza kaloryczna niedostępna - sprawdź konfigurację API w backendzie.
           </p>
         ) : null}
 
-        {isFetching ? <p className="nutrition-dialog__status">Szukam…</p> : null}
+        {isFetching ? <p className="nutrition-dialog__status">Szukam...</p> : null}
 
         {!isFetching && !isError && hits.length > 0 ? (
           <ul className="nutrition-dialog__hits">
@@ -137,7 +137,7 @@ export function LinkIngredientNutritionDialog({
 
         {!isFetching && !isError && searchTerm.length >= 2 && hits.length === 0 ? (
           <p className="nutrition-dialog__status">
-            Brak wyników — spróbuj innej nazwy (najlepiej po angielsku).
+            Brak wyników - spróbuj innej nazwy (najlepiej po angielsku).
           </p>
         ) : null}
       </DialogContent>

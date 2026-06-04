@@ -14,7 +14,7 @@ describe('displayEnum', () => {
   })
 
   it('returns em dash for empty values', () => {
-    expect(displayEnum(null)).toBe('—')
+    expect(displayEnum(null)).toBe('-')
   })
 })
 

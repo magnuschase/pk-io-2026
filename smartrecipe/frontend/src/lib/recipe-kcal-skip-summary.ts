@@ -11,7 +11,7 @@ export function skipSummary(skipped: RecipeKcalEstimate['skipped']): string {
   }
   if (noMass > 0) {
     parts.push(
-      `${noMass} w szt./łyżkach — użyj gramów lub ml, żeby wliczyć`,
+      `${noMass} w szt./łyżkach - użyj gramów lub ml, żeby wliczyć`,
     )
   }
   return parts.join(' · ')

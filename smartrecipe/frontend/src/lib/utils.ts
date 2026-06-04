@@ -30,7 +30,7 @@ const STATUS_LABELS: Record<RecipeLifecycleStatus, string> = {
 }
 
 export function displayEnum(value: DietType | CuisineType | RecipeLifecycleStatus | null | undefined): string {
-  if (!value) return '—'
+  if (!value) return '-'
   if (value in DIET_LABELS) return DIET_LABELS[value as DietType]
   if (value in CUISINE_LABELS) return CUISINE_LABELS[value as CuisineType]
   if (value in STATUS_LABELS) return STATUS_LABELS[value as RecipeLifecycleStatus]

@@ -67,7 +67,7 @@ export class NutritionService {
     const key = this.config.get<string>('NUTRITION_API_KEY');
     if (!key || key === 'REPLACE' || key.trim() === '') {
       this.logger.warn(
-        'NUTRITION_API_KEY not set — using DEMO_KEY (rate-limited: 30 req/hr)',
+        'NUTRITION_API_KEY not set - using DEMO_KEY (rate-limited: 30 req/hr)',
       );
       return 'DEMO_KEY';
     }

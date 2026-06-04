@@ -46,7 +46,7 @@ export function RecipeNewPage() {
   return (
     <RecipeEditorShell
       title="Nowy przepis"
-      lede="Uzupełnij dane po lewej i składniki po prawej — zapiszesz szkic i wrócisz do edycji w dowolnym momencie."
+      lede="Uzupełnij dane po lewej i składniki po prawej - zapiszesz szkic i wrócisz do edycji w dowolnym momencie."
       main={
         <RecipeForm
           formId={FORM_ID}
@@ -67,7 +67,7 @@ export function RecipeNewPage() {
           disabled={isPending}
           onClick={() => submitFormRef.current()}
         >
-          {isPending ? 'Zapisywanie…' : 'Utwórz szkic'}
+          {isPending ? 'Zapisywanie...' : 'Utwórz szkic'}
         </button>
       }
     />

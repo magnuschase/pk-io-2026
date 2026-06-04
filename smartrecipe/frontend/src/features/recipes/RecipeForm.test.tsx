@@ -21,7 +21,7 @@ vi.mock('@/components/ui/rich-text-editor', () => ({
 import { CuisineType, DietType, RecipeLifecycleStatus } from '@/types/domain'
 import { renderWithProviders } from '@/test/test-utils'
 
-describe('RecipeForm (Recipe metadata — title, diet, cuisine, servings, kcal)', () => {
+describe('RecipeForm (Recipe metadata - title, diet, cuisine, servings, kcal)', () => {
   it('shows validation error when title is empty', async () => {
     const onSubmit = vi.fn()
     const user = userEvent.setup()

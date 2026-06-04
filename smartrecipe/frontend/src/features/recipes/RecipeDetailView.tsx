@@ -39,8 +39,8 @@ export function RecipeDetailView({ recipe }: RecipeDetailViewProps) {
       title={recipe.title}
       lede={
         isActive
-          ? "Opublikowany przepis — przeglądasz skład i instrukcje. Aby edytować, cofnij do szkicu."
-          : "Przepis w archiwum — tylko podgląd. Przywróć, jeśli chcesz z niego ponownie korzystać."
+          ? "Opublikowany przepis - przeglądasz skład i instrukcje. Aby edytować, cofnij do szkicu."
+          : "Przepis w archiwum - tylko podgląd. Przywróć, jeśli chcesz z niego ponownie korzystać."
       }
       mainPanelTitle="Przepis"
       status={

@@ -1,4 +1,4 @@
-# SmartRecipe — frontend
+# SmartRecipe - frontend
 
 React + Vite + TypeScript. Package manager: **pnpm** (`packageManager: pnpm@10.23.0`).
 
@@ -21,7 +21,7 @@ pnpm dev
 ```
 
 Aplikacja: http://localhost:5173  
-Backend (domyślnie): http://localhost:3000 — ustaw `VITE_API_URL` w `.env`.
+Backend (domyślnie): http://localhost:3000 - ustaw `VITE_API_URL` w `.env`.
 
 ## Skrypty
 
@@ -35,4 +35,4 @@ Backend (domyślnie): http://localhost:3000 — ustaw `VITE_API_URL` w `.env`.
 | `pnpm test:watch` | testy w trybie watch            |
 | `pnpm test:cov` | testy z raportem pokrycia         |
 
-Testy obejmują logikę UI powiązaną z modelem domenowym (spiżarnia, przepisy i cykl życia, sugestie posiłków, lista zakupów, szacowanie kcal, filtry diety/kuchni) — zgodnie z `model-statyczny.md` i `model-dynamiczny.md` (UC01–UC04, RF17).
+Testy obejmują logikę UI powiązaną z modelem domenowym (spiżarnia, przepisy i cykl życia, sugestie posiłków, lista zakupów, szacowanie kcal, filtry diety/kuchni) - zgodnie z `model-statyczny.md` i `model-dynamiczny.md` (UC01–UC04, RF17).

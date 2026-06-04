@@ -25,7 +25,7 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════
-   NAV — N6 Newspaper Masthead
+   NAV - N6 Newspaper Masthead
 ══════════════════════════════════════════════════════ */
 .masthead {
   padding-block-start: var(--space-xl);
@@ -134,7 +134,7 @@ body {
 .hero__cta:active { opacity: 0.75; }
 
 /* ══════════════════════════════════════════════════════
-   STAGES — Narrative Workflow
+   STAGES - Narrative Workflow
 ══════════════════════════════════════════════════════ */
 .stages {
   padding-block-end: clamp(var(--space-3xl), 10vw, var(--space-4xl));
@@ -302,7 +302,7 @@ body {
 .cta-section__btn:active { transform: translateY(1px); }
 
 /* ══════════════════════════════════════════════════════
-   FOOTER — Ft5 Statement
+   FOOTER - Ft5 Statement
 ══════════════════════════════════════════════════════ */
 .site-footer {
   padding-block: clamp(var(--space-3xl), 10vw, var(--space-4xl));

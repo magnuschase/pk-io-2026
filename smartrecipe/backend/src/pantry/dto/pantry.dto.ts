@@ -17,7 +17,7 @@ export class UpsertPantryItemDto {
   @MaxLength(50)
   unit: string;
 
-  /** `add` — dodaj do istniejącej ilości; `set` (domyślnie) — ustaw bezwzględną wartość. */
+  /** `add` - dodaj do istniejącej ilości; `set` (domyślnie) - ustaw bezwzględną wartość. */
   @ApiPropertyOptional({ enum: ['set', 'add'], default: 'set' })
   @IsOptional()
   @IsIn(['set', 'add'])

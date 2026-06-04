@@ -1,4 +1,4 @@
-# SmartRecipe — Backend API
+# SmartRecipe - Backend API
 
 Backend systemu SmartRecipe. NestJS + TypeORM + PostgreSQL. Udostępnia REST API z pełną dokumentacją OpenAPI.
 
@@ -15,14 +15,14 @@ Backend systemu SmartRecipe. NestJS + TypeORM + PostgreSQL. Udostępnia REST API
 
 ```
 src/
-├── auth/               # JWT register/login/refresh (UC — autoryzacja)
+├── auth/               # JWT register/login/refresh (UC - autoryzacja)
 ├── users/              # Encja User, izolacja danych per userId
 ├── ingredients/        # Katalog składników (shared, deduplikacja)
-├── recipes/            # UC01 — CRUD przepisów, state machine DRAFT→ACTIVE↔ARCHIVED
-├── pantry/             # UC02 — wirtualna spiżarnia (upsert/delete)
-├── suggestions/        # UC03 — algorytm dopasowania przepisów do spiżarni
-├── shopping-list/      # UC04 — lista zakupów, fillMissingFromRecipes
-├── external/           # UC05 — Spoonacular search + import jako DRAFT
+├── recipes/            # UC01 - CRUD przepisów, state machine DRAFT→ACTIVE↔ARCHIVED
+├── pantry/             # UC02 - wirtualna spiżarnia (upsert/delete)
+├── suggestions/        # UC03 - algorytm dopasowania przepisów do spiżarni
+├── shopping-list/      # UC04 - lista zakupów, fillMissingFromRecipes
+├── external/           # UC05 - Spoonacular search + import jako DRAFT
 ├── shared/             # UnitNormalizationService (g↔kg, ml↔l, łyżki↔łyżeczki)
 │                       # CurrentUser dekorator
 └── domain/
@@ -76,7 +76,7 @@ Aplikacja startuje na `http://localhost:3000` (lub `PORT` z `.env`).
 
 | URL                              | Opis                                       |
 | -------------------------------- | ------------------------------------------ |
-| `http://localhost:3000/api`      | Swagger UI — interaktywna dokumentacja API |
+| `http://localhost:3000/api`      | Swagger UI - interaktywna dokumentacja API |
 | `http://localhost:3000/api-json` | OpenAPI 3.x spec (JSON)                    |
 
 Schemat bazy jest tworzony automatycznie przy starcie (`synchronize: true` w trybie development).
@@ -161,11 +161,11 @@ POST /nutrition/enrich/:ingredientId      auto-wzbogać (pierwszy wynik USDA)
 POST /nutrition/enrich/:ingredientId/fdc/:fdcId   wzbogać konkretnym FDC ID
 ```
 
-Zapisuje `externalFoodId` (USDA FDC ID), `kcalPer100g` oraz — gdy FDC ma porcję — `gramsPerPiece` (domyślna waga 1 szt, bez wyboru w UI).
+Zapisuje `externalFoodId` (USDA FDC ID), `kcalPer100g` oraz - gdy FDC ma porcję - `gramsPerPiece` (domyślna waga 1 szt, bez wyboru w UI).
 
 Polskie nazwy składników są tłumaczone na angielski przez **DeepL** przed zapytaniem do USDA (`DEEPL_API_KEY`). Bez klucza DeepL wyszukiwanie używa oryginalnej nazwy.
 
-**Klucz USDA:** system automatycznie używa `DEMO_KEY` gdy `NUTRITION_API_KEY` nie jest ustawiony (limit: 30 req/godz). Klucz produkcyjny jest **bezpłatny** — rejestracja zajmuje minutę:
+**Klucz USDA:** system automatycznie używa `DEMO_KEY` gdy `NUTRITION_API_KEY` nie jest ustawiony (limit: 30 req/godz). Klucz produkcyjny jest **bezpłatny** - rejestracja zajmuje minutę:
 
 ```
 https://api.data.gov/signup/
@@ -196,20 +196,20 @@ POST /nutrition/enrich/<ingredientId>/fdc/2187885
 | `DB_NAME`            | `smartrecipe` | Nazwa bazy                                                                 |
 | `DB_USER`            | `smartrecipe` | Użytkownik                                                                 |
 | `DB_PASS`            | `smartrecipe` | Hasło                                                                      |
-| `JWT_SECRET`         | —             | Sekret access tokenu (**zmień w produkcji**)                               |
-| `JWT_REFRESH_SECRET` | —             | Sekret refresh tokenu (**zmień w produkcji**)                              |
+| `JWT_SECRET`         | -             | Sekret access tokenu (**zmień w produkcji**)                               |
+| `JWT_REFRESH_SECRET` | -             | Sekret refresh tokenu (**zmień w produkcji**)                              |
 | `JWT_ACCESS_TTL`     | `900`         | TTL access tokenu w sekundach (15 min)                                     |
 | `JWT_REFRESH_TTL`    | `604800`      | TTL refresh tokenu w sekundach (7 dni)                                     |
-| `NUTRITION_API_KEY`  | `DEMO_KEY`    | USDA FDC — bezpłatny klucz: api.data.gov/signup (30 req/h bez klucza)      |
-| `DEEPL_API_KEY`      | —             | DeepL — tłumaczenie PL→EN nazw składników (klucz Free kończy się na `:fx`) |
-| `DEEPL_API_URL`      | —             | Opcjonalny bazowy URL API DeepL (np. `https://api-free.deepl.com/v2`)      |
-| `RECIPE_API_KEY`     | —             | Spoonacular — klucz do zewnętrznych przepisów (UC05, opcjonalny)           |
+| `NUTRITION_API_KEY`  | `DEMO_KEY`    | USDA FDC - bezpłatny klucz: api.data.gov/signup (30 req/h bez klucza)      |
+| `DEEPL_API_KEY`      | -             | DeepL - tłumaczenie PL→EN nazw składników (klucz Free kończy się na `:fx`) |
+| `DEEPL_API_URL`      | -             | Opcjonalny bazowy URL API DeepL (np. `https://api-free.deepl.com/v2`)      |
+| `RECIPE_API_KEY`     | -             | Spoonacular - klucz do zewnętrznych przepisów (UC05, opcjonalny)           |
 | `PORT`               | `3000`        | Port serwera HTTP                                                          |
 | `NODE_ENV`           | `development` | `development` włącza synchronize + SQL logging                             |
 
 ## Produkcja
 
-W produkcji ustaw `NODE_ENV=production` — wyłącza automatyczną synchronizację schematu.  
+W produkcji ustaw `NODE_ENV=production` - wyłącza automatyczną synchronizację schematu.  
 Należy wtedy używać migracji TypeORM:
 
 ```bash

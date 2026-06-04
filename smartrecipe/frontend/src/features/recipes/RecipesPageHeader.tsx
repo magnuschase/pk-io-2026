@@ -11,7 +11,7 @@ export function RecipesPageHeader({ recipeCount, actions }: RecipesPageHeaderPro
       <div className="recipes-header__main">
         <h1 className="recipes-header__title">Moje przepisy</h1>
         <p className="recipes-header__lede">
-          Katalog dań, które tworzysz i publikujesz — filtruj po diecie, kuchni i kaloriach.
+          Katalog dań, które tworzysz i publikujesz - filtruj po diecie, kuchni i kaloriach.
         </p>
       </div>
       <div className="recipes-header__aside">

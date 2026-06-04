@@ -18,7 +18,7 @@ export function CookRecipeButton({
       disabled={mutation.isPending}
       onClick={() => mutation.mutate()}
     >
-      {mutation.isPending ? 'Odejmowanie…' : 'Ugotowałem!'}
+      {mutation.isPending ? 'Odejmowanie...' : 'Ugotowałem!'}
     </button>
   )
 }

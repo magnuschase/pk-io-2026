@@ -20,14 +20,14 @@ const TAB_DEFS: TabDef[] = [
     id: "ready",
     label: "Ze spiżarni",
     shortLabel: "Ready!",
-    lede: "Masz wszystkie składniki — możesz od razu gotować.",
+    lede: "Masz wszystkie składniki - możesz od razu gotować.",
     empty: "Brak w pełni dopasowanych przepisów przy tych filtrach.",
   },
   {
     id: "almost",
     label: "Lekkie braki",
     shortLabel: "Lekkie braki",
-    lede: "Brakuje co najwyżej dwóch składników — dodaj je na listę zakupów.",
+    lede: "Brakuje co najwyżej dwóch składników - dodaj je na listę zakupów.",
     empty: "Żaden przepis nie mieści się w tym progu.",
   },
   {

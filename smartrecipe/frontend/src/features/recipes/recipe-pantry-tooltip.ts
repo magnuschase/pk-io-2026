@@ -10,7 +10,7 @@ export function getIngredientPantryTooltip(match: IngredientPantryMatch): string
   if (match.status === 'sufficient') return undefined
 
   if (match.status === 'incompatible') {
-    return 'W spiżarni jest inna jednostka — uzupełnij ręcznie.'
+    return 'W spiżarni jest inna jednostka - uzupełnij ręcznie.'
   }
 
   if (

@@ -74,7 +74,7 @@ export function RecipeDraftDetail({ recipe }: RecipeDraftDetailProps) {
         disabled={saveMutation.isPending}
         onClick={() => submitFormRef.current()}
       >
-        {saveMutation.isPending ? "Zapisywanie…" : "Zapisz zmiany"}
+        {saveMutation.isPending ? "Zapisywanie..." : "Zapisz zmiany"}
       </button>
       <LifecycleActions recipe={recipe} />
     </div>
@@ -83,7 +83,7 @@ export function RecipeDraftDetail({ recipe }: RecipeDraftDetailProps) {
   return (
     <RecipeEditorShell
       title={recipe.title}
-      lede="Szkic — uzupełnij dane i składniki, zapisz zmiany, a gdy będzie gotowy opublikuj."
+      lede="Szkic - uzupełnij dane i składniki, zapisz zmiany, a gdy będzie gotowy opublikuj."
       status={
         <span className="recipe-editor__status recipe-editor__status--draft">
           {displayEnum(RecipeLifecycleStatus.DRAFT)}

@@ -175,7 +175,7 @@
   border: 0;
 }
 
-/* Mobile drawer — portaled to body (fixed must escape sticky/backdrop-filter) */
+/* Mobile drawer - portaled to body (fixed must escape sticky/backdrop-filter) */
 body.app-nav--menu-open {
   overflow: hidden;
 }

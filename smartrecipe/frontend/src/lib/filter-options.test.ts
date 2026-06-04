@@ -9,7 +9,7 @@ import {
 } from '@/lib/filter-options'
 import { CuisineType, DietType } from '@/types/domain'
 
-describe('filter URL params (UC03 — diet/cuisine filters)', () => {
+describe('filter URL params (UC03 - diet/cuisine filters)', () => {
   it('parseFilterValue treats "all" as no filter', () => {
     expect(parseFilterValue<DietType>('all')).toBeUndefined()
     expect(parseFilterValue<CuisineType>('all')).toBeUndefined()

@@ -52,7 +52,7 @@ export function RecipesPage() {
         <div className="recipes-shelf-empty" role="status">
           <p className="recipes-shelf-empty__title">Katalog jest pusty</p>
           <p className="recipes-shelf-empty__hint">
-            Dodaj pierwszy przepis — potem pojawi się tutaj i w sugestiach po uzupełnieniu spiżarni.
+            Dodaj pierwszy przepis - potem pojawi się tutaj i w sugestiach po uzupełnieniu spiżarni.
           </p>
           <Link className="recipes-add-btn" to="/recipes/new">
             Utwórz przepis

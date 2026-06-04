@@ -33,7 +33,7 @@ export class DeeplTranslationService {
 
     const apiKey = this.config.get<string>('DEEPL_API_KEY');
     if (!apiKey || apiKey === 'REPLACE' || apiKey.trim() === '') {
-      this.logger.debug('DEEPL_API_KEY not set — skipping translation');
+      this.logger.debug('DEEPL_API_KEY not set - skipping translation');
       return null;
     }
 

@@ -125,7 +125,7 @@ export function RecipeForm({
               <RichTextEditor
                 value={field.value ?? ""}
                 onChange={field.onChange}
-                placeholder="Krok po kroku — możesz uzupełnić później."
+                placeholder="Krok po kroku - możesz uzupełnić później."
               />
             )}
           />
@@ -142,7 +142,7 @@ export function RecipeForm({
               min={1}
               step={1}
               className="recipe-form__input"
-              placeholder="—"
+              placeholder="-"
               {...register("servings")}
             />
           </div>
@@ -155,7 +155,7 @@ export function RecipeForm({
                 id="recipe-kcal"
                 type="number"
                 className="recipe-form__input"
-                placeholder="—"
+                placeholder="-"
                 {...register("estimatedKcalPerServing")}
               />
               {kcalFieldAddon}
@@ -173,7 +173,7 @@ export function RecipeForm({
                 setValue("dietType", parseFormValue<DietType>(v))
               }
               options={dietFormOptions()}
-              placeholder="—"
+              placeholder="-"
               allowSearch={false}
             />
           </div>
@@ -189,8 +189,8 @@ export function RecipeForm({
                 setValue("cuisineType", parseFormValue<CuisineType>(v))
               }
               options={cuisineFormOptions()}
-              placeholder="—"
-              searchPlaceholder="Szukaj kuchni…"
+              placeholder="-"
+              searchPlaceholder="Szukaj kuchni..."
             />
           </div>
         </div>
@@ -209,7 +209,7 @@ export function RecipeForm({
             className="recipe-form__submit"
             disabled={isPending}
           >
-            {isPending ? "Zapisywanie…" : submitLabel}
+            {isPending ? "Zapisywanie..." : submitLabel}
           </button>
         </div>
       ) : null}

@@ -130,7 +130,7 @@
   }
 }
 
-/* Save — secondary (outline) */
+/* Save - secondary (outline) */
 .recipe-editor__toolbar-actions .recipe-editor__toolbar-save {
   width: auto;
   min-width: 11rem;
@@ -150,7 +150,7 @@
   }
 }
 
-/* Shopping list — accent primary (active recipe view) */
+/* Shopping list - accent primary (active recipe view) */
 .recipe-editor__toolbar-actions .recipe-detail-view__shop-btn,
 .recipe-editor__toolbar-actions .recipe-detail-view__cook-btn {
   min-width: 12rem;
@@ -197,7 +197,7 @@
   cursor: not-allowed;
 }
 
-/* Publish — accent primary */
+/* Publish - accent primary */
 .recipe-editor__toolbar-actions .recipe-editor__toolbar-publish {
   min-width: 10rem;
   min-height: 2.75rem;
@@ -474,7 +474,7 @@
   padding-block-start: var(--space-sm);
 }
 
-/* Explicit sizing — survives global * { padding: 0 } reset */
+/* Explicit sizing - survives global * { padding: 0 } reset */
 .recipe-kcal-dialog__actions > button {
   display: inline-flex;
   align-items: center;
@@ -660,7 +660,7 @@
 /* ── Ingredients panel ─────────────────────────────────────── */
 /* Hallmark · component: ingredient-list · genre: editorial · theme: Garden
  * states: default · hover · focus · active · disabled
- * layout: table-row model — fixed columns, named grid areas, stable at any name length
+ * layout: table-row model - fixed columns, named grid areas, stable at any name length
  */
 
 .recipe-ingredients {
@@ -691,7 +691,7 @@
   min-width: 0;
 }
 
-/* Column header — hidden on mobile, shown on desktop */
+/* Column header - hidden on mobile, shown on desktop */
 .recipe-ingredients__cols {
   display: none;
 }
@@ -736,7 +736,7 @@
   color: var(--color-muted);
 }
 
-/* Row list — no gaps; rows separated by border-bottom */
+/* Row list - no gaps; rows separated by border-bottom */
 .recipe-ingredients__list {
   list-style: none;
   margin: 0;
@@ -784,7 +784,7 @@
   }
 }
 
-/* Aside stays stacked until the panel itself is wide enough — avoids 1-char columns */
+/* Aside stays stacked until the panel itself is wide enough - avoids 1-char columns */
 .recipe-editor__panel--aside .recipe-ingredient-line {
   grid-template-columns: 5.5rem minmax(0, 1fr) 2.5rem;
   grid-template-rows: auto auto auto;
@@ -935,7 +935,7 @@
   outline-offset: 2px;
 }
 
-/* Published recipe — read-only ingredient list in aside */
+/* Published recipe - read-only ingredient list in aside */
 .recipe-detail__ingredients-read {
   list-style: none;
   margin: 0;

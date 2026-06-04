@@ -243,7 +243,7 @@
   color: var(--color-muted);
 }
 
-/* ── Tabbed categories (segmented — mobile-first) ────────── */
+/* ── Tabbed categories (segmented - mobile-first) ────────── */
 .suggest-tabs {
   min-width: 0;
 }
@@ -380,7 +380,7 @@
   }
 }
 
-/* ── Section heads (legacy — unused after tabs) ──────────── */
+/* ── Section heads (legacy - unused after tabs) ──────────── */
 .suggest-section {
   margin-block-end: var(--space-3xl);
 }
@@ -669,7 +669,7 @@
   color: var(--color-muted);
 }
 
-/* Podczas zmiany filtra — poprzednia lista zostaje, lekkie przygaszenie */
+/* Podczas zmiany filtra - poprzednia lista zostaje, lekkie przygaszenie */
 .suggest-content {
   transition: opacity var(--dur-base) var(--ease-out);
 }

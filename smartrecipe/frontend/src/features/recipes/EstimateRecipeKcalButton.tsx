@@ -17,7 +17,7 @@ import type { RecipeIngredientLine } from "@/types/domain";
 interface EstimateRecipeKcalButtonProps {
   recipeId: string;
   lines: RecipeIngredientLine[];
-  /** Porcje z formularza lub zapisane w przepisie — wstępna wartość w dialogu. */
+  /** Porcje z formularza lub zapisane w przepisie - wstępna wartość w dialogu. */
   resolveDefaultServings?: () => number | null | undefined;
   onEstimated: (result: RecipeKcalEstimate) => void;
 }
@@ -110,7 +110,7 @@ export function EstimateRecipeKcalButton({
               Sumujemy składniki z zapisaną kaloryką na 100 g i ilością w
               gramach lub ml (1 ml ≈ 1 g). Używamy liczby porcji z dialogu
               (domyślnie z pola „Porcje”, jeśli zapisane). Wynik trafi do kcal /
-              porcja — zapisz przepis, żeby utrwalić.
+              porcja - zapisz przepis, żeby utrwalić.
             </p>
           </DialogHeader>
 
@@ -145,7 +145,7 @@ export function EstimateRecipeKcalButton({
               onClick={() => mutation.mutate()}
               disabled={mutation.isPending}
             >
-              {mutation.isPending ? "Liczenie…" : "Oblicz"}
+              {mutation.isPending ? "Liczenie..." : "Oblicz"}
             </Button>
           </div>
         </DialogContent>

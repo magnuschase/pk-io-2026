@@ -79,7 +79,7 @@ export class EstimateRecipeKcalDto {
   @ApiPropertyOptional({
     example: 4,
     description:
-      'Liczba porcji — kcal całego przepisu zostanie podzielone przez tę wartość',
+      'Liczba porcji - kcal całego przepisu zostanie podzielone przez tę wartość',
   })
   @IsOptional()
   @Type(() => Number)
@@ -90,7 +90,7 @@ export class EstimateRecipeKcalDto {
   @ApiPropertyOptional({
     type: [RecipeIngredientLineDto],
     description:
-      'Aktualny skład z edytora (jeśli brak — używany zapisany skład z bazy)',
+      'Aktualny skład z edytora (jeśli brak - używany zapisany skład z bazy)',
   })
   @IsOptional()
   @IsArray()

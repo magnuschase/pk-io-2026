@@ -23,7 +23,7 @@
   --font-body:    "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --font-outlier: "Geist Mono", ui-monospace, monospace;
 
-  /* ── Text scale — major third 1.25 ─────────────────── */
+  /* ── Text scale - major third 1.25 ─────────────────── */
   --text-xs:        0.64rem;
   --text-sm:        0.8rem;
   --text-base:      1rem;
@@ -36,7 +36,7 @@
   --text-display:   clamp(2.75rem, 5vw + 1rem, 5.25rem);
   --text-display-s: clamp(1.75rem, 3vw + 0.75rem, 3rem);
 
-  /* ── Spacing — 4pt scale ────────────────────────────── */
+  /* ── Spacing - 4pt scale ────────────────────────────── */
   --space-3xs: 0.125rem;
   --space-2xs: 0.25rem;
   --space-xs:  0.5rem;

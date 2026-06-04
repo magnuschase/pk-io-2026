@@ -29,14 +29,14 @@ export function toFilterValue(value?: string): string {
 
 export function dietFormOptions(): ComboboxOption[] {
   return [
-    { value: NONE_VALUE, label: '—' },
+    { value: NONE_VALUE, label: '-' },
     ...Object.values(DietType).map((d) => ({ value: d, label: displayEnum(d) })),
   ]
 }
 
 export function cuisineFormOptions(): ComboboxOption[] {
   return [
-    { value: NONE_VALUE, label: '—' },
+    { value: NONE_VALUE, label: '-' },
     ...Object.values(CuisineType).map((c) => ({ value: c, label: displayEnum(c) })),
   ]
 }

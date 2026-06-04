@@ -139,7 +139,7 @@ export function ShoppingListView() {
             onClick={handleSyncPantry}
           >
             {syncMutation.isPending
-              ? 'Synchronizowanie…'
+              ? 'Synchronizowanie...'
               : `Synchronizuj kupione ze spiżarnią (${purchasedCount})`}
           </button>
         ) : null}
@@ -151,7 +151,7 @@ export function ShoppingListView() {
           disabled={clearMutation.isPending}
           onClick={handleClearList}
         >
-          {clearMutation.isPending ? 'Czyszczenie…' : 'Wyczyść listę'}
+          {clearMutation.isPending ? 'Czyszczenie...' : 'Wyczyść listę'}
         </button>
       ) : null}
     </>

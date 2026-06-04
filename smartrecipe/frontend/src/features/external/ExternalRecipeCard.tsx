@@ -89,7 +89,7 @@ export function ExternalRecipeCard({ hit }: ExternalRecipeCardProps) {
             disabled={mutation.isPending}
             onClick={() => mutation.mutate()}
           >
-            {mutation.isPending ? 'Import…' : 'Importuj jako szkic'}
+            {mutation.isPending ? 'Import...' : 'Importuj jako szkic'}
           </button>
         </div>
       </article>

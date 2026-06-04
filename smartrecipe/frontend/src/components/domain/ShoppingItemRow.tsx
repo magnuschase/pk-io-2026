@@ -27,7 +27,7 @@ export function ShoppingItemRow({ item, onToggle, onDelete, disabled }: Shopping
       />
       <span className="shopping-row__label">
         {name}
-        <span className="shopping-row__qty"> — {qty}</span>
+        <span className="shopping-row__qty"> - {qty}</span>
       </span>
       <button
         type="button"

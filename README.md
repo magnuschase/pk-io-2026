@@ -44,7 +44,7 @@ Wygenerowanie listy zakupów wypełnionej brakującymi produktami na podstawie w
 
 ```mermaid
 C4Context
-    title Diagram kontekstu — SmartRecipe
+    title Diagram kontekstu - SmartRecipe
 
     Person(homecook, "Użytkownik", "Domowy kucharz.<br/>Własna baza przepisów i spiżarnia.<br/>Plan posiłków oraz zakupy.")
     System(smartrecipe, "SmartRecipe", "Aplikacja webowa.<br/>Baza przepisów i wirtualna spiżarnia.<br/>Filtrowanie dań.<br/>Propozycje posiłków z posiadanych składników.")
@@ -68,7 +68,7 @@ C4Context
 
 ```mermaid
 C4Container
-    title Diagram kontenerów — SmartRecipe
+    title Diagram kontenerów - SmartRecipe
 
     Person(homecook, "Użytkownik", "Domowy kucharz.")
 
@@ -101,8 +101,8 @@ C4Container
 
 ### Moduły aplikacji
 
-- **Backend API** (NestJS, PostgreSQL): [smartrecipe/backend/README.md](smartrecipe/backend/README.md) — uruchomienie, architektura `src/`, endpointy REST, zmienne środowiskowe
-- **Frontend** (React, Vite): [smartrecipe/frontend/README.md](smartrecipe/frontend/README.md) — uruchomienie dev, skrypty, struktura katalogów
+- **Backend API** (NestJS, PostgreSQL): [smartrecipe/backend/README.md](smartrecipe/backend/README.md) - uruchomienie, architektura `src/`, endpointy REST, zmienne środowiskowe
+- **Frontend** (React, Vite): [smartrecipe/frontend/README.md](smartrecipe/frontend/README.md) - uruchomienie dev, skrypty, struktura katalogów
 
 ### Model statyczny (UML)
 
@@ -114,4 +114,4 @@ Aktorzy, przypadki użycia, analiza problemu, diagramy sekwencji i czynności or
 
 ### Diagramy (źródła Mermaid)
 
-Diagramy w folderze [diagrams/](diagrams/) — m.in. C4, przypadki użycia, sekwencje (w tym wzbogacanie składnika z DeepL + USDA), diagram klas.
+Diagramy w folderze [diagrams/](diagrams/) - m.in. C4, przypadki użycia, sekwencje (w tym wzbogacanie składnika z DeepL + USDA), diagram klas.

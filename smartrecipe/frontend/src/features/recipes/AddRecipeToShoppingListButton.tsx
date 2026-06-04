@@ -11,7 +11,7 @@ export function AddRecipeToShoppingListButton({
   recipeId,
   className = 'recipe-detail-view__shop-btn',
   label = 'Dodaj braki do listy zakupów',
-  pendingLabel = 'Dodawanie…',
+  pendingLabel = 'Dodawanie...',
 }: AddRecipeToShoppingListButtonProps) {
   const mutation = useFillShoppingListFromRecipes()
 

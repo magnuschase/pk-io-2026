@@ -38,7 +38,7 @@ export class ExternalService {
     const apiKey = this.config.get<string>('RECIPE_API_KEY');
     if (!apiKey) {
       this.logger.warn(
-        'RECIPE_API_KEY not set — external recipe search unavailable',
+        'RECIPE_API_KEY not set - external recipe search unavailable',
       );
       throw new ServiceUnavailableException(
         'External recipe API not configured',

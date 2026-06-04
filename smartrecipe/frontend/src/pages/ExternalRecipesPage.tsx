@@ -74,7 +74,7 @@ export function ExternalRecipesPage() {
         <Input
           id="external-q"
           className="external-search__field"
-          placeholder="np. tofu, makaron, curry…"
+          placeholder="np. tofu, makaron, curry..."
           value={q}
           onChange={(e) => setQ(e.target.value)}
           autoComplete="off"
@@ -92,7 +92,7 @@ export function ExternalRecipesPage() {
         <div className="external-idle" role="status">
           <p className="external-idle__title">Zacznij od frazy</p>
           <p className="external-idle__hint">
-            Wpisz składnik lub nazwę dania — wyniki pojawią się poniżej.
+            Wpisz składnik lub nazwę dania - wyniki pojawią się poniżej.
           </p>
         </div>
       ) : null}
@@ -142,7 +142,7 @@ export function ExternalRecipesPage() {
         <div className="external-empty" role="status">
           <p className="external-empty__title">Brak wyników</p>
           <p className="external-empty__hint">
-            Spróbuj krótszej frazy lub innego składnika — katalog może nie mieć dokładnego
+            Spróbuj krótszej frazy lub innego składnika - katalog może nie mieć dokładnego
             dopasowania.
           </p>
         </div>

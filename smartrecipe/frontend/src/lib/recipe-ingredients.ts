@@ -1,7 +1,7 @@
 import { normalizeIngredient } from '@/lib/ingredient-nutrition'
 import type { RecipeIngredientLine } from '@/types/domain'
 
-/** TypeORM decimal columns arrive as strings — coerce before API calls. */
+/** TypeORM decimal columns arrive as strings - coerce before API calls. */
 export function normalizeRecipeIngredientLines(
   lines: RecipeIngredientLine[],
 ): Pick<RecipeIngredientLine, 'ingredientId' | 'quantity' | 'unit'>[] {

@@ -55,7 +55,7 @@ export function RegisterForm() {
         <p className="text-sm text-[var(--color-destructive)]">Rejestracja nie powiodła się. Spróbuj ponownie.</p>
       ) : null}
       <Button type="submit" disabled={mutation.isPending}>
-        {mutation.isPending ? 'Tworzenie konta…' : 'Utwórz konto'}
+        {mutation.isPending ? 'Tworzenie konta...' : 'Utwórz konto'}
       </Button>
       <p className="text-center text-sm text-[var(--color-muted)]">
         Masz już konto?{' '}

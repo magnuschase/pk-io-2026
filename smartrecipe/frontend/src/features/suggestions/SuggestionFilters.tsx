@@ -47,7 +47,7 @@ export function SuggestionFilters({
             onValueChange={(v) => onDietChange(parseFilterValue<DietType>(v))}
             options={dietFilterOptions()}
             placeholder="Wszystkie diety"
-            searchPlaceholder="Szukaj diety…"
+            searchPlaceholder="Szukaj diety..."
             allowSearch={false}
           />
         </div>
@@ -62,7 +62,7 @@ export function SuggestionFilters({
             onValueChange={(v) => onCuisineChange(parseFilterValue<CuisineType>(v))}
             options={cuisineFilterOptions()}
             placeholder="Wszystkie kuchnie"
-            searchPlaceholder="Szukaj kuchni…"
+            searchPlaceholder="Szukaj kuchni..."
           />
         </div>
       </div>

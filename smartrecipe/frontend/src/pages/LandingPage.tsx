@@ -49,7 +49,7 @@ export function LandingPage() {
             num="1.0"
             name="Spiżarnia"
             heading="Twój dom. Twoje składniki."
-            text="Dodaj produkty, które masz na półkach i w lodówce — z ilościami i jednostkami. System zapamięta stan spiżarni i będzie go porównywał ze składem Twoich przepisów."
+            text="Dodaj produkty, które masz na półkach i w lodówce - z ilościami i jednostkami. System zapamięta stan spiżarni i będzie go porównywał ze składem Twoich przepisów."
             visual="pantry"
             headingId="stage-1-heading"
           />
@@ -57,7 +57,7 @@ export function LandingPage() {
             num="2.0"
             name="Dopasowanie"
             heading="Przepisy gotowe do gotowania."
-            text="Algorytm porównuje skład każdego przepisu ze stanem spiżarni — z normalizacją jednostek. Wyróżnia dania gotowe i te, do których brakuje co najwyżej dwóch składników."
+            text="Algorytm porównuje skład każdego przepisu ze stanem spiżarni - z normalizacją jednostek. Wyróżnia dania gotowe i te, do których brakuje co najwyżej dwóch składników."
             visual="match"
             headingId="stage-2-heading"
           />
@@ -73,7 +73,7 @@ export function LandingPage() {
             num="4.0"
             name="Zakupy"
             heading="Lista, która liczy za Ciebie."
-            text="Wybierz przepisy na ten tydzień. System odejmuje to, co masz w spiżarni, i generuje listę brakujących składników. Zaznacz jako kupione — i gotowe."
+            text="Wybierz przepisy na ten tydzień. System odejmuje to, co masz w spiżarni, i generuje listę brakujących składników. Zaznacz jako kupione - i gotowe."
             visual="shopping"
             headingId="stage-4-heading"
           />

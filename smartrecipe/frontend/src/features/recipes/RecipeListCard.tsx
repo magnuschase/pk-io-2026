@@ -47,7 +47,7 @@ export function RecipeListCard({ recipe }: RecipeListCardProps) {
           <span className="recipes-card__kcal">{recipe.estimatedKcalPerServing} kcal</span>
         ) : (
           <span className="recipes-card__kcal recipes-card__kcal--placeholder" aria-hidden="true">
-            —
+            -
           </span>
         )}
       </div>

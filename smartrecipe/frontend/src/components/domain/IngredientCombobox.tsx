@@ -110,7 +110,7 @@ export function IngredientCombobox({
             <p className="ingredient-search__hint">Składniki z katalogu</p>
           ) : null}
           {isFetching ? (
-            <p className="ingredient-search__status">Szukam…</p>
+            <p className="ingredient-search__status">Szukam...</p>
           ) : null}
           {data.length > 0 ? (
             <ul

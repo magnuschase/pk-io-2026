@@ -131,7 +131,7 @@ export class RecipesController {
   @Post(':id/cook')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Oznacz jako ugotowany — odejmij składniki przepisu ze spiżarni',
+    summary: 'Oznacz jako ugotowany - odejmij składniki przepisu ze spiżarni',
   })
   cook(@CurrentUser() userId: string, @Param('id', ParseUUIDPipe) id: string) {
     return this.service.cookRecipe(userId, id);
