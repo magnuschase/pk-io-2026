@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IsString, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -50,9 +42,14 @@ export class ExternalController {
   ) {
     const detail = await this.externalService.fetchRecipeDetail(dto.externalId);
 
+    const title =
+      typeof detail.title === 'string' ? detail.title : 'Imported recipe';
+    const instructions =
+      typeof detail.instructions === 'string' ? detail.instructions : '';
+
     const recipe = await this.recipesService.create(userId, {
-      title: String(detail['title'] ?? 'Imported recipe'),
-      instructions: String(detail['instructions'] ?? ''),
+      title,
+      instructions,
     });
 
     const extIngredients =

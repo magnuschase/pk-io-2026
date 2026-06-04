@@ -10,7 +10,13 @@ import { Ingredient } from '../domain/entities/ingredient.entity';
 const ING_ID = 'ing-uuid';
 
 const makeIngredient = (overrides: Partial<Ingredient> = {}): Ingredient =>
-  ({ id: ING_ID, name: 'Chicken breast', externalFoodId: null, kcalPer100g: null, ...overrides } as Ingredient);
+  ({
+    id: ING_ID,
+    name: 'Chicken breast',
+    externalFoodId: null,
+    kcalPer100g: null,
+    ...overrides,
+  }) as Ingredient;
 
 const mockHttp = { get: jest.fn() };
 
@@ -24,7 +30,7 @@ const mockConfig = {
 
 const mockIngredientRepo = {
   findOne: jest.fn(),
-  save: jest.fn(async (r: unknown) => r),
+  save: jest.fn((r: Ingredient) => Promise.resolve(r)),
 };
 
 const usdaSearchResponse = {
@@ -33,7 +39,12 @@ const usdaSearchResponse = {
       fdcId: 2187885,
       description: 'CHICKEN BREAST',
       foodNutrients: [
-        { nutrientId: 1008, nutrientName: 'Energy', value: 165, unitName: 'KCAL' },
+        {
+          nutrientId: 1008,
+          nutrientName: 'Energy',
+          value: 165,
+          unitName: 'KCAL',
+        },
         { nutrientId: 1003, nutrientName: 'Protein', value: 31, unitName: 'G' },
       ],
     },
@@ -41,7 +52,12 @@ const usdaSearchResponse = {
       fdcId: 2092152,
       description: 'CHICKEN BREAST FILLET',
       foodNutrients: [
-        { nutrientId: 1008, nutrientName: 'Energy', value: 143, unitName: 'KCAL' },
+        {
+          nutrientId: 1008,
+          nutrientName: 'Energy',
+          value: 143,
+          unitName: 'KCAL',
+        },
       ],
     },
   ],
@@ -53,13 +69,18 @@ describe('NutritionService', () => {
 
   beforeEach(async () => {
     jest.resetAllMocks();
-    mockIngredientRepo.save.mockImplementation(async (r: unknown) => r);
+    mockIngredientRepo.save.mockImplementation((r: Ingredient) =>
+      Promise.resolve(r),
+    );
     const module = await Test.createTestingModule({
       providers: [
         NutritionService,
         { provide: HttpService, useValue: mockHttp },
         { provide: ConfigService, useValue: mockConfig },
-        { provide: getRepositoryToken(Ingredient), useValue: mockIngredientRepo },
+        {
+          provide: getRepositoryToken(Ingredient),
+          useValue: mockIngredientRepo,
+        },
       ],
     }).compile();
     service = module.get(NutritionService);
@@ -71,8 +92,16 @@ describe('NutritionService', () => {
       mockHttp.get.mockReturnValue(of({ data: usdaSearchResponse }));
       const hits = await service.searchFoods('chicken breast', 5);
       expect(hits).toHaveLength(2);
-      expect(hits[0]).toEqual({ fdcId: 2187885, description: 'CHICKEN BREAST', kcalPer100g: 165 });
-      expect(hits[1]).toEqual({ fdcId: 2092152, description: 'CHICKEN BREAST FILLET', kcalPer100g: 143 });
+      expect(hits[0]).toEqual({
+        fdcId: 2187885,
+        description: 'CHICKEN BREAST',
+        kcalPer100g: 165,
+      });
+      expect(hits[1]).toEqual({
+        fdcId: 2092152,
+        description: 'CHICKEN BREAST FILLET',
+        kcalPer100g: 143,
+      });
     });
 
     it('returns empty array for empty query without calling API', async () => {
@@ -85,7 +114,9 @@ describe('NutritionService', () => {
       mockConfig.get.mockReturnValue('');
       mockHttp.get.mockReturnValue(of({ data: usdaSearchResponse }));
       await service.searchFoods('pasta');
-      const [[, config]] = mockHttp.get.mock.calls as [[string, { params: { api_key: string } }]];
+      const [[, config]] = mockHttp.get.mock.calls as [
+        [string, { params: { api_key: string } }],
+      ];
       expect(config.params.api_key).toBe('DEMO_KEY');
     });
 
@@ -95,20 +126,28 @@ describe('NutritionService', () => {
       );
       mockHttp.get.mockReturnValue(of({ data: usdaSearchResponse }));
       await service.searchFoods('pasta');
-      const [[, config]] = mockHttp.get.mock.calls as [[string, { params: { api_key: string } }]];
+      const [[, config]] = mockHttp.get.mock.calls as [
+        [string, { params: { api_key: string } }],
+      ];
       expect(config.params.api_key).toBe('my-real-key');
     });
 
     it('throws ServiceUnavailableException on API error', async () => {
-      mockHttp.get.mockReturnValue(throwError(() => new Error('network error')));
-      await expect(service.searchFoods('chicken')).rejects.toBeInstanceOf(ServiceUnavailableException);
+      mockHttp.get.mockReturnValue(
+        throwError(() => new Error('network error')),
+      );
+      await expect(service.searchFoods('chicken')).rejects.toBeInstanceOf(
+        ServiceUnavailableException,
+      );
     });
 
     it('returns null kcalPer100g when energy nutrient is absent', async () => {
       mockHttp.get.mockReturnValue(
         of({
           data: {
-            foods: [{ fdcId: 999, description: 'Mystery food', foodNutrients: [] }],
+            foods: [
+              { fdcId: 999, description: 'Mystery food', foodNutrients: [] },
+            ],
             totalHits: 1,
           },
         }),
@@ -122,7 +161,9 @@ describe('NutritionService', () => {
   describe('enrichIngredient', () => {
     it('throws NotFoundException for unknown ingredient', async () => {
       mockIngredientRepo.findOne.mockResolvedValue(null);
-      await expect(service.enrichIngredient('bad-uuid')).rejects.toBeInstanceOf(NotFoundException);
+      await expect(service.enrichIngredient('bad-uuid')).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
     });
 
     it('saves fdcId and kcalPer100g on the ingredient', async () => {

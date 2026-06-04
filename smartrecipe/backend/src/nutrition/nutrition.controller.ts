@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Get,
   Param,
@@ -12,25 +11,12 @@ import {
 import {
   ApiBearerAuth,
   ApiOperation,
-  ApiProperty,
+  ApiParam,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { IsInt, Min } from 'class-validator';
-import { Type } from 'class-transformer';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { NutritionService } from './nutrition.service';
-
-class EnrichByFdcDto {
-  @ApiProperty({
-    description: 'USDA FDC ID z wyników wyszukiwania',
-    example: 171477,
-  })
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  fdcId: number;
-}
 
 @ApiTags('nutrition')
 @ApiBearerAuth()
@@ -79,6 +65,12 @@ export class NutritionController {
     description:
       'Pobiera dane dla wybranego fdcId i aktualizuje składnik. ' +
       'Używaj po /nutrition/search gdy chcesz wybrać konkretny wynik zamiast automatycznego.',
+  })
+  @ApiParam({
+    name: 'fdcId',
+    type: Number,
+    description: 'USDA FDC ID z wyników wyszukiwania',
+    example: 171477,
   })
   enrichByFdc(
     @Param('ingredientId', ParseUUIDPipe) ingredientId: string,

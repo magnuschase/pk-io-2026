@@ -8,7 +8,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { RecipesService } from './recipes.service';
 import { Recipe } from '../domain/entities/recipe.entity';
 import { RecipeIngredient } from '../domain/entities/recipe-ingredient.entity';
-import { RecipeLifecycleStatus, DietType, CuisineType } from '../domain/enums';
+import { RecipeLifecycleStatus } from '../domain/enums';
 
 const OWNER_ID = 'owner-uuid';
 const OTHER_ID = 'other-uuid';
@@ -23,7 +23,7 @@ const makeRecipe = (overrides: Partial<Recipe> = {}): Recipe => ({
   dietType: null,
   cuisineType: null,
   userId: OWNER_ID,
-  user: undefined as any,
+  user: undefined!,
   ingredients: [],
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -33,15 +33,17 @@ const makeRecipe = (overrides: Partial<Recipe> = {}): Recipe => ({
 const mockRecipeRepo = {
   createQueryBuilder: jest.fn(),
   findOne: jest.fn(),
-  create: jest.fn((dto) => ({ ...dto })),
-  save: jest.fn(async (r) => r),
+  create: jest.fn((dto: Partial<Recipe>) => ({ ...dto }) as Recipe),
+  save: jest.fn((r: Recipe) => Promise.resolve(r)),
   remove: jest.fn(),
 };
 
 const mockRiRepo = {
   delete: jest.fn(),
-  create: jest.fn((dto) => ({ ...dto })),
-  save: jest.fn(async (items) => items),
+  create: jest.fn(
+    (dto: Partial<RecipeIngredient>) => ({ ...dto }) as RecipeIngredient,
+  ),
+  save: jest.fn((items: RecipeIngredient[]) => Promise.resolve(items)),
   count: jest.fn(),
 };
 
@@ -90,7 +92,7 @@ describe('RecipesService', () => {
     it('creates a recipe with DRAFT status', async () => {
       const saved = makeRecipe();
       mockRecipeRepo.save.mockResolvedValue(saved);
-      const recipe = await service.create(OWNER_ID, { title: 'New Recipe' });
+      await service.create(OWNER_ID, { title: 'New Recipe' });
       expect(mockRecipeRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({
           userId: OWNER_ID,
@@ -107,7 +109,7 @@ describe('RecipesService', () => {
         makeRecipe({ lifecycleStatus: RecipeLifecycleStatus.DRAFT }),
       );
       mockRiRepo.count.mockResolvedValue(2);
-      mockRecipeRepo.save.mockImplementation(async (r) => r);
+      mockRecipeRepo.save.mockImplementation((r: Recipe) => Promise.resolve(r));
       const result = await service.transition(
         OWNER_ID,
         RECIPE_ID,
@@ -130,7 +132,7 @@ describe('RecipesService', () => {
       mockRecipeRepo.findOne.mockResolvedValue(
         makeRecipe({ lifecycleStatus: RecipeLifecycleStatus.ACTIVE }),
       );
-      mockRecipeRepo.save.mockImplementation(async (r) => r);
+      mockRecipeRepo.save.mockImplementation((r: Recipe) => Promise.resolve(r));
       const result = await service.transition(
         OWNER_ID,
         RECIPE_ID,
@@ -143,7 +145,7 @@ describe('RecipesService', () => {
       mockRecipeRepo.findOne.mockResolvedValue(
         makeRecipe({ lifecycleStatus: RecipeLifecycleStatus.ACTIVE }),
       );
-      mockRecipeRepo.save.mockImplementation(async (r) => r);
+      mockRecipeRepo.save.mockImplementation((r: Recipe) => Promise.resolve(r));
       const result = await service.transition(
         OWNER_ID,
         RECIPE_ID,
@@ -157,7 +159,7 @@ describe('RecipesService', () => {
         makeRecipe({ lifecycleStatus: RecipeLifecycleStatus.ARCHIVED }),
       );
       mockRiRepo.count.mockResolvedValue(2);
-      mockRecipeRepo.save.mockImplementation(async (r) => r);
+      mockRecipeRepo.save.mockImplementation((r: Recipe) => Promise.resolve(r));
       const result = await service.transition(
         OWNER_ID,
         RECIPE_ID,

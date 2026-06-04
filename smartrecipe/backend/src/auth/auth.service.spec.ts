@@ -121,23 +121,21 @@ describe('AuthService', () => {
 
   // ── refresh ───────────────────────────────────────────────────────────
   describe('refresh', () => {
-    it('issues new tokens for a valid refresh token', async () => {
+    it('issues new tokens for a valid refresh token', () => {
       mockJwtService.verify.mockReturnValue({
         sub: 'user-uuid',
         email: 'test@example.com',
       });
-      const result = await service.refresh('valid-refresh-token');
+      const result = service.refresh('valid-refresh-token');
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
     });
 
-    it('throws UnauthorizedException when refresh token is invalid', async () => {
+    it('throws UnauthorizedException when refresh token is invalid', () => {
       mockJwtService.verify.mockImplementation(() => {
         throw new Error('invalid');
       });
-      await expect(service.refresh('bad-token')).rejects.toBeInstanceOf(
-        UnauthorizedException,
-      );
+      expect(() => service.refresh('bad-token')).toThrow(UnauthorizedException);
     });
   });
 });

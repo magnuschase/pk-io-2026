@@ -92,7 +92,7 @@ export class RecipesService {
     id: string,
     dto: SetIngredientsDto,
   ): Promise<Recipe> {
-    const recipe = await this.findOne(userId, id);
+    await this.findOne(userId, id);
     await this.riRepo.delete({ recipeId: id });
     const lines = dto.ingredients.map((line) =>
       this.riRepo.create({

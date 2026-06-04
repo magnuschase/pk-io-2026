@@ -3,6 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { SelectQueryBuilder } from 'typeorm';
 import { SuggestionsService } from './suggestions.service';
 import { Recipe } from '../domain/entities/recipe.entity';
+import { RecipeIngredient } from '../domain/entities/recipe-ingredient.entity';
 import { PantryItem } from '../domain/entities/pantry-item.entity';
 import { UnitNormalizationService } from '../shared/unit-normalization.service';
 import { RecipeLifecycleStatus } from '../domain/enums';
@@ -18,7 +19,7 @@ const makeRecipe = (
     title: `Recipe ${id}`,
     lifecycleStatus: RecipeLifecycleStatus.ACTIVE,
     userId: USER_ID,
-    ingredients: ingredients as any,
+    ingredients: ingredients as RecipeIngredient[],
   }) as Recipe;
 
 const makePantry = (

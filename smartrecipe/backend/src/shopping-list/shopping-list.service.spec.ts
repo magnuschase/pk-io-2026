@@ -31,14 +31,16 @@ const makePantry = (
 
 const mockListRepo = {
   findOne: jest.fn(),
-  create: jest.fn((dto) => ({ ...dto })),
-  save: jest.fn(async (r) => r),
+  create: jest.fn((dto: Partial<ShoppingList>) => ({ ...dto }) as ShoppingList),
+  save: jest.fn((r: ShoppingList) => Promise.resolve(r)),
 };
 
 const mockItemRepo = {
   findOne: jest.fn(),
-  create: jest.fn((dto) => ({ ...dto })),
-  save: jest.fn(async (r) => r),
+  create: jest.fn(
+    (dto: Partial<ShoppingListItem>) => ({ ...dto }) as ShoppingListItem,
+  ),
+  save: jest.fn((r: ShoppingListItem) => Promise.resolve(r)),
   remove: jest.fn(),
 };
 
@@ -50,10 +52,18 @@ describe('ShoppingListService', () => {
 
   beforeEach(async () => {
     jest.resetAllMocks();
-    mockListRepo.create.mockImplementation((dto) => ({ ...dto }));
-    mockItemRepo.create.mockImplementation((dto) => ({ ...dto }));
-    mockListRepo.save.mockImplementation(async (r) => r);
-    mockItemRepo.save.mockImplementation(async (r) => r);
+    mockListRepo.create.mockImplementation(
+      (dto: Partial<ShoppingList>) => ({ ...dto }) as ShoppingList,
+    );
+    mockItemRepo.create.mockImplementation(
+      (dto: Partial<ShoppingListItem>) => ({ ...dto }) as ShoppingListItem,
+    );
+    mockListRepo.save.mockImplementation((r: ShoppingList) =>
+      Promise.resolve(r),
+    );
+    mockItemRepo.save.mockImplementation((r: ShoppingListItem) =>
+      Promise.resolve(r),
+    );
     const module = await Test.createTestingModule({
       providers: [
         ShoppingListService,

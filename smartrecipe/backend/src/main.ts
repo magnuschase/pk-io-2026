@@ -31,4 +31,4 @@ async function bootstrap() {
   console.log(`SmartRecipe API running on http://localhost:${port}`);
   console.log(`Swagger UI: http://localhost:${port}/api`);
 }
-bootstrap();
+void bootstrap();

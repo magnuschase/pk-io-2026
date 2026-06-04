@@ -26,7 +26,7 @@ export class AuthService {
     return this.issueTokens(user.id, user.email);
   }
 
-  async refresh(token: string) {
+  refresh(token: string) {
     try {
       const payload = this.jwtService.verify<{ sub: string; email: string }>(
         token,
