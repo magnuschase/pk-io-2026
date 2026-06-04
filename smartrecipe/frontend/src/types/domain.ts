@@ -24,6 +24,10 @@ export enum RecipeLifecycleStatus {
 export interface Ingredient {
   id: string
   name: string
+  externalFoodId?: string | null
+  kcalPer100g?: number | null
+  /** Grams per 1 szt from USDA (auto); used in kcal estimate. */
+  gramsPerPiece?: number | null
 }
 
 export type IngredientPantryMatchStatus = 'sufficient' | 'deficit' | 'missing' | 'incompatible'
@@ -50,6 +54,7 @@ export interface Recipe {
   title: string
   instructions: string | null
   estimatedKcalPerServing: number | null
+  servings: number | null
   lifecycleStatus: RecipeLifecycleStatus
   dietType: DietType | null
   cuisineType: CuisineType | null
@@ -92,6 +97,13 @@ export interface ExternalRecipeHit {
   id: string | number
   title: string
   sourceUrl?: string
+}
+
+export interface ExternalRecipeSearchPage {
+  results: ExternalRecipeHit[]
+  offset: number
+  number: number
+  totalResults: number
 }
 
 export interface AuthTokens {

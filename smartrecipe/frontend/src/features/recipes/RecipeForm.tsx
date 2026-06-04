@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { type ReactNode, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Combobox } from "@/components/ui/combobox";
@@ -17,6 +17,7 @@ const schema = z.object({
   title: z.string().min(1, "Tytuł jest wymagany").max(300),
   instructions: z.string().optional(),
   estimatedKcalPerServing: z.coerce.number().int().min(0).optional(),
+  servings: z.coerce.number().int().min(1).optional(),
   dietType: z.nativeEnum(DietType).optional(),
   cuisineType: z.nativeEnum(CuisineType).optional(),
 });
@@ -33,6 +34,12 @@ interface RecipeFormProps {
   submitPlacement?: "inline" | "footer" | "none";
   /** Toolbar / footer buttons call this to run validation + onSubmit. */
   onRegisterSubmit?: (submit: () => void) => void;
+  /** Optional control beside kcal / porcja (e.g. draft estimate button). */
+  kcalFieldAddon?: ReactNode;
+  onRegisterFormApi?: (api: {
+    setKcal: (value: number) => void;
+    getServings: () => number | undefined;
+  }) => void;
 }
 
 export function RecipeForm({
@@ -43,11 +50,14 @@ export function RecipeForm({
   formId = "recipe-form",
   submitPlacement = "inline",
   onRegisterSubmit,
+  kcalFieldAddon,
+  onRegisterFormApi,
 }: RecipeFormProps) {
   const {
     register,
     handleSubmit,
     setValue,
+    getValues,
     watch,
     control,
     formState: { errors },
@@ -58,6 +68,7 @@ export function RecipeForm({
       instructions: defaultValues?.instructions ?? "",
       estimatedKcalPerServing:
         defaultValues?.estimatedKcalPerServing ?? undefined,
+      servings: defaultValues?.servings ?? undefined,
       dietType: defaultValues?.dietType ?? undefined,
       cuisineType: defaultValues?.cuisineType ?? undefined,
     },
@@ -71,6 +82,18 @@ export function RecipeForm({
       void handleSubmit(onSubmit)();
     });
   }, [handleSubmit, onSubmit, onRegisterSubmit]);
+
+  useEffect(() => {
+    onRegisterFormApi?.({
+      setKcal: (value) => setValue("estimatedKcalPerServing", value),
+      getServings: () => {
+        const raw = getValues("servings");
+        if (raw == null) return undefined;
+        const n = Number(raw);
+        return Number.isFinite(n) && n >= 1 ? Math.round(n) : undefined;
+      },
+    });
+  }, [onRegisterFormApi, setValue, getValues]);
 
   return (
     <form id={formId} className="recipe-form" onSubmit={handleSubmit(onSubmit)}>
@@ -111,16 +134,33 @@ export function RecipeForm({
 
         <div className="recipe-form__meta">
           <div className="recipe-form__field">
+            <label className="recipe-form__label" htmlFor="recipe-servings">
+              Porcje
+            </label>
+            <Input
+              id="recipe-servings"
+              type="number"
+              min={1}
+              step={1}
+              className="recipe-form__input"
+              placeholder="—"
+              {...register("servings")}
+            />
+          </div>
+          <div className="recipe-form__field recipe-form__field--kcal">
             <label className="recipe-form__label" htmlFor="recipe-kcal">
               kcal / porcja
             </label>
-            <Input
-              id="recipe-kcal"
-              type="number"
-              className="recipe-form__input"
-              placeholder="—"
-              {...register("estimatedKcalPerServing")}
-            />
+            <div className="recipe-form__kcal-row">
+              <Input
+                id="recipe-kcal"
+                type="number"
+                className="recipe-form__input"
+                placeholder="—"
+                {...register("estimatedKcalPerServing")}
+              />
+              {kcalFieldAddon}
+            </div>
           </div>
           <div className="recipe-form__field">
             <label className="recipe-form__label" id="recipe-diet-label">

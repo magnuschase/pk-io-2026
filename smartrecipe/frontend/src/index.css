@@ -10,5 +10,7 @@
 @import "./styles/recipe-form.css";
 @import "./styles/pantry-dialog.css";
 @import "./styles/fill-recipes-dialog.css";
+@import "./styles/external-recipes.css";
+@import "./styles/nutrition-dialog.css";
 @import "./styles/ingredient-search.css";
 @import "./styles/combobox.css";

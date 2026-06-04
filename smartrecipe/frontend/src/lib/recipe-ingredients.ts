@@ -1,3 +1,4 @@
+import { normalizeIngredient } from '@/lib/ingredient-nutrition'
 import type { RecipeIngredientLine } from '@/types/domain'
 
 /** TypeORM decimal columns arrive as strings — coerce before API calls. */
@@ -21,5 +22,6 @@ export function normalizeIngredientLine(
   return {
     ...line,
     quantity: Number.isFinite(q) && q > 0 ? q : 1,
+    ingredient: line.ingredient ? normalizeIngredient(line.ingredient) : line.ingredient,
   }
 }

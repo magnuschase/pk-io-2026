@@ -47,6 +47,7 @@ export class PantryService {
     dto: UpsertPantryItemDto,
   ): Promise<PantryItem> {
     const mode = dto.mode ?? 'set';
+    const incoming = this.units.resolveForStorage(dto.quantity, dto.unit);
     let item = await this.repo.findOne({ where: { userId, ingredientId } });
     if (item) {
       if (mode === 'add') {
@@ -54,8 +55,8 @@ export class PantryService {
           item.quantity = this.units.addQuantities(
             Number(item.quantity),
             item.unit,
-            dto.quantity,
-            dto.unit,
+            incoming.quantity,
+            incoming.unit,
             item.unit,
           );
         } catch {
@@ -64,15 +65,15 @@ export class PantryService {
           );
         }
       } else {
-        item.quantity = dto.quantity;
-        item.unit = dto.unit;
+        item.quantity = incoming.quantity;
+        item.unit = incoming.unit;
       }
     } else {
       item = this.repo.create({
         userId,
         ingredientId,
-        quantity: dto.quantity,
-        unit: dto.unit,
+        quantity: incoming.quantity,
+        unit: incoming.unit,
       });
     }
     return this.repo.save(item);

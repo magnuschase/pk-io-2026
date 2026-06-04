@@ -7,8 +7,10 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { RecipesService } from './recipes.service';
 import { PantryService } from '../pantry/pantry.service';
+import { UnitNormalizationService } from '../shared/unit-normalization.service';
 import { Recipe } from '../domain/entities/recipe.entity';
 import { RecipeIngredient } from '../domain/entities/recipe-ingredient.entity';
+import { Ingredient } from '../domain/entities/ingredient.entity';
 import { RecipeLifecycleStatus } from '../domain/enums';
 
 const OWNER_ID = 'owner-uuid';
@@ -20,6 +22,7 @@ const makeRecipe = (overrides: Partial<Recipe> = {}): Recipe => ({
   title: 'Test Recipe',
   instructions: null,
   estimatedKcalPerServing: null,
+  servings: null,
   lifecycleStatus: RecipeLifecycleStatus.DRAFT,
   dietType: null,
   cuisineType: null,
@@ -37,6 +40,10 @@ const mockRecipeRepo = {
   create: jest.fn((dto: Partial<Recipe>) => ({ ...dto }) as Recipe),
   save: jest.fn((r: Recipe) => Promise.resolve(r)),
   remove: jest.fn(),
+};
+
+const mockIngredientRepo = {
+  findBy: jest.fn().mockResolvedValue([]),
 };
 
 const mockRiRepo = {
@@ -65,7 +72,12 @@ describe('RecipesService', () => {
         RecipesService,
         { provide: getRepositoryToken(Recipe), useValue: mockRecipeRepo },
         { provide: getRepositoryToken(RecipeIngredient), useValue: mockRiRepo },
+        {
+          provide: getRepositoryToken(Ingredient),
+          useValue: mockIngredientRepo,
+        },
         { provide: PantryService, useValue: mockPantryService },
+        UnitNormalizationService,
       ],
     }).compile();
     service = module.get(RecipesService);

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { setRecipeIngredients, updateRecipe } from "@/api/recipes";
 import { IngredientListEditor } from "@/features/recipes/IngredientListEditor";
 import { LifecycleActions } from "@/features/recipes/LifecycleActions";
+import { EstimateRecipeKcalButton } from "@/features/recipes/EstimateRecipeKcalButton";
 import {
   RecipeForm,
   type RecipeFormValues,
@@ -31,6 +32,10 @@ interface RecipeDraftDetailProps {
 export function RecipeDraftDetail({ recipe }: RecipeDraftDetailProps) {
   const qc = useQueryClient();
   const submitFormRef = useRef<() => void>(() => {});
+  const formApiRef = useRef<{
+    setKcal: (value: number) => void;
+    getServings: () => number | undefined;
+  } | null>(null);
   const [lines, setLines] = useState<RecipeIngredientLine[]>([]);
 
   useEffect(() => {
@@ -43,6 +48,7 @@ export function RecipeDraftDetail({ recipe }: RecipeDraftDetailProps) {
         title: values.title,
         instructions: values.instructions,
         estimatedKcalPerServing: values.estimatedKcalPerServing || undefined,
+        servings: values.servings || undefined,
         dietType: values.dietType,
         cuisineType: values.cuisineType,
       });
@@ -89,6 +95,21 @@ export function RecipeDraftDetail({ recipe }: RecipeDraftDetailProps) {
           onRegisterSubmit={(submit) => {
             submitFormRef.current = submit;
           }}
+          onRegisterFormApi={(api) => {
+            formApiRef.current = api;
+          }}
+          kcalFieldAddon={
+            <EstimateRecipeKcalButton
+              recipeId={recipe.id}
+              lines={lines}
+              resolveDefaultServings={() =>
+                formApiRef.current?.getServings() ?? recipe.servings
+              }
+              onEstimated={(result) => {
+                formApiRef.current?.setKcal(result.estimatedKcalPerServing);
+              }}
+            />
+          }
         />
       }
       aside={

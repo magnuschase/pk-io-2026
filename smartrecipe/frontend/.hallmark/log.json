@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-06-04",
+    "macrostructure": "Index-First",
+    "theme": "Garden",
+    "enrichment": "none",
+    "scope": "single-page-redesign",
+    "brief": "SmartRecipe · external recipes import page redesign"
+  },
+  {
+    "date": "2026-06-04",
     "macrostructure": "Catalogue",
     "theme": "Garden",
     "enrichment": "none",

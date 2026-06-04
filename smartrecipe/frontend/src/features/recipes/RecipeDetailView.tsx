@@ -54,6 +54,12 @@ export function RecipeDetailView({ recipe }: RecipeDetailViewProps) {
       main={
         <article className="recipe-detail-view__body">
           <dl className="recipe-detail-view__meta">
+            {recipe.servings != null ? (
+              <div className="recipe-detail-view__meta-item">
+                <dt>Porcje</dt>
+                <dd>{recipe.servings}</dd>
+              </div>
+            ) : null}
             {recipe.estimatedKcalPerServing != null ? (
               <div className="recipe-detail-view__meta-item">
                 <dt>kcal / porcja</dt>

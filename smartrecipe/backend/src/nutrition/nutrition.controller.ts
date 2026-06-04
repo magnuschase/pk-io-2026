@@ -52,7 +52,7 @@ export class NutritionController {
       'Automatycznie pobierz i zapisz dane kaloryczne składnika (najlepszy wynik USDA)',
     description:
       'Wyszukuje nazwę składnika w USDA FDC, bierze pierwszy wynik i zapisuje ' +
-      'externalFoodId (fdcId) oraz kcalPer100g w bazie danych.',
+      'externalFoodId (fdcId), kcalPer100g oraz opcjonalnie gramsPerPiece (waga 1 szt z USDA) w bazie.',
   })
   enrichAuto(@Param('ingredientId', ParseUUIDPipe) ingredientId: string) {
     return this.service.enrichIngredient(ingredientId);

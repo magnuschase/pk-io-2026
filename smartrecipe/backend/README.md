@@ -146,7 +146,7 @@ DELETE /shopping-list/items/:id
 ### Zewnętrzne przepisy (UC05)
 
 ```
-GET  /external/recipes/search?q=     szukaj przez Spoonacular API
+GET  /external/recipes/search?q=&offset=  szukaj przez Spoonacular API (stronicowanie po 20)
 POST /external/recipes/import        { externalId } → importuj jako DRAFT
 ```
 
@@ -160,7 +160,7 @@ POST /nutrition/enrich/:ingredientId      auto-wzbogać (pierwszy wynik USDA)
 POST /nutrition/enrich/:ingredientId/fdc/:fdcId   wzbogać konkretnym FDC ID
 ```
 
-Zapisuje `externalFoodId` (USDA FDC ID) i `kcalPer100g` na składniku.
+Zapisuje `externalFoodId` (USDA FDC ID), `kcalPer100g` oraz — gdy FDC ma porcję — `gramsPerPiece` (domyślna waga 1 szt, bez wyboru w UI).
 
 **Klucz API:** system automatycznie używa `DEMO_KEY` gdy `NUTRITION_API_KEY` nie jest ustawiony (limit: 30 req/godz). Klucz produkcyjny jest **bezpłatny** — rejestracja zajmuje minutę:
 

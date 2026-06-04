@@ -23,6 +23,7 @@ export async function createRecipe(body: {
   title: string
   instructions?: string
   estimatedKcalPerServing?: number
+  servings?: number
   dietType?: DietType
   cuisineType?: CuisineType
 }): Promise<Recipe> {
@@ -36,6 +37,7 @@ export async function updateRecipe(
     title: string
     instructions: string
     estimatedKcalPerServing: number
+    servings: number
     dietType: DietType
     cuisineType: CuisineType
   }>,
@@ -67,5 +69,36 @@ export async function recipeLifecycle(id: string, action: LifecycleAction): Prom
 
 export async function cookRecipe(id: string): Promise<PantryItem[]> {
   const { data } = await apiClient.post<PantryItem[]>(`/recipes/${id}/cook`)
+  return data
+}
+
+export type KcalSkipReason = 'no_kcal_data' | 'no_mass_unit'
+
+export interface RecipeKcalEstimate {
+  servings: number
+  totalKcal: number
+  estimatedKcalPerServing: number
+  includedCount: number
+  skipped: {
+    ingredientId: string
+    name: string
+    reason: KcalSkipReason
+    unit?: string
+  }[]
+}
+
+export async function estimateRecipeKcal(
+  id: string,
+  body: { servings?: number; ingredients?: RecipeIngredientLine[] },
+): Promise<RecipeKcalEstimate> {
+  const { data } = await apiClient.post<RecipeKcalEstimate>(
+    `/recipes/${id}/estimate-kcal`,
+    {
+      servings: body.servings,
+      ingredients: body.ingredients
+        ? normalizeRecipeIngredientLines(body.ingredients)
+        : undefined,
+    },
+  )
   return data
 }

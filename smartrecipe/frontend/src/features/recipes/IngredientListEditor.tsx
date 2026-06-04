@@ -1,14 +1,16 @@
-import { useState } from 'react'
+import { useState, type Dispatch, type SetStateAction } from 'react'
+import { normalizeIngredient } from '@/lib/ingredient-nutrition'
 import { Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { IngredientCombobox } from '@/components/domain/IngredientCombobox'
 import { UnitCombobox } from '@/components/domain/UnitCombobox'
+import { IngredientNutritionBadge } from '@/features/nutrition/IngredientNutritionBadge'
 import { DEFAULT_UNIT, NO_UNIT } from '@/lib/unit-options'
 import type { Ingredient, RecipeIngredientLine } from '@/types/domain'
 
 interface IngredientListEditorProps {
   lines: RecipeIngredientLine[]
-  onChange: (lines: RecipeIngredientLine[]) => void
+  onChange: Dispatch<SetStateAction<RecipeIngredientLine[]>>
 }
 
 export function IngredientListEditor({ lines, onChange }: IngredientListEditorProps) {
@@ -16,7 +18,16 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
 
   function addLine(ingredient: Ingredient) {
     if (lines.some((l) => l.ingredientId === ingredient.id)) return
-    onChange([...lines, { ingredientId: ingredient.id, quantity: 1, unit: DEFAULT_UNIT, ingredient }])
+    const normalized = normalizeIngredient(ingredient)
+    onChange((prev) => [
+      ...prev,
+      {
+        ingredientId: normalized.id,
+        quantity: 1,
+        unit: DEFAULT_UNIT,
+        ingredient: normalized,
+      },
+    ])
   }
 
   function updateLine(index: number, patch: Partial<RecipeIngredientLine>) {
@@ -27,6 +38,15 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
 
   function removeLine(index: number) {
     onChange(lines.filter((_, i) => i !== index))
+  }
+
+  function updateIngredientOnLine(ingredient: Ingredient) {
+    const normalized = normalizeIngredient(ingredient)
+    onChange((prev) =>
+      prev.map((line) =>
+        line.ingredientId === normalized.id ? { ...line, ingredient: normalized } : line,
+      ),
+    )
   }
 
   return (
@@ -52,6 +72,7 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
         <div className="recipe-ingredients__table">
           <div className="recipe-ingredients__cols" aria-hidden="true">
             <span className="recipe-ingredients__col">Składnik</span>
+            <span className="recipe-ingredients__col">kcal / 100 g</span>
             <span className="recipe-ingredients__col">Ilość</span>
             <span className="recipe-ingredients__col">Jednostka</span>
             <span />
@@ -62,6 +83,14 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
                 <span className="recipe-ingredient-line__name">
                   {line.ingredient?.name ?? line.ingredientId}
                 </span>
+                {line.ingredient ? (
+                  <IngredientNutritionBadge
+                    ingredient={line.ingredient}
+                    onIngredientUpdate={updateIngredientOnLine}
+                  />
+                ) : (
+                  <span className="ingredient-nutrition ingredient-nutrition--placeholder" aria-hidden="true" />
+                )}
                 {line.unit !== NO_UNIT && (
                   <Input
                     type="number"

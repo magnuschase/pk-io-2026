@@ -166,13 +166,26 @@ describe('NutritionService', () => {
       );
     });
 
-    it('saves fdcId and kcalPer100g on the ingredient', async () => {
+    it('saves fdcId, kcalPer100g and gramsPerPiece from food detail', async () => {
       const ing = makeIngredient();
       mockIngredientRepo.findOne.mockResolvedValue(ing);
-      mockHttp.get.mockReturnValue(of({ data: usdaSearchResponse }));
+      mockHttp.get
+        .mockReturnValueOnce(of({ data: usdaSearchResponse }))
+        .mockReturnValueOnce(
+          of({
+            data: {
+              fdcId: 2187885,
+              foodNutrients: usdaSearchResponse.foods[0].foodNutrients,
+              foodPortions: [
+                { amount: 1, modifier: 'medium', gramWeight: 85 },
+              ],
+            },
+          }),
+        );
       const result = await service.enrichIngredient(ING_ID);
       expect(result.externalFoodId).toBe('2187885');
       expect(result.kcalPer100g).toBe(165);
+      expect(result.gramsPerPiece).toBe(85);
       expect(mockIngredientRepo.save).toHaveBeenCalled();
     });
 

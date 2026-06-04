@@ -22,6 +22,7 @@ export function RecipeNewPage() {
         title: values.title,
         instructions: values.instructions,
         estimatedKcalPerServing: values.estimatedKcalPerServing || undefined,
+        servings: values.servings || undefined,
         dietType: values.dietType,
         cuisineType: values.cuisineType,
       })

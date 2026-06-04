@@ -11,9 +11,10 @@ Model statyczny precyzuje strukturę danych i podział odpowiedzialności międz
 | Fragment modelu opisowego                                  | Odwzorowanie w modelu statycznym                                                                                                                               |
 | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Własne przepisy z listą składników i ilościami             | Klasy `Recipe`, `Ingredient`, `RecipeIngredient` (ilość, jednostka); powiązania jeden do wielu między przepisem a wierszami składowymi                         |
-| Filtry: typ kuchni, kaloryczność, rodzaj diety             | Atrybuty / wartości w `Recipe` (np. szacowana kaloryczność, `DietType`, `CuisineType`); reguły filtrowania w warstwie aplikacji                                |
+| Filtry: typ kuchni, kaloryczność, rodzaj diety             | Atrybuty / wartości w `Recipe` (np. `servings`, szacowana kaloryczność na porcję, `DietType`, `CuisineType`); reguły filtrowania w warstwie aplikacji          |
 | Wirtualna spiżarnia i lista zakupów                        | `PantryItem` (co użytkownik ma w domu), `ShoppingList` oraz `ShoppingListItem` (braki i zakupy)                                                                |
-| Integracja: kalorie składników, wyszukiwarka przepisów     | Pakiet `infrastructure`, komponenty `NutritionApiClient`, `RecipeSearchApiClient`                                                                              |
+| Integracja: kalorie składników, wyszukiwarka przepisów     | Pakiet `infrastructure`, komponenty `NutritionApiClient` (kcal/100 g, domyślna waga 1 szt z porcji FDC), `RecipeSearchApiClient`                               |
+| Szacowanie kcal przepisu w szkicu                          | `RecipeManagementService.estimateKcal` — suma składników (g/ml/szt z `gramsPerPiece`) ÷ `servings` → `estimatedKcalPerServing` (tylko `DRAFT`)                 |
 | Generowanie propozycji posiłków z posiadanych składników   | `MealSuggestionService` w warstwie `application` — operacja `suggestRecipes` na bazie przepisów użytkownika i stanu spiżarni                                   |
 | Dodawanie i edycja własnych przepisów (szkic → publikacja) | `RecipeManagementService` — tworzenie szkicu, skład, metadane, publikacja / archiwizacja / usuwanie; użytkownik operuje przez API, nie bezpośrednio na encjach |
 | Lista zakupów i uzupełnianie jej wg wybranych przepisów    | `ShoppingListService` — aktywna lista, scalanie braków ze składu wielu `Recipe`, odjęcie tego co jest w `PantryItem`, oznaczanie zakupu                        |
@@ -42,6 +43,7 @@ classDiagram
         +UUID id
         +String title
         +String instructions
+        +Integer servings
         +Integer estimatedKcalPerServing
         +RecipeLifecycleStatus lifecycleStatus
         +DietType dietType
@@ -52,6 +54,8 @@ classDiagram
         +UUID id
         +String name
         +String externalFoodId
+        +Decimal kcalPer100g
+        +Decimal gramsPerPiece
     }
 
     class RecipeIngredient {
@@ -111,6 +115,7 @@ classDiagram
         +createDraft(UUID userId) Recipe
         +updateRecipe(UUID recipeId, metadata) void
         +setIngredients(UUID recipeId, lines) void
+        +estimateKcal(UUID recipeId, servings, lines) Integer
         +publish(UUID recipeId) void
         +archive(UUID recipeId) void
         +deleteRecipe(UUID recipeId) void
@@ -191,6 +196,7 @@ classDiagram
     class PestoPasta {
         <<object>>
         +title = "Makaron z pesto"
+        +servings = 4
         +lifecycleStatus = ACTIVE
     }
 
