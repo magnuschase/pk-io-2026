@@ -3,7 +3,8 @@
 FROM node:22-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+# Pin pnpm 10 — corepack default (v11+) enforces minimumReleaseAge on lockfile verify
+RUN corepack enable && corepack prepare pnpm@10.23.0 --activate
 
 FROM base AS deps
 WORKDIR /app
