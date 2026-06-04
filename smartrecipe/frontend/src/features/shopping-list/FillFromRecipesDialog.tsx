@@ -1,7 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { listRecipes } from '@/api/recipes'
-import { fillShoppingList } from '@/api/shopping-list'
+import { useFillShoppingListFromRecipes } from '@/features/shopping-list/useFillShoppingListFromRecipes'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
@@ -10,20 +10,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { queryKeys } from '@/lib/query-keys'
 import { RecipeLifecycleStatus } from '@/types/domain'
 
 interface FillFromRecipesDialogProps {
   trigger: React.ReactNode
-  preselectedIds?: string[]
 }
 
-export function FillFromRecipesDialog({ trigger, preselectedIds = [] }: FillFromRecipesDialogProps) {
+export function FillFromRecipesDialog({ trigger }: FillFromRecipesDialogProps) {
   const [open, setOpen] = useState(false)
-  const [selected, setSelected] = useState<Set<string>>(() => new Set(preselectedIds))
-  const qc = useQueryClient()
-
+  const [selected, setSelected] = useState<Set<string>>(() => new Set())
   const { data: recipes = [] } = useQuery({
     queryKey: queryKeys.recipes.list(),
     queryFn: () => listRecipes(),
@@ -33,13 +29,7 @@ export function FillFromRecipesDialog({ trigger, preselectedIds = [] }: FillFrom
 
   const active = recipes.filter((r) => r.lifecycleStatus === RecipeLifecycleStatus.ACTIVE)
 
-  const mutation = useMutation({
-    mutationFn: () => fillShoppingList([...selected]),
-    onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: [{ resource: 'shopping-list' }] })
-      setOpen(false)
-    },
-  })
+  const mutation = useFillShoppingListFromRecipes()
 
   function toggle(id: string) {
     setSelected((prev) => {
@@ -50,32 +40,71 @@ export function FillFromRecipesDialog({ trigger, preselectedIds = [] }: FillFrom
     })
   }
 
+  const selectedCount = selected.size
+
   return (
     <Dialog
       open={open}
       onOpenChange={(v) => {
         setOpen(v)
-        if (v) setSelected(new Set(preselectedIds))
+        if (v) setSelected(new Set())
       }}
     >
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-h-[80dvh] overflow-y-auto sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Dodaj braki z przepisów</DialogTitle>
+      <DialogContent className="fill-recipes-dialog">
+        <DialogHeader className="fill-recipes-dialog__header mb-0 gap-0">
+          <DialogTitle className="fill-recipes-dialog__title">Dodaj braki z przepisów</DialogTitle>
+          <p className="fill-recipes-dialog__lede">
+            Zaznacz przepisy — brakujące składniki trafią na listę zakupów.
+          </p>
         </DialogHeader>
-        <ul className="my-4 flex max-h-60 flex-col gap-2 overflow-y-auto">
-          {active.map((r) => (
-            <li key={r.id} className="flex items-center gap-2">
-              <Checkbox checked={selected.has(r.id)} onCheckedChange={() => toggle(r.id)} id={`r-${r.id}`} />
-              <label htmlFor={`r-${r.id}`} className="text-sm">
-                {r.title}
-              </label>
-            </li>
-          ))}
-        </ul>
-        <Button type="button" disabled={selected.size === 0 || mutation.isPending} onClick={() => mutation.mutate()}>
-          {mutation.isPending ? 'Uzupełnianie…' : 'Uzupełnij listę'}
-        </Button>
+
+        <div className="fill-recipes-dialog__list-wrap">
+          {active.length === 0 ? (
+            <p className="fill-recipes-dialog__empty">Brak aktywnych przepisów.</p>
+          ) : (
+            <ul className="fill-recipes-dialog__list">
+              {active.map((r) => {
+                const isSelected = selected.has(r.id)
+                return (
+                  <li key={r.id}>
+                    <label
+                      htmlFor={`fill-recipe-${r.id}`}
+                      className={`fill-recipes-dialog__option${isSelected ? ' fill-recipes-dialog__option--selected' : ''}`}
+                    >
+                      <Checkbox
+                        id={`fill-recipe-${r.id}`}
+                        className="fill-recipes-dialog__check"
+                        checked={isSelected}
+                        onCheckedChange={() => toggle(r.id)}
+                      />
+                      <span className="fill-recipes-dialog__option-title">{r.title}</span>
+                    </label>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
+
+        <footer className="fill-recipes-dialog__footer">
+          <p className="fill-recipes-dialog__meta">
+            Wybrano: <strong>{selectedCount}</strong>{' '}
+            {selectedCount === 1 ? 'przepis' : selectedCount < 5 ? 'przepisy' : 'przepisów'}
+          </p>
+          <button
+            type="button"
+            className="fill-recipes-dialog__submit"
+            disabled={selectedCount === 0 || mutation.isPending}
+            onClick={() =>
+              mutation.mutate([...selected], {
+                onSuccess: () => setOpen(false),
+              })
+            }
+          >
+            {mutation.isPending ? 'Uzupełnianie…' : 'Uzupełnij listę zakupów'}
+          </button>
+        </footer>
       </DialogContent>
     </Dialog>
   )

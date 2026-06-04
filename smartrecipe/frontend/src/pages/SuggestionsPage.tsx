@@ -1,12 +1,16 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { getPantry } from '@/api/pantry'
 import { getSuggestions } from '@/api/suggestions'
-import { FillFromRecipesDialog } from '@/features/shopping-list/FillFromRecipesDialog'
 import { SuggestionFilters } from '@/features/suggestions/SuggestionFilters'
-import { SuggestionRecipeRow } from '@/features/suggestions/SuggestionRecipeRow'
+import {
+  defaultSuggestTab,
+  parseSuggestTab,
+  SuggestionsTabs,
+  type SuggestTabId,
+} from '@/features/suggestions/SuggestionsTabs'
 import { SuggestionsPageHeader } from '@/features/suggestions/SuggestionsPageHeader'
-import { SuggestionsSection } from '@/features/suggestions/SuggestionsSection'
 import { queryKeys } from '@/lib/query-keys'
 import { CuisineType, DietType } from '@/types/domain'
 
@@ -15,6 +19,7 @@ export function SuggestionsPage() {
   const diet = (params.get('diet') as DietType | null) ?? undefined
   const cuisine = (params.get('cuisine') as CuisineType | null) ?? undefined
   const filters = { diet, cuisine }
+  const tabFromUrl = parseSuggestTab(params.get('tab'))
 
   const pantryQuery = useQuery({
     queryKey: queryKeys.pantry(),
@@ -37,14 +42,46 @@ export function SuggestionsPage() {
   }
 
   function clearAllFilters() {
-    setParams({}, { replace: true })
+    const tab = params.get('tab')
+    const next = new URLSearchParams()
+    if (tab) next.set('tab', tab)
+    setParams(next, { replace: true })
+  }
+
+  function setTab(tab: SuggestTabId) {
+    const next = new URLSearchParams(params)
+    next.set('tab', tab)
+    setParams(next, { replace: true })
   }
 
   const pantryCount = pantryQuery.data?.length ?? 0
   const suggestionData = suggestionsQuery.data
-  const { available = [], almostAvailable = [] } = suggestionData ?? {}
+  const { available = [], almostAvailable = [], needsMore = [] } = suggestionData ?? {}
   const isInitialSuggestionsLoad = suggestionsQuery.isPending && !suggestionData
   const isRefetchingSuggestions = suggestionsQuery.isFetching && !isInitialSuggestionsLoad
+
+  const activeTab =
+    tabFromUrl ??
+    defaultSuggestTab({
+      ready: available.length,
+      almost: almostAvailable.length,
+      needsMore: needsMore.length,
+    })
+
+  useEffect(() => {
+    if (!suggestionData || params.get('tab')) return
+    const next = new URLSearchParams(params)
+    next.set(
+      'tab',
+      defaultSuggestTab({
+        ready: available.length,
+        almost: almostAvailable.length,
+        needsMore: needsMore.length,
+      }),
+    )
+    setParams(next, { replace: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync default tab once when URL omits ?tab=
+  }, [suggestionData])
 
   return (
     <div className="suggest-page">
@@ -90,56 +127,13 @@ export function SuggestionsPage() {
           className={isRefetchingSuggestions ? 'suggest-content suggest-content--loading' : 'suggest-content'}
           aria-busy={isRefetchingSuggestions}
         >
-          <SuggestionsSection label="Gotowe" title="Z Twojej spiżarni" count={available.length}>
-            {available.length === 0 ? (
-              <p className="suggest-muted">Brak w pełni dopasowanych przepisów przy tych filtrach.</p>
-            ) : (
-              <ul className="suggest-list">
-                {available.map((recipe) => (
-                  <SuggestionRecipeRow
-                    key={recipe.id}
-                    recipe={recipe}
-                    actions={
-                      <FillFromRecipesDialog
-                        preselectedIds={[recipe.id]}
-                        trigger={
-                          <button type="button" className="suggest-row__cta">
-                            Na listę zakupów
-                          </button>
-                        }
-                      />
-                    }
-                  />
-                ))}
-              </ul>
-            )}
-          </SuggestionsSection>
-
-          <SuggestionsSection label="Prawie" title="Brakuje co najwyżej dwóch składników" count={almostAvailable.length}>
-            {almostAvailable.length === 0 ? (
-              <p className="suggest-muted">Żaden przepis nie mieści się w tym progu.</p>
-            ) : (
-              <ul className="suggest-list">
-                {almostAvailable.map(({ recipe, missingCount }) => (
-                  <SuggestionRecipeRow
-                    key={recipe.id}
-                    recipe={recipe}
-                    missingCount={missingCount}
-                    actions={
-                      <FillFromRecipesDialog
-                        preselectedIds={[recipe.id]}
-                        trigger={
-                          <button type="button" className="suggest-row__cta">
-                            Dodaj braki
-                          </button>
-                        }
-                      />
-                    }
-                  />
-                ))}
-              </ul>
-            )}
-          </SuggestionsSection>
+          <SuggestionsTabs
+            activeTab={activeTab}
+            onTabChange={setTab}
+            available={available}
+            almostAvailable={almostAvailable}
+            needsMore={needsMore}
+          />
         </div>
       ) : null}
     </div>

@@ -71,6 +71,7 @@ export interface ShoppingList {
 export interface SuggestionResult {
   available: Recipe[]
   almostAvailable: { recipe: Recipe; missingCount: number }[]
+  needsMore: { recipe: Recipe; missingCount: number }[]
 }
 
 export interface ExternalRecipeHit {

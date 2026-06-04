@@ -1,42 +1,28 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { fillShoppingList } from "@/api/shopping-list";
+import { useFillShoppingListFromRecipes } from '@/features/shopping-list/useFillShoppingListFromRecipes'
 
 interface AddRecipeToShoppingListButtonProps {
-  recipeId: string;
-  className?: string;
+  recipeId: string
+  className?: string
+  label?: string
+  pendingLabel?: string
 }
 
 export function AddRecipeToShoppingListButton({
   recipeId,
-  className = "recipe-detail-view__shop-btn",
+  className = 'recipe-detail-view__shop-btn',
+  label = 'Dodaj braki do listy zakupów',
+  pendingLabel = 'Dodawanie…',
 }: AddRecipeToShoppingListButtonProps) {
-  const navigate = useNavigate();
-  const qc = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: () => fillShoppingList([recipeId]),
-    onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: [{ resource: "shopping-list" }] });
-      toast.success("Brakujące składniki dodane do listy zakupów", {
-        action: {
-          label: "Zobacz listę",
-          onClick: () => navigate("/shopping-list"),
-        },
-      });
-    },
-    onError: () => toast.error("Nie udało się uzupełnić listy zakupów"),
-  });
+  const mutation = useFillShoppingListFromRecipes()
 
   return (
     <button
       type="button"
       className={className}
       disabled={mutation.isPending}
-      onClick={() => mutation.mutate()}
+      onClick={() => mutation.mutate([recipeId])}
     >
-      {mutation.isPending ? "Dodawanie…" : "Dodaj braki do listy zakupów"}
+      {mutation.isPending ? pendingLabel : label}
     </button>
-  );
+  )
 }

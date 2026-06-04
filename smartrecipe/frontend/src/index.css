@@ -9,5 +9,6 @@
 @import "./styles/recipes.css";
 @import "./styles/recipe-form.css";
 @import "./styles/pantry-dialog.css";
+@import "./styles/fill-recipes-dialog.css";
 @import "./styles/ingredient-search.css";
 @import "./styles/combobox.css";
