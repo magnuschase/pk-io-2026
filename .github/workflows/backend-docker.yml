@@ -1,11 +1,11 @@
-name: Backend Docker
+name: 🛥️ CD - Build and Push Docker Image
 
 on:
   push:
     branches: [main]
     paths:
-      - 'smartrecipe/backend/**'
-      - '.github/workflows/backend-docker.yml'
+      - "smartrecipe/backend/**"
+      - ".github/workflows/backend-docker.yml"
   workflow_dispatch:
 
 env:
@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to Container Registry (GHCR)
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
