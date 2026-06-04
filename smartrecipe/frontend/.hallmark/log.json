@@ -1,0 +1,17 @@
+[
+  {
+    "date": "2026-06-04",
+    "macrostructure": "Workbench",
+    "theme": "Garden",
+    "enrichment": "none",
+    "scope": "single-page-redesign",
+    "brief": "SmartRecipe · suggestions page redesign"
+  },
+  {
+    "date": "2026-06-04",
+    "macrostructure": "Narrative Workflow",
+    "theme": "Garden",
+    "enrichment": "E5 hand-built SVG",
+    "brief": "SmartRecipe · landing page port"
+  }
+]
