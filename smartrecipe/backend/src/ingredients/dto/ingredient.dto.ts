@@ -7,7 +7,7 @@ export class CreateIngredientDto {
   @MaxLength(200)
   name: string;
 
-  @ApiPropertyOptional({ example: 'edamam-food-id-123' })
+  @ApiPropertyOptional({ example: 'usda-food-id-123' })
   @IsOptional()
   @IsString()
   externalFoodId?: string;

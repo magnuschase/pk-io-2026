@@ -16,6 +16,7 @@ import { PantryModule } from './pantry/pantry.module';
 import { SuggestionsModule } from './suggestions/suggestions.module';
 import { ShoppingListModule } from './shopping-list/shopping-list.module';
 import { ExternalModule } from './external/external.module';
+import { NutritionModule } from './nutrition/nutrition.module';
 import { SharedModule } from './shared/shared.module';
 
 @Module({
@@ -53,6 +54,7 @@ import { SharedModule } from './shared/shared.module';
     SuggestionsModule,
     ShoppingListModule,
     ExternalModule,
+    NutritionModule,
   ],
 })
 export class AppModule {}

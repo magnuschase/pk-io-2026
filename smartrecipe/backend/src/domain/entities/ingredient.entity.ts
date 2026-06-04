@@ -14,6 +14,9 @@ export class Ingredient {
   @Column({ type: 'varchar', nullable: true })
   externalFoodId: string | null;
 
+  @Column({ type: 'decimal', precision: 8, scale: 2, nullable: true })
+  kcalPer100g: number | null;
+
   @OneToMany(() => RecipeIngredient, (ri) => ri.ingredient)
   recipeIngredients: RecipeIngredient[];
 
