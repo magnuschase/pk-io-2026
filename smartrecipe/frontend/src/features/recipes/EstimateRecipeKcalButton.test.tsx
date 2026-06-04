@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { EstimateRecipeKcalButton } from '@/features/recipes/EstimateRecipeKcalButton'
+import { toast } from 'sonner'
 import { estimateRecipeKcal } from '@/api/recipes'
 import { renderWithProviders } from '@/test/test-utils'
 
@@ -71,5 +72,26 @@ describe('EstimateRecipeKcalButton (draft estimateKcal / RF17)', () => {
       ingredients: [{ ingredientId: 'i1', quantity: 200, unit: 'g' }],
     })
     expect(onEstimated).toHaveBeenCalled()
+  })
+
+  it('shows info toast when some ingredients were skipped', async () => {
+    vi.mocked(estimateRecipeKcal).mockResolvedValue({
+      servings: 2,
+      totalKcal: 400,
+      estimatedKcalPerServing: 200,
+      includedCount: 1,
+      skipped: [{ ingredientId: 'i2', name: 'Sól', reason: 'no_kcal_data' }],
+    })
+    const user = userEvent.setup()
+    renderWithProviders(
+      <EstimateRecipeKcalButton
+        recipeId="r1"
+        lines={[{ ingredientId: 'i1', quantity: 100, unit: 'g' }]}
+        onEstimated={vi.fn()}
+      />,
+    )
+    await user.click(screen.getByRole('button', { name: 'Oblicz kcal' }))
+    await user.click(screen.getByRole('button', { name: 'Oblicz' }))
+    expect(toast.info).toHaveBeenCalled()
   })
 })

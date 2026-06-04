@@ -35,4 +35,4 @@ Backend (domyślnie): http://localhost:3000 - ustaw `VITE_API_URL` w `.env`.
 | `pnpm test:watch` | testy w trybie watch            |
 | `pnpm test:cov` | testy z raportem pokrycia         |
 
-Testy obejmują logikę UI powiązaną z modelem domenowym (spiżarnia, przepisy i cykl życia, sugestie posiłków, lista zakupów, szacowanie kcal, filtry diety/kuchni) - zgodnie z `model-statyczny.md` i `model-dynamiczny.md` (UC01–UC04, RF17).
+Testy obejmują logikę UI powiązaną z modelem domenowym (spiżarnia, przepisy i cykl życia, sugestie posiłków, lista zakupów, szacowanie kcal, filtry diety/kuchni) - zgodnie z `model-statyczny.md` i `model-dynamiczny.md` (UC01–UC04, RF17). Raport `pnpm test:cov` mierzy warstwy `lib/`, `api/` (bez axios interceptora), `hooks/`, `store/` oraz kluczowe moduły w `features/`; pełne ekrany CRUD i formularze auth są testowane ręcznie / E2E.

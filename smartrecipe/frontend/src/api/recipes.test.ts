@@ -1,9 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  cookRecipe,
+  createRecipe,
+  deleteRecipe,
   estimateRecipeKcal,
+  getRecipe,
   listRecipes,
   recipeLifecycle,
   setRecipeIngredients,
+  updateRecipe,
 } from '@/api/recipes'
 import { apiClient } from '@/api/client'
 import { CuisineType, DietType, RecipeLifecycleStatus } from '@/types/domain'
@@ -93,5 +98,42 @@ describe('recipes API (RecipeManagementService)', () => {
       servings: 4,
       ingredients: [{ ingredientId: 'a', quantity: 50, unit: 'g' }],
     })
+  })
+
+  it('getRecipe fetches detail by id', async () => {
+    vi.mocked(apiClient.get).mockResolvedValue({ data: mockRecipe })
+    const recipe = await getRecipe('recipe-1')
+    expect(apiClient.get).toHaveBeenCalledWith('/recipes/recipe-1')
+    expect(recipe.title).toBe('Omlet')
+  })
+
+  it('createRecipe posts body', async () => {
+    vi.mocked(apiClient.post).mockResolvedValue({ data: mockRecipe })
+    await createRecipe({ title: 'Nowy', dietType: DietType.VEGAN })
+    expect(apiClient.post).toHaveBeenCalledWith('/recipes', {
+      title: 'Nowy',
+      dietType: DietType.VEGAN,
+    })
+  })
+
+  it('updateRecipe patches fields', async () => {
+    vi.mocked(apiClient.patch).mockResolvedValue({ data: mockRecipe })
+    await updateRecipe('recipe-1', { title: 'Zmieniony', servings: 3 })
+    expect(apiClient.patch).toHaveBeenCalledWith('/recipes/recipe-1', {
+      title: 'Zmieniony',
+      servings: 3,
+    })
+  })
+
+  it('deleteRecipe calls DELETE', async () => {
+    vi.mocked(apiClient.delete).mockResolvedValue({})
+    await deleteRecipe('recipe-1')
+    expect(apiClient.delete).toHaveBeenCalledWith('/recipes/recipe-1')
+  })
+
+  it('cookRecipe posts cook action', async () => {
+    vi.mocked(apiClient.post).mockResolvedValue({ data: [] })
+    await cookRecipe('recipe-1')
+    expect(apiClient.post).toHaveBeenCalledWith('/recipes/recipe-1/cook')
   })
 })

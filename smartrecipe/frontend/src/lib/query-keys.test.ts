@@ -24,4 +24,13 @@ describe('queryKeys', () => {
     expect(queryKeys.pantry()[0].resource).toBe('pantry')
     expect(queryKeys.shoppingList()[0].resource).toBe('shopping-list')
   })
+
+  it('keys ingredient search and external catalog by query', () => {
+    expect(queryKeys.ingredients('mąka')[0]).toEqual({
+      resource: 'ingredients',
+      scope: 'search',
+      data: { search: 'mąka' },
+    })
+    expect(queryKeys.externalRecipes('tofu')[0].data).toEqual({ q: 'tofu' })
+  })
 })

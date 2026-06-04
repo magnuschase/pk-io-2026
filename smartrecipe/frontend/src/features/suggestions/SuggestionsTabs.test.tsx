@@ -64,6 +64,21 @@ describe('SuggestionsTabs (UC03 suggestion buckets)', () => {
     expect(onTabChange).toHaveBeenCalledWith('almost')
   })
 
+  it('renders almost-available recipes with missing count', () => {
+    renderWithProviders(
+      <SuggestionsTabs
+        activeTab="almost"
+        onTabChange={vi.fn()}
+        available={[]}
+        almostAvailable={[
+          { recipe: activeRecipe('2', 'Pizza'), missingCount: 2 },
+        ]}
+        needsMore={[]}
+      />,
+    )
+    expect(screen.getByTestId('recipe-row')).toHaveTextContent('Pizza')
+  })
+
   it('shows empty state for active tab without recipes', () => {
     renderWithProviders(
       <SuggestionsTabs

@@ -13,8 +13,12 @@ describe('displayEnum', () => {
     expect(displayEnum(RecipeLifecycleStatus.DRAFT)).toBe('Szkic')
   })
 
-  it('returns em dash for empty values', () => {
+  it('returns dash for empty values', () => {
     expect(displayEnum(null)).toBe('-')
+  })
+
+  it('returns raw value for unknown enum strings', () => {
+    expect(displayEnum('UNKNOWN' as DietType)).toBe('UNKNOWN')
   })
 })
 

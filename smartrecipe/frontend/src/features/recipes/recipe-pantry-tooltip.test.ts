@@ -33,4 +33,14 @@ describe('getIngredientPantryTooltip (pantryMatch on ACTIVE recipes)', () => {
       'Brakuje w spiżarni.',
     )
   })
+
+  it('formats deficit without pantry snapshot', () => {
+    expect(
+      getIngredientPantryTooltip({
+        status: 'deficit',
+        deficitQuantity: 2,
+        deficitUnit: 'szt',
+      }),
+    ).toBe('Brakuje 2 szt w spiżarni.')
+  })
 })
