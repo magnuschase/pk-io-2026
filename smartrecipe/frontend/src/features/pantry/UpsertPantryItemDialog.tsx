@@ -1,36 +1,40 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { z } from 'zod'
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
-import { NumberInput } from '@/components/ui/number-input'
-import { IngredientCombobox } from '@/components/domain/IngredientCombobox'
-import { UnitCombobox } from '@/components/domain/UnitCombobox'
-import { DEFAULT_UNIT } from '@/lib/unit-options'
-import type { Ingredient, PantryItem } from '@/types/domain'
+} from "@/components/ui/dialog";
+import { NumberInput } from "@/components/ui/number-input";
+import { IngredientCombobox } from "@/components/domain/IngredientCombobox";
+import { UnitCombobox } from "@/components/domain/UnitCombobox";
+import { DEFAULT_UNIT } from "@/lib/unit-options";
+import type { Ingredient, PantryItem } from "@/types/domain";
 
 const schema = z.object({
-  quantity: z.coerce.number().positive('Ilość musi być dodatnia'),
-  unit: z.string().min(1, 'Wybierz jednostkę'),
-})
+  quantity: z.coerce.number().positive("Ilość musi być dodatnia"),
+  unit: z.string().min(1, "Wybierz jednostkę"),
+});
 
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof schema>;
 
 interface UpsertPantryItemDialogProps {
-  trigger: React.ReactNode
-  item?: PantryItem
-  onSubmit: (ingredientId: string, values: FormValues) => void
+  trigger: React.ReactNode;
+  item?: PantryItem;
+  onSubmit: (ingredientId: string, values: FormValues) => void;
 }
 
-export function UpsertPantryItemDialog({ trigger, item, onSubmit }: UpsertPantryItemDialogProps) {
-  const [open, setOpen] = useState(false)
-  const [ingredient, setIngredient] = useState<Ingredient | null>(null)
+export function UpsertPantryItemDialog({
+  trigger,
+  item,
+  onSubmit,
+}: UpsertPantryItemDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [ingredient, setIngredient] = useState<Ingredient | null>(null);
 
   const {
     control,
@@ -40,33 +44,32 @@ export function UpsertPantryItemDialog({ trigger, item, onSubmit }: UpsertPantry
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { quantity: 1, unit: DEFAULT_UNIT },
-  })
+  });
 
   function resolveIngredientId(): string | undefined {
-    return item?.ingredientId ?? ingredient?.id
+    return item?.ingredientId ?? ingredient?.id;
   }
-
-  useEffect(() => {
-    if (!open) return
-    if (item) {
-      reset({ quantity: Number(item.quantity), unit: item.unit })
-      const ing = item.ingredient
-      setIngredient(ing ?? { id: item.ingredientId, name: '' })
-      return
-    }
-    reset({ quantity: 1, unit: DEFAULT_UNIT })
-    setIngredient(null)
-  }, [open, item, reset])
 
   function handleOpenChange(next: boolean) {
-    setOpen(next)
-    if (!next && !item) {
-      setIngredient(null)
+    setOpen(next);
+    if (next) {
+      if (item) {
+        reset({ quantity: Number(item.quantity), unit: item.unit });
+        const ing = item.ingredient;
+        setIngredient(ing ?? { id: item.ingredientId, name: "" });
+      } else {
+        reset({ quantity: 1, unit: DEFAULT_UNIT });
+        setIngredient(null);
+      }
+      return;
+    }
+    if (!item) {
+      setIngredient(null);
     }
   }
 
-  const ingredientId = resolveIngredientId()
-  const canSave = Boolean(ingredientId)
+  const ingredientId = resolveIngredientId();
+  const canSave = Boolean(ingredientId);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -74,7 +77,7 @@ export function UpsertPantryItemDialog({ trigger, item, onSubmit }: UpsertPantry
       <DialogContent className="pantry-dialog">
         <DialogHeader className="pantry-dialog__header">
           <DialogTitle className="pantry-dialog__title">
-            {item ? 'Edytuj pozycję' : 'Dodaj do spiżarni'}
+            {item ? "Edytuj pozycję" : "Dodaj do spiżarni"}
           </DialogTitle>
         </DialogHeader>
 
@@ -90,10 +93,10 @@ export function UpsertPantryItemDialog({ trigger, item, onSubmit }: UpsertPantry
           <form
             className="pantry-dialog__form"
             onSubmit={handleSubmit((values) => {
-              const id = resolveIngredientId()
-              if (!id) return
-              onSubmit(id, values)
-              setOpen(false)
+              const id = resolveIngredientId();
+              if (!id) return;
+              onSubmit(id, values);
+              setOpen(false);
             })}
           >
             <div className="pantry-dialog__field">
@@ -114,8 +117,8 @@ export function UpsertPantryItemDialog({ trigger, item, onSubmit }: UpsertPantry
                     stepAmount={1}
                     minValue={0.01}
                     onChange={(e) => {
-                      const raw = e.target.value
-                      field.onChange(raw === '' ? '' : Number.parseFloat(raw))
+                      const raw = e.target.value;
+                      field.onChange(raw === "" ? "" : Number.parseFloat(raw));
                     }}
                   />
                 )}
@@ -150,12 +153,16 @@ export function UpsertPantryItemDialog({ trigger, item, onSubmit }: UpsertPantry
               ) : null}
             </div>
 
-            <button type="submit" className="pantry-dialog__submit" disabled={!canSave}>
+            <button
+              type="submit"
+              className="pantry-dialog__submit"
+              disabled={!canSave}
+            >
               Zapisz
             </button>
           </form>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

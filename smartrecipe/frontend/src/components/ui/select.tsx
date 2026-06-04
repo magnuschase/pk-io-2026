@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- Radix primitive re-exports */
 import * as SelectPrimitive from '@radix-ui/react-select'
 import { Check, ChevronDown } from 'lucide-react'
 import type { ComponentProps } from 'react'

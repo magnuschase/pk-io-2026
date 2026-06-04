@@ -4,12 +4,12 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { getPantry } from '@/api/pantry'
 import { getSuggestions } from '@/api/suggestions'
 import { SuggestionFilters } from '@/features/suggestions/SuggestionFilters'
+import { SuggestionsTabs } from '@/features/suggestions/SuggestionsTabs'
 import {
   defaultSuggestTab,
   parseSuggestTab,
-  SuggestionsTabs,
   type SuggestTabId,
-} from '@/features/suggestions/SuggestionsTabs'
+} from '@/features/suggestions/suggest-tab-utils'
 import { SuggestionsPageHeader } from '@/features/suggestions/SuggestionsPageHeader'
 import { queryKeys } from '@/lib/query-keys'
 import { CuisineType, DietType } from '@/types/domain'

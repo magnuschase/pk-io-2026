@@ -21,11 +21,18 @@ export function Navbar() {
   const location = useLocation();
   const { logout } = useAuth();
   const drawerId = useId();
-  const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPath, setMenuPath] = useState(location.pathname);
+  const open = menuOpen && menuPath === location.pathname;
 
-  useEffect(() => {
-    setOpen(false);
-  }, [location.pathname]);
+  function setOpen(next: boolean) {
+    if (next) {
+      setMenuPath(location.pathname);
+      setMenuOpen(true);
+      return;
+    }
+    setMenuOpen(false);
+  }
 
   useEffect(() => {
     if (!open) {
@@ -33,7 +40,7 @@ export function Navbar() {
       return;
     }
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") setMenuOpen(false);
     };
     document.body.classList.add("app-nav--menu-open");
     document.addEventListener("keydown", onKeyDown);
@@ -85,7 +92,7 @@ export function Navbar() {
             className="app-nav__menu-btn"
             aria-expanded={open}
             aria-controls={drawerId}
-            onClick={() => setOpen((value) => !value)}
+            onClick={() => setOpen(!open)}
           >
             <span className="app-nav__sr-only">
               {open ? "Zamknij menu" : "Otwórz menu"}

@@ -2,9 +2,8 @@ import { useEffect, useId } from "react";
 import { Link } from "react-router-dom";
 import { AddRecipeToShoppingListButton } from "@/features/recipes/AddRecipeToShoppingListButton";
 import { SuggestionRecipeRow } from "@/features/suggestions/SuggestionRecipeRow";
+import type { SuggestTabId } from "@/features/suggestions/suggest-tab-utils";
 import type { Recipe } from "@/types/domain";
-
-export type SuggestTabId = "ready" | "almost" | "needs-more";
 
 type AlmostEntry = { recipe: Recipe; missingCount: number };
 
@@ -40,25 +39,6 @@ const TAB_DEFS: TabDef[] = [
       "Żaden aktywny przepis nie wymaga więcej niż dwóch brakujących składników.",
   },
 ];
-
-export function parseSuggestTab(
-  value: string | null,
-): SuggestTabId | undefined {
-  if (value === "ready" || value === "almost" || value === "needs-more")
-    return value;
-  return undefined;
-}
-
-export function defaultSuggestTab(counts: {
-  ready: number;
-  almost: number;
-  needsMore: number;
-}): SuggestTabId {
-  if (counts.ready > 0) return "ready";
-  if (counts.almost > 0) return "almost";
-  if (counts.needsMore > 0) return "needs-more";
-  return "ready";
-}
 
 interface SuggestionsTabsProps {
   activeTab: SuggestTabId;

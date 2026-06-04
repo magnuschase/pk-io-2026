@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type ReactNode, useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
@@ -58,7 +58,6 @@ export function RecipeForm({
     handleSubmit,
     setValue,
     getValues,
-    watch,
     control,
     formState: { errors },
   } = useForm<RecipeFormValues>({
@@ -74,8 +73,8 @@ export function RecipeForm({
     },
   });
 
-  const dietType = watch("dietType");
-  const cuisineType = watch("cuisineType");
+  const dietType = useWatch({ control, name: "dietType" });
+  const cuisineType = useWatch({ control, name: "cuisineType" });
 
   useEffect(() => {
     onRegisterSubmit?.(() => {

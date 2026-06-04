@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { setRecipeIngredients, updateRecipe } from "@/api/recipes";
 import { IngredientListEditor } from "@/features/recipes/IngredientListEditor";
@@ -36,11 +36,16 @@ export function RecipeDraftDetail({ recipe }: RecipeDraftDetailProps) {
     setKcal: (value: number) => void;
     getServings: () => number | undefined;
   } | null>(null);
-  const [lines, setLines] = useState<RecipeIngredientLine[]>([]);
+  const recipeId = recipe.id;
+  const [syncedRecipeId, setSyncedRecipeId] = useState(recipeId);
+  const [lines, setLines] = useState<RecipeIngredientLine[]>(() =>
+    (recipe.ingredients ?? []).map(normalizeIngredientLine),
+  );
 
-  useEffect(() => {
+  if (syncedRecipeId !== recipeId) {
+    setSyncedRecipeId(recipeId);
     setLines((recipe.ingredients ?? []).map(normalizeIngredientLine));
-  }, [recipe]);
+  }
 
   const saveMutation = useMutation({
     mutationFn: async ({ values, lines }: SaveRecipePayload) => {
@@ -112,9 +117,7 @@ export function RecipeDraftDetail({ recipe }: RecipeDraftDetailProps) {
           }
         />
       }
-      aside={
-        <IngredientListEditor lines={lines} onChange={setLines} />
-      }
+      aside={<IngredientListEditor lines={lines} onChange={setLines} />}
     />
   );
 }

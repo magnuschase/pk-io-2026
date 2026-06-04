@@ -1,69 +1,77 @@
-import { useQuery } from '@tanstack/react-query'
-import { useEffect, useId, useState } from 'react'
-import { createIngredient, searchIngredients } from '@/api/ingredients'
-import { useDebounce } from '@/hooks/useDebounce'
-import { queryKeys } from '@/lib/query-keys'
-import { Input } from '@/components/ui/input'
-import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
-import type { Ingredient } from '@/types/domain'
+import { useQuery } from "@tanstack/react-query";
+import { useId, useState } from "react";
+import { createIngredient, searchIngredients } from "@/api/ingredients";
+import { useDebounce } from "@/hooks/useDebounce";
+import { queryKeys } from "@/lib/query-keys";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+} from "@/components/ui/popover";
+import type { Ingredient } from "@/types/domain";
 
 interface IngredientComboboxProps {
-  value: Ingredient | null
-  onChange: (ingredient: Ingredient | null) => void
-  label?: string
+  value: Ingredient | null;
+  onChange: (ingredient: Ingredient | null) => void;
+  label?: string;
 }
 
-export function IngredientCombobox({ value, onChange, label = 'Szukaj składnika' }: IngredientComboboxProps) {
-  const [search, setSearch] = useState(value?.name ?? '')
-  const [open, setOpen] = useState(false)
-  const debounced = useDebounce(search, 300)
-  const queryTerm = debounced.trim()
-  const inputId = useId()
-  const listboxId = useId()
+export function IngredientCombobox({
+  value,
+  onChange,
+  label = "Szukaj składnika",
+}: IngredientComboboxProps) {
+  const valueKey = value?.id ?? "";
+  const [prevValueKey, setPrevValueKey] = useState(valueKey);
+  const [search, setSearch] = useState(value?.name ?? "");
+  const [open, setOpen] = useState(false);
+
+  if (prevValueKey !== valueKey) {
+    setPrevValueKey(valueKey);
+    setSearch(value?.name ?? "");
+  }
+  const debounced = useDebounce(search, 300);
+  const queryTerm = debounced.trim();
+  const inputId = useId();
+  const listboxId = useId();
 
   const { data = [], isFetching } = useQuery({
-    queryKey: queryKeys.ingredients(queryTerm || '__default__'),
+    queryKey: queryKeys.ingredients(queryTerm || "__default__"),
     queryFn: () => searchIngredients(queryTerm),
     staleTime: 300_000,
     enabled: open,
-  })
+  });
 
   const showCreate =
-    queryTerm.length >= 2 && !data.some((i) => i.name.toLowerCase() === queryTerm.toLowerCase())
-
-  useEffect(() => {
-    if (value?.name) {
-      setSearch(value.name)
-    } else if (!value) {
-      setSearch('')
-    }
-  }, [value])
+    queryTerm.length >= 2 &&
+    !data.some((i) => i.name.toLowerCase() === queryTerm.toLowerCase());
 
   async function handleCreate() {
-    const name = search.trim()
-    if (!name) return
-    const created = await createIngredient(name)
-    onChange(created)
-    setSearch(created.name)
-    setOpen(false)
+    const name = search.trim();
+    if (!name) return;
+    const created = await createIngredient(name);
+    onChange(created);
+    setSearch(created.name);
+    setOpen(false);
   }
 
   function handleSelect(item: Ingredient) {
-    onChange(item)
-    setSearch(item.name)
-    setOpen(false)
+    onChange(item);
+    setSearch(item.name);
+    setOpen(false);
   }
 
   function handleSearchChange(next: string) {
-    setSearch(next)
+    setSearch(next);
     if (value && next.trim() !== value.name) {
-      onChange(null)
+      onChange(null);
     }
-    setOpen(true)
+    setOpen(true);
   }
 
   function openPicker() {
-    setOpen(true)
+    setOpen(true);
   }
 
   return (
@@ -119,8 +127,8 @@ export function IngredientCombobox({ value, onChange, label = 'Szukaj składnika
                     role="option"
                     className="ingredient-search__item"
                     onPointerDown={(e) => {
-                      e.preventDefault()
-                      handleSelect(item)
+                      e.preventDefault();
+                      handleSelect(item);
                     }}
                   >
                     {item.name}
@@ -130,7 +138,7 @@ export function IngredientCombobox({ value, onChange, label = 'Szukaj składnika
             </ul>
           ) : !isFetching ? (
             <p className="ingredient-search__status">
-              {queryTerm ? 'Brak wyników' : 'Katalog jest pusty'}
+              {queryTerm ? "Brak wyników" : "Katalog jest pusty"}
             </p>
           ) : null}
           {showCreate ? (
@@ -139,8 +147,8 @@ export function IngredientCombobox({ value, onChange, label = 'Szukaj składnika
                 type="button"
                 className="ingredient-search__create"
                 onPointerDown={(e) => {
-                  e.preventDefault()
-                  void handleCreate()
+                  e.preventDefault();
+                  void handleCreate();
                 }}
               >
                 Utwórz „{search.trim()}”
@@ -150,5 +158,5 @@ export function IngredientCombobox({ value, onChange, label = 'Szukaj składnika
         </PopoverContent>
       </div>
     </Popover>
-  )
+  );
 }
