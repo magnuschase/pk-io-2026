@@ -86,7 +86,10 @@ describe('UnitNormalizationService', () => {
     });
 
     it('maps empty unit to szt', () => {
-      expect(svc.resolveForStorage(1, '')).toEqual({ quantity: 1, unit: 'szt' });
+      expect(svc.resolveForStorage(1, '')).toEqual({
+        quantity: 1,
+        unit: 'szt',
+      });
     });
 
     it('maps unknown piece-like labels to szt', () => {

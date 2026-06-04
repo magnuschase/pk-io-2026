@@ -190,9 +190,7 @@ describe('NutritionService', () => {
             data: {
               fdcId: 2187885,
               foodNutrients: usdaSearchResponse.foods[0].foodNutrients,
-              foodPortions: [
-                { amount: 1, modifier: 'medium', gramWeight: 85 },
-              ],
+              foodPortions: [{ amount: 1, modifier: 'medium', gramWeight: 85 }],
             },
           }),
         );

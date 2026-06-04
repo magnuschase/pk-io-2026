@@ -177,10 +177,7 @@ export class RecipesService {
     let lines: { ingredientId: string; quantity: number; unit: string }[];
     if (dto.ingredients?.length) {
       lines = dto.ingredients.map((line) => {
-        const resolved = this.units.resolveForStorage(
-          line.quantity,
-          line.unit,
-        );
+        const resolved = this.units.resolveForStorage(line.quantity, line.unit);
         return {
           ingredientId: line.ingredientId,
           quantity: resolved.quantity,

@@ -42,12 +42,14 @@ describe('DeeplTranslationService', () => {
     expect(mockHttp.post).toHaveBeenCalledWith(
       'https://api-free.deepl.com/v2/translate',
       { text: ['mąka'], source_lang: 'PL', target_lang: 'EN' },
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          Authorization: 'DeepL-Auth-Key test-key:fx',
-        }),
-      }),
+      expect.any(Object),
     );
+    const [, , config] = mockHttp.post.mock.calls[0] as [
+      string,
+      { text: string[]; source_lang: string; target_lang: string },
+      { headers: { Authorization: string } },
+    ];
+    expect(config.headers.Authorization).toBe('DeepL-Auth-Key test-key:fx');
   });
 
   it('returns null when API key is missing', async () => {

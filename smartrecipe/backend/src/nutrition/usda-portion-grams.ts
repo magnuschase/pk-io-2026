@@ -29,7 +29,9 @@ const PREFERRED_MODIFIERS = [
 ] as const;
 
 function portionText(p: UsdaFoodPortion): string {
-  return `${p.modifier ?? ''} ${p.portionDescription ?? ''}`.trim().toLowerCase();
+  return `${p.modifier ?? ''} ${p.portionDescription ?? ''}`
+    .trim()
+    .toLowerCase();
 }
 
 function isSinglePiecePortion(p: UsdaFoodPortion): boolean {
@@ -73,7 +75,11 @@ function pickFromBrandedServing(
   servingSize?: number,
   servingSizeUnit?: string,
 ): number | null {
-  if (servingSize == null || !Number.isFinite(servingSize) || servingSize <= 0) {
+  if (
+    servingSize == null ||
+    !Number.isFinite(servingSize) ||
+    servingSize <= 0
+  ) {
     return null;
   }
   const unit = (servingSizeUnit ?? '').toLowerCase().trim();
@@ -89,7 +95,9 @@ function pickFromBrandedServing(
   return null;
 }
 
-export function pickDefaultGramsPerPiece(source: UsdaPortionSource): number | null {
+export function pickDefaultGramsPerPiece(
+  source: UsdaPortionSource,
+): number | null {
   return (
     pickFromFoodPortions(source.foodPortions) ??
     pickFromBrandedServing(source.servingSize, source.servingSizeUnit)

@@ -147,8 +147,7 @@ export class NutritionService {
       return ingredient;
     }
 
-    const best =
-      hits.find((hit) => hit.kcalPer100g != null) ?? hits[0];
+    const best = hits.find((hit) => hit.kcalPer100g != null) ?? hits[0];
     return this.applyFdcToIngredient(ingredient, best.fdcId, best.kcalPer100g);
   }
 
@@ -193,8 +192,7 @@ export class NutritionService {
   ): Promise<Ingredient> {
     const food = detail ?? (await this.fetchFoodDetail(fdcId));
     ingredient.externalFoodId = String(fdcId);
-    const kcal =
-      kcalFromSearch ?? this.extractKcal(food.foodNutrients ?? []);
+    const kcal = kcalFromSearch ?? this.extractKcal(food.foodNutrients ?? []);
     if (kcal != null) {
       ingredient.kcalPer100g = kcal;
     }

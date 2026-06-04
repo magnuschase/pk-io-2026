@@ -78,7 +78,8 @@ export class SetIngredientsDto {
 export class EstimateRecipeKcalDto {
   @ApiPropertyOptional({
     example: 4,
-    description: 'Liczba porcji — kcal całego przepisu zostanie podzielone przez tę wartość',
+    description:
+      'Liczba porcji — kcal całego przepisu zostanie podzielone przez tę wartość',
   })
   @IsOptional()
   @Type(() => Number)

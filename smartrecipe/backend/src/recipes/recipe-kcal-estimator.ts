@@ -30,7 +30,8 @@ export function estimateRecipeKcal(
   servings: number,
   units: UnitNormalizationService,
 ): RecipeKcalEstimate {
-  const safeServings = Number.isFinite(servings) && servings >= 1 ? servings : 1;
+  const safeServings =
+    Number.isFinite(servings) && servings >= 1 ? servings : 1;
   let totalKcal = 0;
   let includedCount = 0;
   const skipped: KcalEstimateSkipped[] = [];
@@ -39,11 +40,13 @@ export function estimateRecipeKcal(
     const ingredient = ingredientsById.get(line.ingredientId);
     const name = ingredient?.name ?? line.ingredientId;
     const kcalPer100g =
-      ingredient?.kcalPer100g != null
-        ? Number(ingredient.kcalPer100g)
-        : null;
+      ingredient?.kcalPer100g != null ? Number(ingredient.kcalPer100g) : null;
 
-    if (kcalPer100g == null || !Number.isFinite(kcalPer100g) || kcalPer100g <= 0) {
+    if (
+      kcalPer100g == null ||
+      !Number.isFinite(kcalPer100g) ||
+      kcalPer100g <= 0
+    ) {
       skipped.push({
         ingredientId: line.ingredientId,
         name,
@@ -99,9 +102,7 @@ function lineQuantityToGrams(
   if (norm.baseUnit !== 'szt') return null;
 
   const perPiece =
-    ingredient?.gramsPerPiece != null
-      ? Number(ingredient.gramsPerPiece)
-      : null;
+    ingredient?.gramsPerPiece != null ? Number(ingredient.gramsPerPiece) : null;
   if (perPiece == null || !Number.isFinite(perPiece) || perPiece <= 0) {
     return null;
   }

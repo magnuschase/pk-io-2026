@@ -10,9 +10,17 @@ import { IngredientsService } from '../ingredients/ingredients.service';
 import { RecipesService } from '../recipes/recipes.service';
 import { UnitNormalizationService } from '../shared/unit-normalization.service';
 
+function transformExternalId(value: unknown): string | null | undefined {
+  if (value === null || value === undefined) return value;
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value);
+  if (typeof value === 'bigint') return String(value);
+  return undefined;
+}
+
 class ImportRecipeDto {
   @ApiProperty({ description: 'External recipe ID (Spoonacular)' })
-  @Transform(({ value }) => (value == null ? value : String(value)))
+  @Transform(({ value }: { value: unknown }) => transformExternalId(value))
   @IsString()
   @MaxLength(50)
   externalId: string;

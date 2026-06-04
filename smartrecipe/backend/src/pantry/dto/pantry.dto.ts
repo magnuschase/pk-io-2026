@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsOptional, IsPositive, IsString, MaxLength } from 'class-validator';
+import {
+  IsIn,
+  IsOptional,
+  IsPositive,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
 export class UpsertPantryItemDto {
   @ApiProperty({ example: 500 })
