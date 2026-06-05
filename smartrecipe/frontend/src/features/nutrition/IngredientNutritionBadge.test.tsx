@@ -22,14 +22,16 @@ vi.mock('@/features/nutrition/LinkIngredientNutritionDialog', () => ({
 }))
 
 describe('IngredientNutritionBadge', () => {
-  it('shows kcal label when ingredient has nutrition data', () => {
+  it('opens edit dialog when linked kcal is clicked', async () => {
+    const user = userEvent.setup()
     renderWithProviders(
       <IngredientNutritionBadge
         ingredient={{ id: '1', name: 'Ryż', kcalPer100g: 130 }}
         onIngredientUpdate={vi.fn()}
       />,
     )
-    expect(screen.getByText('130 kcal / 100 g')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: '130 kcal / 100 g' }))
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 
   it('opens link dialog when kcal is missing', async () => {

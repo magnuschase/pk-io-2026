@@ -39,6 +39,7 @@ interface RecipeFormProps {
   onRegisterFormApi?: (api: {
     setKcal: (value: number) => void;
     getServings: () => number | undefined;
+    getValues: () => RecipeFormValues;
   }) => void;
 }
 
@@ -91,6 +92,7 @@ export function RecipeForm({
         const n = Number(raw);
         return Number.isFinite(n) && n >= 1 ? Math.round(n) : undefined;
       },
+      getValues: () => getValues(),
     });
   }, [onRegisterFormApi, setValue, getValues]);
 

@@ -374,6 +374,12 @@
   max-width: 42rem;
 }
 
+.suggest-tabs__lede strong,
+.suggest-row__chip--match strong {
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
 @media (min-width: 40rem) {
   .suggest-tabs__lede {
     margin-block-end: var(--space-lg);

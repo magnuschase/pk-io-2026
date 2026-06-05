@@ -39,7 +39,9 @@ export function SuggestionRecipeRow({
           ) : null}
           {showMissing ? (
             <span className="suggest-row__chip suggest-row__chip--match">
-              Brakuje {missingCount} {missingCount === 1 ? 'składnika' : 'składników'}
+              Brakuje{' '}
+              {variant === 'needs-more' ? <strong>{missingCount}</strong> : missingCount}{' '}
+              {missingCount === 1 ? 'składnika' : 'składników'}
             </span>
           ) : (
             <span className="suggest-row__chip suggest-row__chip--match">100% składników</span>

@@ -13,15 +13,23 @@ import { Ingredient } from '../domain/entities/ingredient.entity';
 import { buildUsdaSearchQueries } from './ingredient-usda-query';
 import { DeeplTranslationService } from './deepl-translation.service';
 import { pickDefaultGramsPerPiece } from './usda-portion-grams';
+import { pickProposedHit, splitProposedAndHits } from './usda-hit-ranking';
+
+const REFERENCE_DATA_TYPES = ['Foundation', 'SR Legacy', 'Survey (FNDDS)'];
 
 const USDA_BASE = 'https://api.nal.usda.gov/fdc/v1';
 const ENERGY_NUTRIENT_ID = 1008;
 
 interface UsdaFoodNutrient {
-  nutrientId: number;
-  nutrientName: string;
-  value: number;
-  unitName: string;
+  nutrientId?: number;
+  nutrientName?: string;
+  value?: number;
+  amount?: number;
+  unitName?: string;
+  nutrient?: {
+    id?: number;
+    name?: string;
+  };
 }
 
 interface UsdaFoodPortion {
@@ -34,6 +42,7 @@ interface UsdaFoodPortion {
 interface UsdaFood {
   fdcId: number;
   description: string;
+  dataType?: string;
   foodNutrients: UsdaFoodNutrient[];
   foodPortions?: UsdaFoodPortion[];
   servingSize?: number;
@@ -49,6 +58,12 @@ export interface NutritionSearchHit {
   fdcId: number;
   description: string;
   kcalPer100g: number | null;
+  dataType?: string | null;
+}
+
+export interface NutritionSearchResult {
+  proposed: NutritionSearchHit | null;
+  hits: NutritionSearchHit[];
 }
 
 @Injectable()
@@ -77,40 +92,70 @@ export class NutritionService {
   async searchFoods(
     query: string,
     pageSize = 10,
-  ): Promise<NutritionSearchHit[]> {
-    if (!query.trim()) return [];
+  ): Promise<NutritionSearchResult> {
+    if (!query.trim()) return { proposed: null, hits: [] };
     const english = await this.deepl.translatePlToEn(query);
     const queries = buildUsdaSearchQueries(query, english);
     const seen = new Set<number>();
     const merged: NutritionSearchHit[] = [];
 
-    for (const q of queries) {
-      const hits = await this.searchFoodsOnce(q, pageSize);
+    const mergeHits = (hits: NutritionSearchHit[]) => {
       for (const hit of hits) {
         if (seen.has(hit.fdcId)) continue;
         seen.add(hit.fdcId);
         merged.push(hit);
-        if (merged.length >= pageSize) return merged;
+        if (merged.length >= pageSize) return true;
+      }
+      return false;
+    };
+
+    for (const q of queries) {
+      const refHits = await this.searchFoodsOnce(
+        q,
+        pageSize,
+        REFERENCE_DATA_TYPES,
+      );
+      if (mergeHits(refHits)) {
+        return splitProposedAndHits(merged, query, english);
       }
     }
 
-    return merged;
+    for (const q of queries) {
+      const hits = await this.searchFoodsOnce(q, pageSize);
+      if (mergeHits(hits)) break;
+    }
+
+    return splitProposedAndHits(merged, query, english);
   }
 
   private async searchFoodsOnce(
     query: string,
     pageSize: number,
+    dataTypes?: string[],
   ): Promise<NutritionSearchHit[]> {
     try {
+      const params: Record<string, string | number | string[]> = {
+        query,
+        pageSize,
+        api_key: this.apiKey,
+      };
+      if (dataTypes?.length) {
+        params.dataType = dataTypes;
+      }
+
       const { data } = await firstValueFrom(
         this.http.get<UsdaSearchResponse>(`${USDA_BASE}/foods/search`, {
-          params: { query, pageSize, api_key: this.apiKey },
+          params,
+          paramsSerializer: {
+            indexes: null,
+          },
         }),
       );
       return (data.foods ?? []).map((food) => ({
         fdcId: food.fdcId,
         description: food.description,
         kcalPer100g: this.extractKcal(food.foodNutrients),
+        dataType: food.dataType ?? null,
       }));
     } catch (err) {
       this.logger.error('USDA search failed', (err as Error).message);
@@ -141,14 +186,32 @@ export class NutritionService {
       );
     }
 
-    const hits = await this.searchFoods(ingredient.name, 5);
-    if (!hits.length) {
+    const { proposed, hits } = await this.searchFoods(ingredient.name, 5);
+    const best =
+      proposed ??
+      pickProposedHit(hits) ??
+      hits.find((hit) => hit.kcalPer100g != null) ??
+      hits[0];
+    if (!best) {
       this.logger.warn(`No USDA match for "${ingredient.name}"`);
       return ingredient;
     }
 
-    const best = hits.find((hit) => hit.kcalPer100g != null) ?? hits[0];
     return this.applyFdcToIngredient(ingredient, best.fdcId, best.kcalPer100g);
+  }
+
+  async setManualKcal(
+    ingredientId: string,
+    kcalPer100g: number,
+  ): Promise<Ingredient> {
+    const ingredient = await this.ingredientRepo.findOne({
+      where: { id: ingredientId },
+    });
+    if (!ingredient) throw new NotFoundException('Ingredient not found');
+
+    ingredient.kcalPer100g = kcalPer100g;
+    ingredient.externalFoodId = null;
+    return this.ingredientRepo.save(ingredient);
   }
 
   async enrichIngredientByFdcId(
@@ -164,9 +227,10 @@ export class NutritionService {
       const detail = await this.fetchFoodDetail(fdcId);
       let kcal = this.extractKcal(detail.foodNutrients ?? []);
       if (kcal == null) {
-        const searchHits = await this.searchFoodsOnce(ingredient.name, 10);
-        kcal =
-          searchHits.find((hit) => hit.fdcId === fdcId)?.kcalPer100g ?? null;
+        kcal = await this.resolveKcalForFdc(fdcId, [
+          ingredient.name,
+          detail.description,
+        ]);
       }
       return this.applyFdcToIngredient(ingredient, fdcId, kcal, detail);
     } catch (err) {
@@ -207,12 +271,33 @@ export class NutritionService {
     return this.ingredientRepo.save(ingredient);
   }
 
+  private async resolveKcalForFdc(
+    fdcId: number,
+    queries: string[],
+  ): Promise<number | null> {
+    const seen = new Set<string>();
+    for (const query of queries) {
+      const term = query.trim();
+      if (!term || seen.has(term.toLowerCase())) continue;
+      seen.add(term.toLowerCase());
+      const hits = await this.searchFoodsOnce(term, 15);
+      const match = hits.find((hit) => hit.fdcId === fdcId);
+      if (match?.kcalPer100g != null) return match.kcalPer100g;
+    }
+    return null;
+  }
+
   private extractKcal(nutrients: UsdaFoodNutrient[]): number | null {
-    const energy = nutrients.find(
-      (n) =>
-        n.nutrientId === ENERGY_NUTRIENT_ID ||
-        n.nutrientName?.toUpperCase().includes('ENERGY'),
-    );
-    return energy ? Math.round(Number(energy.value)) : null;
+    const energy = nutrients.find((n) => {
+      const nutrientId = n.nutrientId ?? n.nutrient?.id;
+      const nutrientName = n.nutrientName ?? n.nutrient?.name ?? '';
+      return (
+        nutrientId === ENERGY_NUTRIENT_ID ||
+        nutrientName.toUpperCase().includes('ENERGY')
+      );
+    });
+    if (!energy) return null;
+    const raw = energy.value ?? energy.amount;
+    return raw != null ? Math.round(Number(raw)) : null;
   }
 }

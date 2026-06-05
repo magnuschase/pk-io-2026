@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
@@ -16,6 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { SetManualKcalDto } from './dto/set-manual-kcal.dto';
 import { NutritionService } from './nutrition.service';
 
 @ApiTags('nutrition')
@@ -29,8 +31,8 @@ export class NutritionController {
   @ApiOperation({
     summary: 'Szukaj składników w USDA FoodData Central',
     description:
-      'Zwraca listę wyników z bazy USDA FDC - fdcId, opis i kcal/100 g. ' +
-      'Polskie zapytania są tłumaczone przez DeepL (DEEPL_API_KEY). ' +
+      'Zwraca proponowany wynik referencyjny (Foundation / SR Legacy / FNDDS) ' +
+      'oraz pozostałe trafienia z USDA FDC. Polskie zapytania są tłumaczone przez DeepL. ' +
       'USDA: DEMO_KEY gdy brak NUTRITION_API_KEY (30 req/godz).',
   })
   @ApiQuery({
@@ -77,5 +79,18 @@ export class NutritionController {
     @Param('fdcId', ParseIntPipe) fdcId: number,
   ) {
     return this.service.enrichIngredientByFdcId(ingredientId, fdcId);
+  }
+
+  @Post('enrich/:ingredientId/manual')
+  @ApiOperation({
+    summary: 'Zapisz ręcznie wpisaną kaloryczność składnika (kcal / 100 g)',
+    description:
+      'Ustawia kcalPer100g bez powiązania z USDA (czyści externalFoodId).',
+  })
+  setManualKcal(
+    @Param('ingredientId', ParseUUIDPipe) ingredientId: string,
+    @Body() dto: SetManualKcalDto,
+  ) {
+    return this.service.setManualKcal(ingredientId, dto.kcalPer100g);
   }
 }

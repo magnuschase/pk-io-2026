@@ -119,15 +119,103 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-md);
   width: 100%;
   min-width: 0;
 }
 
+.recipe-editor__toolbar-start {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.recipe-editor__toolbar-end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
 @media (min-width: 68rem) {
-  .recipe-editor__toolbar-actions {
+  .recipe-editor__toolbar-end {
+    margin-inline-start: auto;
     justify-content: flex-end;
   }
+}
+
+.recipe-editor__toolbar-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-lg);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-family: var(--font-body);
+  color: var(--color-destructive);
+  background: var(--color-paper);
+  border: 1px solid color-mix(in oklch, var(--color-destructive) 35%, transparent);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .recipe-editor__toolbar-delete:hover:not(:disabled) {
+    background: color-mix(in oklch, var(--color-destructive) 8%, var(--color-paper));
+    border-color: var(--color-destructive);
+    color: var(--color-destructive);
+  }
+}
+
+.recipe-editor__toolbar-delete:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 4px;
+}
+
+.recipe-editor__toolbar-delete:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.delete-draft-dialog__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+}
+
+.delete-draft-dialog__lede {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  line-height: 1.55;
+}
+
+.delete-draft-dialog__name {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.delete-draft-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: stretch;
+  gap: var(--space-md);
+  margin-block-start: var(--space-lg);
+  padding-block-start: var(--space-sm);
+}
+
+.delete-draft-dialog__actions > button {
+  min-height: 2.75rem;
+  min-width: 6.5rem;
 }
 
 /* Save - secondary (outline) */
@@ -227,7 +315,19 @@
     gap: var(--space-sm);
   }
 
+  .recipe-editor__toolbar-start,
+  .recipe-editor__toolbar-end {
+    width: 100%;
+  }
+
+  .recipe-editor__toolbar-end {
+    flex-direction: column;
+    align-items: stretch;
+    margin-inline-start: 0;
+  }
+
   .recipe-editor__toolbar-actions .recipe-editor__toolbar-save,
+  .recipe-editor__toolbar-actions .recipe-editor__toolbar-delete,
   .recipe-editor__toolbar-actions .recipe-detail-view__shop-btn,
   .recipe-editor__toolbar-actions .recipe-detail-view__cook-btn,
   .recipe-editor__toolbar-actions .recipe-editor__lifecycle {
@@ -837,11 +937,30 @@
 }
 
 .ingredient-nutrition--linked {
+  padding: 0;
   font-family: var(--font-outlier);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--color-accent);
   white-space: nowrap;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ingredient-nutrition--linked:hover {
+    color: var(--color-ink);
+  }
+}
+
+.ingredient-nutrition--linked:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .ingredient-nutrition--missing {

@@ -29,7 +29,7 @@ describe('RecipeFilters', () => {
       />,
     )
     await user.click(screen.getByRole('button', { name: /Wyczyść filtry/i }))
-    expect(onChange).toHaveBeenCalledWith({})
+    expect(onChange).toHaveBeenCalledWith({ statusFilter: 'default' })
   })
 
   it('updates kcal min bound', async () => {

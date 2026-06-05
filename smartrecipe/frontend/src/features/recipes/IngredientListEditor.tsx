@@ -1,10 +1,14 @@
 import { useState, type Dispatch, type SetStateAction } from 'react'
-import { normalizeIngredient } from '@/lib/ingredient-nutrition'
+import {
+  hasIngredientKcal,
+  normalizeIngredient,
+} from '@/lib/ingredient-nutrition'
 import { Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { IngredientCombobox } from '@/components/domain/IngredientCombobox'
 import { UnitCombobox } from '@/components/domain/UnitCombobox'
 import { IngredientNutritionBadge } from '@/features/nutrition/IngredientNutritionBadge'
+import { LinkIngredientNutritionDialog } from '@/features/nutrition/LinkIngredientNutritionDialog'
 import { DEFAULT_UNIT, NO_UNIT } from '@/lib/unit-options'
 import type { Ingredient, RecipeIngredientLine } from '@/types/domain'
 
@@ -15,8 +19,12 @@ interface IngredientListEditorProps {
 
 export function IngredientListEditor({ lines, onChange }: IngredientListEditorProps) {
   const [picker, setPicker] = useState<Ingredient | null>(null)
+  const [nutritionIngredient, setNutritionIngredient] = useState<Ingredient | null>(
+    null,
+  )
+  const [quantityDrafts, setQuantityDrafts] = useState<Record<string, string>>({})
 
-  function addLine(ingredient: Ingredient) {
+  function addLine(ingredient: Ingredient, openNutritionDialog = false) {
     if (lines.some((l) => l.ingredientId === ingredient.id)) return
     const normalized = normalizeIngredient(ingredient)
     onChange((prev) => [
@@ -28,6 +36,9 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
         ingredient: normalized,
       },
     ])
+    if (openNutritionDialog && !hasIngredientKcal(normalized)) {
+      setNutritionIngredient(normalized)
+    }
   }
 
   function updateLine(index: number, patch: Partial<RecipeIngredientLine>) {
@@ -37,7 +48,52 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
   }
 
   function removeLine(index: number) {
+    const line = lines[index]
+    if (line) {
+      setQuantityDrafts((prev) => {
+        if (!(line.ingredientId in prev)) return prev
+        const next = { ...prev }
+        delete next[line.ingredientId]
+        return next
+      })
+    }
     onChange(lines.filter((_, i) => i !== index))
+  }
+
+  function quantityDisplay(line: RecipeIngredientLine): string {
+    const draft = quantityDrafts[line.ingredientId]
+    if (draft !== undefined) return draft
+    const q = Number(line.quantity)
+    return Number.isFinite(q) && q > 0 ? String(q) : ''
+  }
+
+  function handleQuantityChange(
+    index: number,
+    line: RecipeIngredientLine,
+    raw: string,
+  ) {
+    setQuantityDrafts((prev) => ({ ...prev, [line.ingredientId]: raw }))
+    if (raw === '') return
+
+    const q = parseFloat(raw)
+    if (Number.isFinite(q) && q > 0) {
+      updateLine(index, { quantity: q })
+    }
+  }
+
+  function handleQuantityBlur(index: number, line: RecipeIngredientLine) {
+    const draft = quantityDrafts[line.ingredientId]
+    if (draft === undefined) return
+
+    const q = parseFloat(draft)
+    updateLine(index, {
+      quantity: Number.isFinite(q) && q > 0 ? q : 1,
+    })
+    setQuantityDrafts((prev) => {
+      const next = { ...prev }
+      delete next[line.ingredientId]
+      return next
+    })
   }
 
   function updateIngredientOnLine(ingredient: Ingredient) {
@@ -55,7 +111,7 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
         value={picker}
         onChange={(ing) => {
           if (ing) {
-            addLine(ing)
+            addLine(ing, true)
             setPicker(null)
           } else {
             setPicker(null)
@@ -97,13 +153,9 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
                     step="any"
                     className="recipe-ingredient-line__qty recipe-form__input"
                     aria-label={`Ilość: ${line.ingredient?.name ?? line.ingredientId}`}
-                    value={Number(line.quantity) || ''}
-                    onChange={(e) => {
-                      const q = parseFloat(e.target.value)
-                      updateLine(i, {
-                        quantity: Number.isFinite(q) && q > 0 ? q : 1,
-                      })
-                    }}
+                    value={quantityDisplay(line)}
+                    onChange={(e) => handleQuantityChange(i, line, e.target.value)}
+                    onBlur={() => handleQuantityBlur(i, line)}
                   />
                 )}
                 <UnitCombobox
@@ -124,6 +176,20 @@ export function IngredientListEditor({ lines, onChange }: IngredientListEditorPr
           </ul>
         </div>
       )}
+
+      {nutritionIngredient ? (
+        <LinkIngredientNutritionDialog
+          ingredient={nutritionIngredient}
+          open
+          onOpenChange={(open) => {
+            if (!open) setNutritionIngredient(null)
+          }}
+          onLinked={(updated) => {
+            updateIngredientOnLine(updated)
+            setNutritionIngredient(null)
+          }}
+        />
+      ) : null}
     </div>
   )
 }
