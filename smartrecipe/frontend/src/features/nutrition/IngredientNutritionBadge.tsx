@@ -18,23 +18,21 @@ export function IngredientNutritionBadge({
 }: IngredientNutritionBadgeProps) {
   const [open, setOpen] = useState(false)
   const normalized = normalizeIngredient(ingredient)
-
-  if (hasIngredientKcal(normalized)) {
-    return (
-      <span className="ingredient-nutrition ingredient-nutrition--linked">
-        {formatIngredientKcal(normalized)}
-      </span>
-    )
-  }
+  const linked = hasIngredientKcal(normalized)
 
   return (
     <>
       <button
         type="button"
-        className="ingredient-nutrition ingredient-nutrition--missing"
+        className={
+          linked
+            ? 'ingredient-nutrition ingredient-nutrition--linked'
+            : 'ingredient-nutrition ingredient-nutrition--missing'
+        }
         onClick={() => setOpen(true)}
+        title={linked ? 'Edytuj kalorykę' : undefined}
       >
-        Pobierz kalorykę
+        {linked ? formatIngredientKcal(normalized) : 'Pobierz kalorykę'}
       </button>
       <LinkIngredientNutritionDialog
         ingredient={normalized}

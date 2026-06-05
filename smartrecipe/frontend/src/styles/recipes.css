@@ -172,6 +172,20 @@
   }
 }
 
+.recipes-filters__status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  max-width: 14rem;
+  padding-block-start: var(--space-sm);
+  border-top: 1px solid var(--color-rule);
+}
+
+.recipes-filters__status .combobox-trigger {
+  min-height: 2.25rem;
+  font-size: var(--text-sm);
+}
+
 .recipes-filters__active {
   display: flex;
   flex-wrap: wrap;

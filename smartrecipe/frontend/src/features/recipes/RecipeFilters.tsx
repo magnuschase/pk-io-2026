@@ -9,6 +9,12 @@ import {
   parseFilterValue,
   toFilterValue,
 } from '@/lib/filter-options'
+import {
+  DEFAULT_RECIPE_STATUS_FILTER,
+  recipeStatusFilterLabel,
+  recipeStatusFilterOptions,
+  type RecipeStatusFilter,
+} from '@/lib/recipe-status-filter'
 import { displayEnum } from '@/lib/utils'
 
 export interface RecipeFilterValues {
@@ -16,6 +22,7 @@ export interface RecipeFilterValues {
   cuisine?: CuisineType
   kcalMin?: number
   kcalMax?: number
+  statusFilter?: RecipeStatusFilter
 }
 
 interface RecipeFiltersProps {
@@ -24,10 +31,17 @@ interface RecipeFiltersProps {
 }
 
 export function RecipeFilters({ values, onChange }: RecipeFiltersProps) {
-  const hasActiveFilters = Boolean(values.diet || values.cuisine || values.kcalMin || values.kcalMax)
+  const statusFilter = values.statusFilter ?? DEFAULT_RECIPE_STATUS_FILTER
+  const hasActiveFilters = Boolean(
+    values.diet ||
+      values.cuisine ||
+      values.kcalMin ||
+      values.kcalMax ||
+      statusFilter !== DEFAULT_RECIPE_STATUS_FILTER,
+  )
 
   function clearAll() {
-    onChange({})
+    onChange({ statusFilter: DEFAULT_RECIPE_STATUS_FILTER })
   }
 
   return (
@@ -77,6 +91,23 @@ export function RecipeFilters({ values, onChange }: RecipeFiltersProps) {
             }
           />
         </div>
+      </div>
+
+      <div className="recipes-filters__status">
+        <Label htmlFor="recipe-filter-status">Status</Label>
+        <Combobox
+          id="recipe-filter-status"
+          value={statusFilter}
+          onValueChange={(v) =>
+            onChange({
+              ...values,
+              statusFilter: (v || DEFAULT_RECIPE_STATUS_FILTER) as RecipeStatusFilter,
+            })
+          }
+          options={recipeStatusFilterOptions()}
+          placeholder="Bez archiwum"
+          allowSearch={false}
+        />
       </div>
 
       {hasActiveFilters ? (
@@ -129,6 +160,21 @@ export function RecipeFilters({ values, onChange }: RecipeFiltersProps) {
                   className="recipes-filters__chip-remove"
                   onClick={() => onChange({ ...values, kcalMax: undefined })}
                   aria-label="Usuń filtr kcal max"
+                >
+                  <X className="size-3.5" />
+                </button>
+              </span>
+            ) : null}
+            {statusFilter !== DEFAULT_RECIPE_STATUS_FILTER ? (
+              <span className="recipes-filters__chip">
+                Status: {recipeStatusFilterLabel(statusFilter)}
+                <button
+                  type="button"
+                  className="recipes-filters__chip-remove"
+                  onClick={() =>
+                    onChange({ ...values, statusFilter: DEFAULT_RECIPE_STATUS_FILTER })
+                  }
+                  aria-label="Usuń filtr statusu"
                 >
                   <X className="size-3.5" />
                 </button>

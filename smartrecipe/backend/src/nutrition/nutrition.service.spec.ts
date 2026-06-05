@@ -43,6 +43,7 @@ const usdaSearchResponse = {
     {
       fdcId: 2187885,
       description: 'CHICKEN BREAST',
+      dataType: 'Branded',
       foodNutrients: [
         {
           nutrientId: 1008,
@@ -55,7 +56,8 @@ const usdaSearchResponse = {
     },
     {
       fdcId: 2092152,
-      description: 'CHICKEN BREAST FILLET',
+      description: 'Chicken, breast, raw',
+      dataType: 'SR Legacy',
       foodNutrients: [
         {
           nutrientId: 1008,
@@ -94,27 +96,29 @@ describe('NutritionService', () => {
 
   // ── searchFoods ───────────────────────────────────────────────────────
   describe('searchFoods', () => {
-    it('returns hits with fdcId, description, and kcalPer100g', async () => {
+    it('returns proposed reference hit and remaining hits', async () => {
       mockHttp.get.mockReturnValue(of({ data: usdaSearchResponse }));
-      const hits = await service.searchFoods('chicken breast', 5);
-      expect(hits).toHaveLength(2);
-      expect(hits[0]).toEqual({
+      const result = await service.searchFoods('chicken breast', 5);
+      expect(result.proposed).toEqual({
+        fdcId: 2092152,
+        description: 'Chicken, breast, raw',
+        kcalPer100g: 143,
+        dataType: 'SR Legacy',
+      });
+      expect(result.hits).toHaveLength(1);
+      expect(result.hits[0]).toEqual({
         fdcId: 2187885,
         description: 'CHICKEN BREAST',
         kcalPer100g: 165,
-      });
-      expect(hits[1]).toEqual({
-        fdcId: 2092152,
-        description: 'CHICKEN BREAST FILLET',
-        kcalPer100g: 143,
+        dataType: 'Branded',
       });
     });
 
-    it('returns empty array for empty query without calling API', async () => {
-      const hits = await service.searchFoods('  ');
+    it('returns empty result for empty query without calling API', async () => {
+      const result = await service.searchFoods('  ');
       expect(mockHttp.get).not.toHaveBeenCalled();
       expect(mockDeepl.translatePlToEn).not.toHaveBeenCalled();
-      expect(hits).toHaveLength(0);
+      expect(result).toEqual({ proposed: null, hits: [] });
     });
 
     it('translates Polish query via DeepL before USDA search', async () => {
@@ -166,8 +170,65 @@ describe('NutritionService', () => {
           },
         }),
       );
-      const hits = await service.searchFoods('mystery');
-      expect(hits[0].kcalPer100g).toBeNull();
+      const result = await service.searchFoods('mystery');
+      expect(result.proposed?.kcalPer100g).toBeNull();
+    });
+
+    it('searches reference data types before unfiltered results', async () => {
+      mockHttp.get.mockReturnValue(of({ data: usdaSearchResponse }));
+      await service.searchFoods('chicken breast', 5);
+      const calls = mockHttp.get.mock.calls as [
+        [string, { params: { dataType?: string } }],
+      ];
+      expect(calls[0][1].params.dataType).toEqual([
+        'Foundation',
+        'SR Legacy',
+        'Survey (FNDDS)',
+      ]);
+    });
+  });
+
+  describe('enrichIngredientByFdcId', () => {
+    it('overwrites manual kcal using USDA food detail nutrient shape', async () => {
+      const ing = makeIngredient({ kcalPer100g: 5, externalFoodId: null });
+      mockIngredientRepo.findOne.mockResolvedValue(ing);
+      mockHttp.get.mockReturnValueOnce(
+        of({
+          data: {
+            fdcId: 2710186,
+            description: 'Olive oil',
+            foodNutrients: [
+              {
+                nutrient: { id: 1008, name: 'Energy' },
+                amount: 900,
+              },
+            ],
+            foodPortions: [{ amount: 1, gramWeight: 14 }],
+          },
+        }),
+      );
+      const result = await service.enrichIngredientByFdcId(ING_ID, 2710186);
+      expect(result.kcalPer100g).toBe(900);
+      expect(result.externalFoodId).toBe('2710186');
+      expect(mockIngredientRepo.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('setManualKcal', () => {
+    it('throws NotFoundException for unknown ingredient', async () => {
+      mockIngredientRepo.findOne.mockResolvedValue(null);
+      await expect(service.setManualKcal('bad-uuid', 120)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
+
+    it('saves manual kcal and clears externalFoodId', async () => {
+      const ing = makeIngredient({ externalFoodId: '12345', kcalPer100g: 50 });
+      mockIngredientRepo.findOne.mockResolvedValue(ing);
+      const result = await service.setManualKcal(ING_ID, 884);
+      expect(result.kcalPer100g).toBe(884);
+      expect(result.externalFoodId).toBeNull();
+      expect(mockIngredientRepo.save).toHaveBeenCalled();
     });
   });
 
@@ -185,18 +246,19 @@ describe('NutritionService', () => {
       mockIngredientRepo.findOne.mockResolvedValue(ing);
       mockHttp.get
         .mockReturnValueOnce(of({ data: usdaSearchResponse }))
+        .mockReturnValueOnce(of({ data: usdaSearchResponse }))
         .mockReturnValueOnce(
           of({
             data: {
-              fdcId: 2187885,
-              foodNutrients: usdaSearchResponse.foods[0].foodNutrients,
+              fdcId: 2092152,
+              foodNutrients: usdaSearchResponse.foods[1].foodNutrients,
               foodPortions: [{ amount: 1, modifier: 'medium', gramWeight: 85 }],
             },
           }),
         );
       const result = await service.enrichIngredient(ING_ID);
-      expect(result.externalFoodId).toBe('2187885');
-      expect(result.kcalPer100g).toBe(165);
+      expect(result.externalFoodId).toBe('2092152');
+      expect(result.kcalPer100g).toBe(143);
       expect(result.gramsPerPiece).toBe(85);
       expect(mockIngredientRepo.save).toHaveBeenCalled();
     });

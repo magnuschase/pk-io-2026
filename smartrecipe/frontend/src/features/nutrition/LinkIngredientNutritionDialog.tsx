@@ -4,7 +4,9 @@ import {
   enrichIngredientAuto,
   enrichIngredientByFdc,
   searchNutritionFoods,
+  setIngredientManualKcal,
 } from '@/api/nutrition'
+import type { NutritionSearchHit } from '@/api/nutrition'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -38,6 +40,38 @@ function handleEnrichResult(
   onOpenChange(false)
 }
 
+function formatHitKcal(hit: NutritionSearchHit): string {
+  return hit.kcalPer100g != null
+    ? `${hit.kcalPer100g} kcal / 100 g`
+    : 'brak danych o kcal'
+}
+
+interface NutritionHitButtonProps {
+  hit: NutritionSearchHit
+  disabled: boolean
+  onPick: (fdcId: number) => void
+  className?: string
+}
+
+function NutritionHitButton({
+  hit,
+  disabled,
+  onPick,
+  className = 'nutrition-dialog__hit',
+}: NutritionHitButtonProps) {
+  return (
+    <button
+      type="button"
+      className={className}
+      disabled={disabled}
+      onClick={() => onPick(hit.fdcId)}
+    >
+      <span className="nutrition-dialog__hit-name">{hit.description}</span>
+      <span className="nutrition-dialog__hit-kcal">{formatHitKcal(hit)}</span>
+    </button>
+  )
+}
+
 export function LinkIngredientNutritionDialog({
   ingredient,
   open,
@@ -45,15 +79,20 @@ export function LinkIngredientNutritionDialog({
   onLinked,
 }: LinkIngredientNutritionDialogProps) {
   const [manualQuery, setManualQuery] = useState('')
+  const [manualKcal, setManualKcal] = useState('')
   const debouncedManual = useDebounce(manualQuery, 350)
   const searchTerm = debouncedManual.trim() || ingredient.name
 
-  const { data: hits = [], isFetching, isError } = useQuery({
+  const { data: searchResult, isFetching, isError } = useQuery({
     queryKey: [{ resource: 'nutrition', scope: 'search', q: searchTerm }],
     queryFn: () => searchNutritionFoods(searchTerm),
     enabled: open && searchTerm.length >= 2,
     staleTime: 60_000,
   })
+
+  const proposed = searchResult?.proposed ?? null
+  const hits = searchResult?.hits ?? []
+  const hasResults = proposed != null || hits.length > 0
 
   const autoMutation = useMutation({
     mutationFn: () => enrichIngredientAuto(ingredient.id),
@@ -67,7 +106,24 @@ export function LinkIngredientNutritionDialog({
     onError: () => toast.error('Zapis nie powiódł się'),
   })
 
-  const busy = autoMutation.isPending || pickMutation.isPending
+  const manualMutation = useMutation({
+    mutationFn: (kcalPer100g: number) =>
+      setIngredientManualKcal(ingredient.id, kcalPer100g),
+    onSuccess: (updated) => handleEnrichResult(updated, onLinked, onOpenChange),
+    onError: () => toast.error('Zapis ręcznej kaloryki nie powiódł się'),
+  })
+
+  const busy =
+    autoMutation.isPending || pickMutation.isPending || manualMutation.isPending
+
+  const handleManualSave = () => {
+    const parsed = Number.parseFloat(manualKcal.replace(',', '.'))
+    if (!Number.isFinite(parsed) || parsed < 0) {
+      toast.error('Podaj poprawną wartość kcal (liczba ≥ 0).')
+      return
+    }
+    manualMutation.mutate(Math.round(parsed * 100) / 100)
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -113,33 +169,66 @@ export function LinkIngredientNutritionDialog({
 
         {isFetching ? <p className="nutrition-dialog__status">Szukam...</p> : null}
 
+        {!isFetching && !isError && proposed ? (
+          <div className="nutrition-dialog__proposed">
+            <p className="nutrition-dialog__proposed-label">Proponowane</p>
+            <NutritionHitButton
+              hit={proposed}
+              disabled={busy}
+              onPick={(fdcId) => pickMutation.mutate(fdcId)}
+              className="nutrition-dialog__hit nutrition-dialog__hit--proposed"
+            />
+          </div>
+        ) : null}
+
         {!isFetching && !isError && hits.length > 0 ? (
           <ul className="nutrition-dialog__hits">
             {hits.map((hit) => (
               <li key={hit.fdcId}>
-                <button
-                  type="button"
-                  className="nutrition-dialog__hit"
+                <NutritionHitButton
+                  hit={hit}
                   disabled={busy}
-                  onClick={() => pickMutation.mutate(hit.fdcId)}
-                >
-                  <span className="nutrition-dialog__hit-name">{hit.description}</span>
-                  <span className="nutrition-dialog__hit-kcal">
-                    {hit.kcalPer100g != null
-                      ? `${hit.kcalPer100g} kcal / 100 g`
-                      : 'brak danych o kcal'}
-                  </span>
-                </button>
+                  onPick={(fdcId) => pickMutation.mutate(fdcId)}
+                />
               </li>
             ))}
           </ul>
         ) : null}
 
-        {!isFetching && !isError && searchTerm.length >= 2 && hits.length === 0 ? (
+        {!isFetching && !isError && searchTerm.length >= 2 && !hasResults ? (
           <p className="nutrition-dialog__status">
             Brak wyników - spróbuj innej nazwy (najlepiej po angielsku).
           </p>
         ) : null}
+
+        <div className="nutrition-dialog__manual">
+          <label className="nutrition-dialog__label" htmlFor="nutrition-manual-kcal">
+            Wpisz ręcznie (kcal / 100 g)
+          </label>
+          <div className="nutrition-dialog__manual-row">
+            <input
+              id="nutrition-manual-kcal"
+              className="app-input nutrition-dialog__manual-input"
+              type="number"
+              min={0}
+              step={1}
+              inputMode="decimal"
+              value={manualKcal}
+              onChange={(e) => setManualKcal(e.target.value)}
+              placeholder="np. 100"
+              autoComplete="off"
+            />
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={busy || manualKcal.trim() === ''}
+              onClick={handleManualSave}
+            >
+              {manualMutation.isPending ? 'Zapisuję...' : 'Zapisz'}
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   )

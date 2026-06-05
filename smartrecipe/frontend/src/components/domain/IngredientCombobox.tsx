@@ -10,6 +10,7 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import type { Ingredient } from "@/types/domain";
+import { toast } from "sonner";
 
 interface IngredientComboboxProps {
   value: Ingredient | null;
@@ -50,10 +51,14 @@ export function IngredientCombobox({
   async function handleCreate() {
     const name = search.trim();
     if (!name) return;
-    const created = await createIngredient(name);
-    onChange(created);
-    setSearch(created.name);
-    setOpen(false);
+    try {
+      const created = await createIngredient(name);
+      onChange(created);
+      setSearch(created.name);
+      setOpen(false);
+    } catch {
+      toast.error("Nie udało się utworzyć składnika — spróbuj ponownie.");
+    }
   }
 
   function handleSelect(item: Ingredient) {

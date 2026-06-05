@@ -10,6 +10,7 @@ import { renderWithProviders } from '@/test/test-utils'
 
 vi.mock('@/api/recipes', () => ({
   recipeLifecycle: vi.fn(),
+  deleteRecipe: vi.fn(),
 }))
 
 vi.mock('sonner', () => ({
@@ -65,6 +66,24 @@ describe('LifecycleActions (Recipe lifecycle DRAFT → ACTIVE → ARCHIVED)', ()
     renderWithProviders(<LifecycleActions recipe={recipe(RecipeLifecycleStatus.ACTIVE)} />)
     await user.click(screen.getByRole('button', { name: 'Archiwizuj' }))
     expect(recipeLifecycle).toHaveBeenCalledWith('r1', 'archive')
+  })
+
+  it('shows archive hint toast when archiving active recipe', async () => {
+    const user = userEvent.setup()
+    renderWithProviders(<LifecycleActions recipe={recipe(RecipeLifecycleStatus.ACTIVE)} />)
+    await user.click(screen.getByRole('button', { name: 'Archiwizuj' }))
+    await waitFor(() =>
+      expect(toast.success).toHaveBeenCalledWith(
+        'Przepis trafił do archiwum. Domyślnie nie widać go w katalogu — wybierz filtr „Archiwum”, aby go odszukać.',
+        { duration: 6000 },
+      ),
+    )
+  })
+
+  it('shows restore and delete actions for archived recipes', () => {
+    renderWithProviders(<LifecycleActions recipe={recipe(RecipeLifecycleStatus.ARCHIVED)} />)
+    expect(screen.getByRole('button', { name: 'Przywróć' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Usuń z archiwum' })).toBeInTheDocument()
   })
 
   it('unarchives archived recipe', async () => {

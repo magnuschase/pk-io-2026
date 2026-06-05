@@ -11,7 +11,7 @@ interface TabDef {
   id: SuggestTabId;
   label: string;
   shortLabel: string;
-  lede: string;
+  lede: React.ReactNode;
   empty: string;
 }
 
@@ -27,7 +27,11 @@ const TAB_DEFS: TabDef[] = [
     id: "almost",
     label: "Lekkie braki",
     shortLabel: "Lekkie braki",
-    lede: "Brakuje co najwyżej dwóch składników - dodaj je na listę zakupów.",
+    lede: (
+      <>
+        Brakuje co najwyżej <strong>dwóch</strong> składników - dodaj je na listę zakupów.
+      </>
+    ),
     empty: "Żaden przepis nie mieści się w tym progu.",
   },
   {
