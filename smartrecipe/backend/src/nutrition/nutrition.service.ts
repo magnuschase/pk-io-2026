@@ -13,10 +13,7 @@ import { Ingredient } from '../domain/entities/ingredient.entity';
 import { buildUsdaSearchQueries } from './ingredient-usda-query';
 import { DeeplTranslationService } from './deepl-translation.service';
 import { pickDefaultGramsPerPiece } from './usda-portion-grams';
-import {
-  pickProposedHit,
-  splitProposedAndHits,
-} from './usda-hit-ranking';
+import { pickProposedHit, splitProposedAndHits } from './usda-hit-ranking';
 
 const REFERENCE_DATA_TYPES = ['Foundation', 'SR Legacy', 'Survey (FNDDS)'];
 
@@ -113,7 +110,11 @@ export class NutritionService {
     };
 
     for (const q of queries) {
-      const refHits = await this.searchFoodsOnce(q, pageSize, REFERENCE_DATA_TYPES);
+      const refHits = await this.searchFoodsOnce(
+        q,
+        pageSize,
+        REFERENCE_DATA_TYPES,
+      );
       if (mergeHits(refHits)) {
         return splitProposedAndHits(merged, query, english);
       }

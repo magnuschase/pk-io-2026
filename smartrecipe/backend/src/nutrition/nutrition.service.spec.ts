@@ -217,9 +217,9 @@ describe('NutritionService', () => {
   describe('setManualKcal', () => {
     it('throws NotFoundException for unknown ingredient', async () => {
       mockIngredientRepo.findOne.mockResolvedValue(null);
-      await expect(service.setManualKcal('bad-uuid', 120)).rejects.toBeInstanceOf(
-        NotFoundException,
-      );
+      await expect(
+        service.setManualKcal('bad-uuid', 120),
+      ).rejects.toBeInstanceOf(NotFoundException);
     });
 
     it('saves manual kcal and clears externalFoodId', async () => {

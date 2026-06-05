@@ -18,8 +18,10 @@ export function useRecipeDraftLeaveGuard({
   const saveDraftRef = useRef(saveDraft)
   const hasPendingChangesRef = useRef(hasPendingChanges)
 
-  saveDraftRef.current = saveDraft
-  hasPendingChangesRef.current = hasPendingChanges
+  useEffect(() => {
+    saveDraftRef.current = saveDraft
+    hasPendingChangesRef.current = hasPendingChanges
+  }, [saveDraft, hasPendingChanges])
 
   const blocker = useBlocker(({ currentLocation, nextLocation }) => {
     if (!enabled) return false

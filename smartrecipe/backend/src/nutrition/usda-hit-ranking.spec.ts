@@ -6,7 +6,8 @@ import {
 import type { NutritionSearchHit } from './nutrition.service';
 
 const hit = (
-  partial: Partial<NutritionSearchHit> & Pick<NutritionSearchHit, 'fdcId' | 'description'>,
+  partial: Partial<NutritionSearchHit> &
+    Pick<NutritionSearchHit, 'fdcId' | 'description'>,
 ): NutritionSearchHit => ({
   kcalPer100g: 100,
   dataType: null,

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { setRecipeIngredients, updateRecipe } from "@/api/recipes";
 import { DeleteRecipeButton } from "@/features/recipes/DeleteRecipeButton";
@@ -46,20 +46,23 @@ export function RecipeDraftDetail({ recipe }: RecipeDraftDetailProps) {
   const linesRef = useRef<RecipeIngredientLine[]>([]);
   const baselineRef = useRef(recipeDraftSnapshotFromRecipe(recipe));
   const skipSuccessToastRef = useRef(false);
+  const loadedRecipeIdRef = useRef(recipeId);
   const recipeId = recipe.id;
-  const [syncedRecipeId, setSyncedRecipeId] = useState(recipeId);
   const [lines, setLines] = useState<RecipeIngredientLine[]>(() =>
     (recipe.ingredients ?? []).map(normalizeIngredientLine),
   );
   const [isDeleting, setIsDeleting] = useState(false);
 
-  linesRef.current = lines;
+  useEffect(() => {
+    linesRef.current = lines;
+  }, [lines]);
 
-  if (syncedRecipeId !== recipeId) {
-    setSyncedRecipeId(recipeId);
+  useEffect(() => {
+    if (loadedRecipeIdRef.current === recipeId) return;
+    loadedRecipeIdRef.current = recipeId;
     setLines((recipe.ingredients ?? []).map(normalizeIngredientLine));
     baselineRef.current = recipeDraftSnapshotFromRecipe(recipe);
-  }
+  }, [recipe, recipeId]);
 
   const saveMutation = useMutation({
     mutationFn: async ({ values, lines }: SaveRecipePayload) => {
