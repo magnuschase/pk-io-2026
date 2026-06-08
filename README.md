@@ -112,7 +112,7 @@ Diagramy klas, obiektów, pakietów, komponentów oraz stany wybranych obiektów
 
 Aktorzy, przypadki użycia, analiza problemu, diagramy sekwencji i czynności oraz specyfikacja wymagań (RF/RNF): [model-dynamiczny.md](model-dynamiczny.md).
 
-### Testy systemu (punkt 6)
+### Testy systemu
 
 - [RAPORT_TESTOW.md](RAPORT_TESTOW.md) — wyniki i pokrycie  
 - [PLAN_TESTOW.md](PLAN_TESTOW.md) — plan i macierz wymagań  
