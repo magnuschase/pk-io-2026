@@ -28,8 +28,8 @@ export function recipeDraftSnapshotFromRecipe(recipe: Recipe): string {
       instructions: recipe.instructions ?? '',
       estimatedKcalPerServing: recipe.estimatedKcalPerServing ?? undefined,
       servings: recipe.servings ?? undefined,
-      dietType: recipe.dietType,
-      cuisineType: recipe.cuisineType,
+      dietType: recipe.dietType ?? undefined,
+      cuisineType: recipe.cuisineType ?? undefined,
     },
     lines,
   )

@@ -22,7 +22,7 @@ const flour: Ingredient = {
   id: 'ing-1',
   name: 'mąka pszenna',
   kcalPer100g: 361,
-  fdcId: null,
+  externalFoodId: null,
 }
 
 function Harness({ initialLines }: { initialLines: RecipeIngredientLine[] }) {

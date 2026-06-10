@@ -12,6 +12,10 @@ describe('recipeDraftSnapshot', () => {
       title: 'Zupa',
       lifecycleStatus: RecipeLifecycleStatus.DRAFT,
       instructions: 'Krok 1',
+      estimatedKcalPerServing: null,
+      servings: null,
+      dietType: null,
+      cuisineType: null,
       ingredients: [
         {
           ingredientId: 'ing-1',

@@ -9,6 +9,11 @@ const recipe = (status: RecipeLifecycleStatus): Recipe => ({
   id: 'r1',
   title: 'Test',
   lifecycleStatus: status,
+  instructions: null,
+  estimatedKcalPerServing: null,
+  servings: null,
+  dietType: null,
+  cuisineType: null,
 })
 
 describe('matchesRecipeStatusFilter', () => {
