@@ -46,8 +46,8 @@ export function RecipeDraftDetail({ recipe }: RecipeDraftDetailProps) {
   const linesRef = useRef<RecipeIngredientLine[]>([]);
   const baselineRef = useRef(recipeDraftSnapshotFromRecipe(recipe));
   const skipSuccessToastRef = useRef(false);
+  const loadedRecipeIdRef = useRef(recipe.id);
   const recipeId = recipe.id;
-  const loadedRecipeIdRef = useRef(recipeId);
   const [lines, setLines] = useState<RecipeIngredientLine[]>(() =>
     (recipe.ingredients ?? []).map(normalizeIngredientLine),
   );
@@ -97,8 +97,8 @@ export function RecipeDraftDetail({ recipe }: RecipeDraftDetailProps) {
         instructions: recipe.instructions ?? "",
         estimatedKcalPerServing: recipe.estimatedKcalPerServing ?? undefined,
         servings: recipe.servings ?? undefined,
-        dietType: recipe.dietType,
-        cuisineType: recipe.cuisineType,
+        dietType: recipe.dietType ?? undefined,
+        cuisineType: recipe.cuisineType ?? undefined,
       }
     );
   }, [recipe]);
