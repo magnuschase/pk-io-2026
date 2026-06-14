@@ -1,12 +1,12 @@
-import { Link, Navigate } from 'react-router-dom'
-import { useAuth } from '@/hooks/useAuth'
-import { LandingStage } from '@/features/landing/LandingStage'
+import { Link, Navigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { LandingStage } from "@/features/landing/LandingStage";
 
 export function LandingPage() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth();
 
   if (isAuthenticated) {
-    return <Navigate to="/suggestions" replace />
+    return <Navigate to="/suggestions" replace />;
   }
 
   return (
@@ -17,7 +17,9 @@ export function LandingPage() {
             <Link className="masthead__wordmark" to="/">
               SmartRecipe
             </Link>
-            <p className="masthead__issue">System zarządzania przepisami kulinarnymi · 2026</p>
+            <p className="masthead__issue">
+              System zarządzania przepisami kulinarnymi · 2026
+            </p>
           </div>
         </div>
         <div className="masthead">
@@ -35,8 +37,8 @@ export function LandingPage() {
               Co ugotować z tego, co masz.
             </h1>
             <p className="hero__lede">
-              SmartRecipe sprawdza Twoją spiżarnię i dobiera przepisy, które możesz zrealizować bez
-              wychodzenia do sklepu.
+              SmartRecipe sprawdza Twoją spiżarnię i dobiera przepisy, które
+              możesz zrealizować bez wychodzenia do sklepu.
             </p>
             <a className="hero__cta" href="#stages">
               Jak to działa <span aria-hidden="true">→</span>
@@ -44,7 +46,11 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="stages" id="stages" aria-label="Cztery etapy pracy z systemem">
+        <section
+          className="stages"
+          id="stages"
+          aria-label="Cztery etapy pracy z systemem"
+        >
           <LandingStage
             num="1.0"
             name="Spiżarnia"
@@ -65,7 +71,7 @@ export function LandingPage() {
             num="3.0"
             name="Przepisy"
             heading="Własna baza, na własnych zasadach."
-            text="Twórz przepisy ze szkicu, definiuj składniki z ilościami, publikuj kiedy gotowy. Filtruj według diety, kuchni i kaloryczności. Importuj przepisy z zewnętrznych baz."
+            text="Twórz przepisy jako szkic, definiuj składniki z ilościami, publikuj kiedy będziesz gotowy. Filtruj według diety, kuchni i kaloryczności. Importuj przepisy z zewnętrznych baz."
             visual="recipes"
             headingId="stage-3-heading"
           />
@@ -102,16 +108,16 @@ export function LandingPage() {
           <div className="site-footer__meta">
             <span className="site-footer__wordmark">SmartRecipe</span>
             <span className="site-footer__sep" aria-hidden="true">
-              ·
+              |
             </span>
             <span>Jakub Kapała, Grzegorz Kotkowski</span>
             <span className="site-footer__sep" aria-hidden="true">
-              ·
+              |
             </span>
-            <span>Inżynieria Oprogramowania · 2026</span>
+            <span>Inżynieria Oprogramowania, 2026</span>
           </div>
         </div>
       </footer>
     </>
-  )
+  );
 }
